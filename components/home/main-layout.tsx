@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Bookmark, Dot, Heart, MessageCircle } from "lucide-react"
 
-const MainLayout = () => {
+export const MainLayout = () => {
   return (
     <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted">
       <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
@@ -81,5 +81,3 @@ const MainLayout = () => {
     </main>
   )
 }
-
-export default MainLayout

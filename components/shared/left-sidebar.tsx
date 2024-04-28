@@ -4,7 +4,7 @@ import { navigationLinks } from "@/constants"
 import { EllipsisVertical, Star } from "lucide-react"
 import Link from "next/link"
 
-const LeftSidebar = () => {
+export const LeftSidebar = () => {
   return (
     <section className="sticky top-0 flex h-screen w-[20%] flex-col items-stretch px-3">
       <div className="mt-4 flex h-full flex-col items-stretch space-y-4">
@@ -46,5 +46,3 @@ const LeftSidebar = () => {
     </section>
   )
 }
-
-export default LeftSidebar
