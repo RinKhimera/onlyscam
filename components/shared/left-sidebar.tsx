@@ -6,7 +6,7 @@ import Link from "next/link"
 
 const LeftSidebar = () => {
   return (
-    <section className="fixed flex h-screen w-[275px] flex-col items-stretch">
+    <section className="sticky top-0 flex h-screen w-[20%] flex-col items-stretch px-3">
       <div className="mt-4 flex h-full flex-col items-stretch space-y-4">
         <Link href={"/"} className="px-4 py-2 text-xl">
           <Star />
