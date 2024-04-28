@@ -28,7 +28,7 @@ const LeftSidebar = () => {
         </Button>
       </div>
 
-      <button className="m-4 flex w-full items-center justify-between rounded-full p-4 transition duration-200 hover:bg-foreground/5">
+      <button className="my-3 flex w-full items-center justify-between rounded-full p-4 transition duration-200 hover:bg-foreground/5">
         <div className="flex items-center space-x-2">
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
