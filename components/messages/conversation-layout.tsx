@@ -1,7 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Bookmark, Dot, Heart, MessageCircle } from "lucide-react"
 import { EmptyConversation } from "./empty-conversation"
+import { UserListDialog } from "./user-list-dialog"
 
 export const ConversationLayout = () => {
   return (
@@ -11,7 +9,14 @@ export const ConversationLayout = () => {
       </h1>
 
       <div className="flex h-full">
-        <div className="w-2/5 border-r border-muted">gauche</div>
+        <div className="w-2/5 border-r border-muted">
+          <div className="flex items-center justify-between border-b border-muted p-4 text-lg font-bold">
+            <div className="">Mes conversations</div>
+            {/* <MailPlus /> */}
+            <UserListDialog />
+            {/* {isAuthenticated && <UserListDialog />} */}
+          </div>
+        </div>
 
         <EmptyConversation />
       </div>

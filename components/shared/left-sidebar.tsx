@@ -1,6 +1,18 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { navigationLinks } from "@/constants"
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignOutButton,
+  UserButton,
+} from "@clerk/nextjs"
 import { EllipsisVertical, Star } from "lucide-react"
 import Link from "next/link"
 
@@ -28,21 +40,45 @@ export const LeftSidebar = () => {
         </Button>
       </div>
 
-      <button className="my-3 flex w-full items-center justify-between rounded-full p-4 transition duration-200 hover:bg-foreground/5">
-        <div className="flex items-center space-x-2">
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <div className="text-left text-sm">
-            <div className="truncate">TypeScript Enthusiast</div>
-            <div className="text-muted-foreground">@rin_khimera</div>
+      <Popover>
+        <PopoverTrigger asChild>
+          <button className="my-3 flex w-full items-center justify-between rounded-full p-4 transition duration-200 hover:bg-foreground/5">
+            <div className="flex items-center space-x-2">
+              <Avatar>
+                <AvatarImage
+                  src="https://github.com/shadcn.png"
+                  alt="@shadcn"
+                />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+              <div className="text-left text-sm">
+                <div className="truncate">TypeScript Enthusiast</div>
+                <div className="text-muted-foreground">@rin_khimera</div>
+              </div>
+            </div>
+            <div>
+              <EllipsisVertical />
+            </div>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent side="top">
+          <div className="flex flex-col items-center gap-2">
+            <SignedIn>
+              {/* Mount the UserButton component */}
+              <UserButton />
+            </SignedIn>
+
+            <SignedOut>
+              {/* Signed out users get sign in button */}
+              <SignInButton />
+            </SignedOut>
+
+            <SignedIn>
+              <SignOutButton>Se déconnecter</SignOutButton>
+            </SignedIn>
           </div>
-        </div>
-        <div>
-          <EllipsisVertical />
-        </div>
-      </button>
+        </PopoverContent>
+      </Popover>
     </section>
   )
 }
