@@ -13,7 +13,7 @@ export const ConversationsList = () => {
   )
 
   return (
-    <div className="my-3 flex max-h-[80%] flex-col gap-0 overflow-auto">
+    <div className="mb-3 flex max-h-[80%] flex-col gap-0 overflow-auto">
       {/* Conversations will go here*/}
       {conversations?.map((conversation) => (
         <ConversationBox key={conversation._id} conversation={conversation} />

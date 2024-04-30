@@ -1,5 +1,4 @@
 import { ConversationIdLayout } from "@/components/messages/conversation-id-layout"
-import { ConversationLayout } from "@/components/messages/conversation-layout"
 import { LeftSidebar } from "@/components/shared/left-sidebar"
 
 const ConversationsIdPage = () => {

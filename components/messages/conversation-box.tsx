@@ -2,21 +2,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { api } from "@/convex/_generated/api"
 import { formatDate } from "@/lib/dates"
 import { MessageSeenSvg } from "@/lib/svgs"
-import { Conversation } from "@/types"
+import { ConversationProps } from "@/types"
 import { useQuery } from "convex/react"
 import { ImageIcon, Users, VideoIcon } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 
 export const ConversationBox = ({
   conversation,
 }: {
-  conversation: Conversation
+  conversation: ConversationProps
 }) => {
+  const params = useParams()
   const router = useRouter()
 
-  const conversationImage = conversation.groupImage || conversation.image
-  const conversationName = conversation.groupName || conversation.name
-  const lastMessage = conversation.lastMessage
+  const conversationImage = conversation?.groupImage || conversation?.image
+  const conversationName = conversation?.groupName || conversation?.name
+  const lastMessage = conversation?.lastMessage
   const lastMessageType = lastMessage?.messageType
 
   const currentUser = useQuery(api.users.getCurrentUser)
@@ -24,15 +25,15 @@ export const ConversationBox = ({
   return (
     <>
       <div
-        onClick={() => router.push(`/messages/${conversation._id}`)}
-        className={`hover:bg-chat-hover flex cursor-pointer items-center gap-2 p-3 `}
+        onClick={() => router.push(`/messages/${conversation?._id}`)}
+        className={`flex cursor-pointer items-center gap-2 p-3 transition hover:bg-muted/60 ${conversation?._id === params.id ? "bg-muted" : ""}`}
       >
         <Avatar className="relative overflow-visible border border-gray-900">
-          {conversation.isOnline && (
+          {conversation?.isOnline && (
             <div className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full border-2 border-foreground bg-green-500" />
           )}
           <AvatarImage
-            src={conversationImage || "/placeholder.png"}
+            src={conversationImage}
             className="rounded-full object-cover"
           />
           <AvatarFallback>
@@ -46,13 +47,13 @@ export const ConversationBox = ({
             </h3>
             <span className="ml-auto text-[10px] text-muted-foreground lg:text-xs">
               {formatDate(
-                lastMessage?._creationTime || conversation._creationTime,
+                lastMessage?._creationTime || conversation?._creationTime!,
               )}
             </span>
           </div>
           <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
             {lastMessage?.sender === currentUser?._id ? <MessageSeenSvg /> : ""}
-            {conversation.isGroup && <Users size={16} />}
+            {conversation?.isGroup && <Users size={16} />}
             {!lastMessage && "Démarrer une conversation"}
             {lastMessageType === "text" ? (
               (lastMessage?.content as string)?.length > 30 ? (
