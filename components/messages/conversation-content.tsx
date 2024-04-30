@@ -7,6 +7,7 @@ import { useConvexAuth, useQuery } from "convex/react"
 import { Video, X } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
+import { GroupMembersDialog } from "./group-members-dialog"
 import { MessageForm } from "./message-form"
 
 export const ConversationContent = () => {
@@ -52,7 +53,9 @@ export const ConversationContent = () => {
               <p>
                 {currentConversation?.groupName || currentConversation?.name}
               </p>
-              {/* {isGroup && <GroupMembersDialog />} */}
+              {currentConversation?.isGroup && (
+                <GroupMembersDialog conversation={currentConversation} />
+              )}
             </div>
           </div>
 
