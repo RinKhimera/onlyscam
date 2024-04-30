@@ -1,8 +1,8 @@
+import { ConversationContent } from "./conversation-content"
 import { ConversationsList } from "./conversations-list"
-import { EmptyConversation } from "./empty-conversation"
 import { UserListDialog } from "./user-list-dialog"
 
-export const ConversationLayout = () => {
+export const ConversationIdLayout = () => {
   return (
     <main className="flex h-screen w-[80%] flex-col border-l border-r border-muted">
       <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
@@ -19,7 +19,7 @@ export const ConversationLayout = () => {
           <ConversationsList />
         </div>
 
-        <EmptyConversation />
+        <ConversationContent />
       </div>
     </main>
   )

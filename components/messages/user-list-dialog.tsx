@@ -103,7 +103,7 @@ export const UserListDialog = () => {
         <DialogHeader>
           {/* TODO: <DialogClose /> will be here */}
           <DialogClose ref={dialogCloseRef} />
-          <DialogTitle>Nouveau message</DialogTitle>
+          <DialogTitle>Nouvelle conversation</DialogTitle>
         </DialogHeader>
 
         <DialogDescription>
