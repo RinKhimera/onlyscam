@@ -1,5 +1,7 @@
 "use client"
 
+import { GroupMembersDialog } from "@/components/messages/group-members-dialog"
+import { MessageForm } from "@/components/messages/message-form"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { api } from "@/convex/_generated/api"
 import { ConversationProps } from "@/types"
@@ -7,14 +9,12 @@ import { useConvexAuth, useQuery } from "convex/react"
 import { Video, X } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
-import { GroupMembersDialog } from "./group-members-dialog"
-import { MessageForm } from "./message-form"
+import { MessagesList } from "./messages-list"
 
 export const ConversationContent = () => {
   const { isAuthenticated } = useConvexAuth()
 
   const params = useParams()
-  const conversationName = "John Doe"
   const router = useRouter()
 
   const conversations = useQuery(
@@ -22,7 +22,11 @@ export const ConversationContent = () => {
     isAuthenticated ? undefined : "skip",
   )
 
-  // filter the conversation by id from the params.id
+  const currentUser = useQuery(
+    api.users.getCurrentUser,
+    isAuthenticated ? undefined : "skip",
+  )
+
   const currentConversation: ConversationProps = conversations?.find(
     (conversation) => conversation._id === params.id,
   )
@@ -31,7 +35,7 @@ export const ConversationContent = () => {
 
   return (
     <div className="flex h-full w-3/5 flex-col">
-      <div className="sticky top-0 z-50 w-full">
+      <div className="sticky top-0 z-10 w-full">
         {/* Header */}
         <div className="flex justify-between bg-muted/50 p-3">
           <div className="flex items-center gap-3">
@@ -71,8 +75,74 @@ export const ConversationContent = () => {
         </div>
       </div>
 
-      <div className="relative h-full flex-1 overflow-auto p-3"></div>
-      <MessageForm />
+      <MessagesList
+        conversation={currentConversation}
+        currentUser={currentUser}
+      />
+      {/* <div className="flex-1 overflow-auto pb-20">
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Amet,
+        Repellendus dolor hic architecto sint. Laudantium, blanditiis autem
+        labore ea sit numquam enim dignissimos nisi rem. Libero sapiente error
+        cumque, repellendus ducimus ad maxime consequatur, commodi sed nam
+        blanditiis atque! Esse possimus necessitatibus nulla illo ducimus
+        asperiores eius omnis maiores quae sit ad ab, repellendus corporis vel
+        explicabo aspernatur ut sed amet unde, minima at, mollitia alias quos.
+        Quisquam, laborum. Amet vero accusantium voluptatibus fuga excepturi sed
+        magnam nisi esse, quam ipsam consequuntur nulla sapiente nesciunt ut
+        vitae inventore saepe nam dignissimos? Laborum nisi rem cum dolore
+        consequatur explicabo atque? Voluptatum consequuntur id quibusdam beatae
+        inventore. Animi, itaque dolorum hic quos consectetur obcaecati ab, nam
+        assumenda iusto, porro amet ut. Molestias repellat voluptates ut
+        consectetur rem tempora quidem, labore libero? periores eius omnis
+        maiores quae sit ad ab, repellendus corporis vel explicabo aspernatur ut
+        sed amet unde, minima at, mollitia alias quos. Quisquam, laborum. Amet
+        vero accusantium voluptatibus fuga excepturi sed magnam nisi esse, quam
+        ipsam consequuntur nulla sapiente nesciunt ut vitae inventore saepe nam
+        dignissimos? Laborum nisi rem cum dolore consequatur explicabo atque?
+        Voluptatum consequuntur id quibusdam beatae inventore. Animi, itaque
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Amet,
+        Repellendus dolor hic architecto sint. Laudantium, blanditiis autem
+        labore ea sit numquam enim dignissimos nisi rem. Libero sapiente error
+        cumque, repellendus ducimus ad maxime consequatur, commodi sed nam
+        blanditiis atque! Esse possimus necessitatibus nulla illo ducimus
+        asperiores eius omnis maiores quae sit ad ab, repellendus corporis vel
+        explicabo aspernatur ut sed amet unde, minima at, mollitia alias quos.
+        Quisquam, laborum. Amet vero accusantium voluptatibus fuga excepturi sed
+        magnam nisi esse, quam ipsam consequuntur nulla sapiente nesciunt ut
+        vitae inventore saepe nam dignissimos? Laborum nisi rem cum dolore
+        consequatur explicabo atque? Voluptatum consequuntur id quibusdam beatae
+        inventore. Animi, itaque dolorum hic quos consectetur obcaecati ab, nam
+        assumenda iusto, porro amet ut. Molestias repellat voluptates ut
+        consectetur rem tempora quidem, labore libero? periores eius omnis
+        maiores quae sit ad ab, repellendus corporis vel explicabo aspernatur ut
+        sed amet unde, minima at, mollitia alias quos. Quisquam, laborum. Amet
+        vero accusantium voluptatibus fuga excepturi sed magnam nisi esse, quam
+        ipsam consequuntur nulla sapiente nesciunt ut vitae inventore saepe nam
+        dignissimos? Laborum nisi rem cum dolore consequatur explicabo atque?
+        Voluptatum consequuntur id quibusdam beatae inventore. Animi, itaque
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Amet,
+        Repellendus dolor hic architecto sint. Laudantium, blanditiis autem
+        labore ea sit numquam enim dignissimos nisi rem. Libero sapiente error
+        cumque, repellendus ducimus ad maxime consequatur, commodi sed nam
+        blanditiis atque! Esse possimus necessitatibus nulla illo ducimus
+        asperiores eius omnis maiores quae sit ad ab, repellendus corporis vel
+        explicabo aspernatur ut sed amet unde, minima at, mollitia alias quos.
+        Quisquam, laborum. Amet vero accusantium voluptatibus fuga excepturi sed
+        magnam nisi esse, quam ipsam consequuntur nulla sapiente nesciunt ut
+        vitae inventore saepe nam dignissimos? Laborum nisi rem cum dolore
+        consequatur explicabo atque? Voluptatum consequuntur id quibusdam beatae
+        inventore. Animi, itaque dolorum hic quos consectetur obcaecati ab, nam
+        assumenda iusto, porro amet ut. Molestias repellat voluptates ut
+        consectetur rem tempora quidem, labore libero? periores eius omnis
+        maiores quae sit ad ab, repellendus corporis vel explicabo aspernatur ut
+        sed amet unde, minima at, mollitia alias quos. Quisquam, laborum. Amet
+        vero accusantium voluptatibus fuga excepturi sed magnam nisi esse, quam
+        ipsam consequuntur nulla sapiente nesciunt ut vitae inventore saepe nam
+        dignissimos? Laborum nisi rem cum dolore consequatur explicabo atque?
+        Voluptatum consequuntur id quibusdam beatae inventore. Animi, itaque
+      </div> */}
+
+      <MessageForm currentUser={currentUser} />
     </div>
   )
 }

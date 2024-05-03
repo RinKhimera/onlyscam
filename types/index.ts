@@ -22,3 +22,31 @@ export type ConversationProps =
       }
     }
   | undefined
+
+export type UserProps =
+  | {
+      _id: Id<"users">
+      _creationTime: number
+      name?: string
+      email: string
+      image: string
+      tokenIdentifier: string
+      isOnline: boolean
+    }
+  | undefined
+
+export type MessageProps = {
+  _id: string
+  content: string
+  _creationTime: number
+  messageType: "text" | "image" | "video"
+  sender: {
+    _id: Id<"users">
+    image: string
+    name?: string
+    tokenIdentifier: string
+    email: string
+    _creationTime: number
+    isOnline: boolean
+  }
+}

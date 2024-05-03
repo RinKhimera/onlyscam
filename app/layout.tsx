@@ -1,4 +1,5 @@
 import "@/app/globals.css"
+import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
 import ConvexClientProvider from "@/providers/convex-client-provider"
 import { ThemeProvider } from "@/providers/theme-provider"
@@ -36,6 +37,7 @@ export default function RootLayout({
         >
           <ConvexClientProvider>{children}</ConvexClientProvider>
         </ThemeProvider>
+        <Toaster richColors />
       </body>
     </html>
   )
