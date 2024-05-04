@@ -1,3 +1,4 @@
+import { MediaPopover } from "@/components/messages/media-popover"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -7,14 +8,23 @@ import {
 } from "@/components/ui/popover"
 import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
+import { ConversationProps, UserProps } from "@/types"
 import { useMutation } from "convex/react"
 import EmojiPicker, { Theme } from "emoji-picker-react"
-import { Mic, Plus, Send, Smile } from "lucide-react"
+import { Mic, Send, Smile } from "lucide-react"
 import { useParams } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 
-export const MessageForm = ({ currentUser }: { currentUser: any }) => {
+type MessageFormProps = {
+  conversation: ConversationProps
+  currentUser: UserProps
+}
+
+export const MessageForm = ({
+  currentUser,
+  conversation,
+}: MessageFormProps) => {
   const params = useParams()
 
   const [msgText, setMsgText] = useState("")
@@ -34,8 +44,9 @@ export const MessageForm = ({ currentUser }: { currentUser: any }) => {
       setMsgText("")
     } catch (error) {
       console.error(error)
-      toast.error("Event has been created", {
-        description: "Sunday, December 03, 2023 at 9:00 AM",
+      toast.error("Une erreur s'est produite !", {
+        description:
+          "Votre message n'a pas été envoyé. Veuillez vérifier votre connexion internet et réessayer",
       })
     }
   }
@@ -44,7 +55,7 @@ export const MessageForm = ({ currentUser }: { currentUser: any }) => {
     <div className="sticky bottom-0 z-10 w-full">
       <div className="flex items-center gap-4 bg-muted/60 p-2">
         <div className="relative ml-2 flex gap-2">
-          {/* EMOJI PICKER WILL GO HERE */}
+          {/* Emoji Picker */}
           <Popover>
             <PopoverTrigger>
               <Smile className="text-muted-foreground" />
@@ -64,7 +75,9 @@ export const MessageForm = ({ currentUser }: { currentUser: any }) => {
             </PopoverContent>
           </Popover>
 
-          <Plus className="text-muted-foreground" />
+          {/* Photos & Videos Picker */}
+          <MediaPopover conversation={conversation} />
+          {/* <Plus className="text-muted-foreground" /> */}
         </div>
         <form onSubmit={handleSendTextMessage} className="flex w-full gap-3">
           <div className="flex-1">

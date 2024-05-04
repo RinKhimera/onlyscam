@@ -19,6 +19,7 @@ import { useConvexAuth, useMutation, useQuery } from "convex/react"
 import { ImageIcon, MailPlus } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useRef, useState, useTransition } from "react"
+import { toast } from "sonner"
 
 export const UserListDialog = () => {
   const { isAuthenticated } = useConvexAuth()
@@ -88,8 +89,11 @@ export const UserListDialog = () => {
 
         // TODO => Update a global state called "selectedConversation"
       } catch (error) {
-        // toast.error("Failed to create conversation")
         console.error(error)
+        toast.error("Une erreur s'est produite !", {
+          description:
+            "La discussion n'a pas été créee. Veuillez vérifier votre connexion internet et réessayer",
+        })
       }
     })
   }

@@ -79,70 +79,11 @@ export const ConversationContent = () => {
         conversation={currentConversation}
         currentUser={currentUser}
       />
-      {/* <div className="flex-1 overflow-auto pb-20">
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Amet,
-        Repellendus dolor hic architecto sint. Laudantium, blanditiis autem
-        labore ea sit numquam enim dignissimos nisi rem. Libero sapiente error
-        cumque, repellendus ducimus ad maxime consequatur, commodi sed nam
-        blanditiis atque! Esse possimus necessitatibus nulla illo ducimus
-        asperiores eius omnis maiores quae sit ad ab, repellendus corporis vel
-        explicabo aspernatur ut sed amet unde, minima at, mollitia alias quos.
-        Quisquam, laborum. Amet vero accusantium voluptatibus fuga excepturi sed
-        magnam nisi esse, quam ipsam consequuntur nulla sapiente nesciunt ut
-        vitae inventore saepe nam dignissimos? Laborum nisi rem cum dolore
-        consequatur explicabo atque? Voluptatum consequuntur id quibusdam beatae
-        inventore. Animi, itaque dolorum hic quos consectetur obcaecati ab, nam
-        assumenda iusto, porro amet ut. Molestias repellat voluptates ut
-        consectetur rem tempora quidem, labore libero? periores eius omnis
-        maiores quae sit ad ab, repellendus corporis vel explicabo aspernatur ut
-        sed amet unde, minima at, mollitia alias quos. Quisquam, laborum. Amet
-        vero accusantium voluptatibus fuga excepturi sed magnam nisi esse, quam
-        ipsam consequuntur nulla sapiente nesciunt ut vitae inventore saepe nam
-        dignissimos? Laborum nisi rem cum dolore consequatur explicabo atque?
-        Voluptatum consequuntur id quibusdam beatae inventore. Animi, itaque
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Amet,
-        Repellendus dolor hic architecto sint. Laudantium, blanditiis autem
-        labore ea sit numquam enim dignissimos nisi rem. Libero sapiente error
-        cumque, repellendus ducimus ad maxime consequatur, commodi sed nam
-        blanditiis atque! Esse possimus necessitatibus nulla illo ducimus
-        asperiores eius omnis maiores quae sit ad ab, repellendus corporis vel
-        explicabo aspernatur ut sed amet unde, minima at, mollitia alias quos.
-        Quisquam, laborum. Amet vero accusantium voluptatibus fuga excepturi sed
-        magnam nisi esse, quam ipsam consequuntur nulla sapiente nesciunt ut
-        vitae inventore saepe nam dignissimos? Laborum nisi rem cum dolore
-        consequatur explicabo atque? Voluptatum consequuntur id quibusdam beatae
-        inventore. Animi, itaque dolorum hic quos consectetur obcaecati ab, nam
-        assumenda iusto, porro amet ut. Molestias repellat voluptates ut
-        consectetur rem tempora quidem, labore libero? periores eius omnis
-        maiores quae sit ad ab, repellendus corporis vel explicabo aspernatur ut
-        sed amet unde, minima at, mollitia alias quos. Quisquam, laborum. Amet
-        vero accusantium voluptatibus fuga excepturi sed magnam nisi esse, quam
-        ipsam consequuntur nulla sapiente nesciunt ut vitae inventore saepe nam
-        dignissimos? Laborum nisi rem cum dolore consequatur explicabo atque?
-        Voluptatum consequuntur id quibusdam beatae inventore. Animi, itaque
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Amet,
-        Repellendus dolor hic architecto sint. Laudantium, blanditiis autem
-        labore ea sit numquam enim dignissimos nisi rem. Libero sapiente error
-        cumque, repellendus ducimus ad maxime consequatur, commodi sed nam
-        blanditiis atque! Esse possimus necessitatibus nulla illo ducimus
-        asperiores eius omnis maiores quae sit ad ab, repellendus corporis vel
-        explicabo aspernatur ut sed amet unde, minima at, mollitia alias quos.
-        Quisquam, laborum. Amet vero accusantium voluptatibus fuga excepturi sed
-        magnam nisi esse, quam ipsam consequuntur nulla sapiente nesciunt ut
-        vitae inventore saepe nam dignissimos? Laborum nisi rem cum dolore
-        consequatur explicabo atque? Voluptatum consequuntur id quibusdam beatae
-        inventore. Animi, itaque dolorum hic quos consectetur obcaecati ab, nam
-        assumenda iusto, porro amet ut. Molestias repellat voluptates ut
-        consectetur rem tempora quidem, labore libero? periores eius omnis
-        maiores quae sit ad ab, repellendus corporis vel explicabo aspernatur ut
-        sed amet unde, minima at, mollitia alias quos. Quisquam, laborum. Amet
-        vero accusantium voluptatibus fuga excepturi sed magnam nisi esse, quam
-        ipsam consequuntur nulla sapiente nesciunt ut vitae inventore saepe nam
-        dignissimos? Laborum nisi rem cum dolore consequatur explicabo atque?
-        Voluptatum consequuntur id quibusdam beatae inventore. Animi, itaque
-      </div> */}
 
-      <MessageForm currentUser={currentUser} />
+      <MessageForm
+        currentUser={currentUser}
+        conversation={currentConversation}
+      />
     </div>
   )
 }
