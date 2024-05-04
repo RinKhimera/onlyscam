@@ -1,17 +1,21 @@
 import { MessageSeenSvg } from "@/lib/svgs"
 import { ConversationProps, MessageProps, UserProps } from "@/types"
 import Link from "next/link"
+import { ChatBubbleAvatar } from "./chat-bubble-avatar"
+import { DateIndicator } from "./date-indicator"
 
 type MessageBoxProps = {
   conversation: ConversationProps
-  message: MessageProps
   currentUser: UserProps
+  message: MessageProps
+  previousMessage?: MessageProps
 }
 
 export const MessageBox = ({
   currentUser,
-  message,
   conversation,
+  message,
+  previousMessage,
 }: MessageBoxProps) => {
   const date = new Date(message._creationTime)
   const hour = date.getHours().toString().padStart(2, "0")
@@ -25,7 +29,13 @@ export const MessageBox = ({
   if (!isFromCurrentUser) {
     return (
       <>
+        <DateIndicator message={message} previousMessage={previousMessage} />
         <div className="flex w-2/3 gap-1">
+          <ChatBubbleAvatar
+            message={message}
+            isMember={isMember}
+            isGroup={isGroup}
+          />
           <div className="relative z-20 flex max-w-fit flex-col rounded-3xl rounded-bl-md bg-accent px-4 py-2 shadow-md">
             <TextMessage message={message} />
             <MessageTime time={time} isFromCurrentUser={isFromCurrentUser} />
@@ -37,8 +47,9 @@ export const MessageBox = ({
 
   return (
     <>
+      <DateIndicator message={message} previousMessage={previousMessage} />
       <div className="ml-auto flex w-2/3 gap-1">
-        <div className="relative z-20 ml-auto flex max-w-fit flex-col rounded-3xl rounded-br-md bg-sky-500 px-4 py-1.5 shadow-md">
+        <div className="relative z-20 ml-auto flex max-w-fit flex-col rounded-3xl rounded-br-md bg-blue-700 px-4 py-1.5 shadow-md">
           <TextMessage message={message} />
           <MessageTime time={time} isFromCurrentUser={isFromCurrentUser} />
         </div>

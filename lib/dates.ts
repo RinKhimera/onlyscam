@@ -66,7 +66,6 @@ export const isSameDay = (timestamp1: number, timestamp2: number): boolean => {
   )
 }
 
-// Define getRelativeDateTime function
 export const getRelativeDateTime = (message: any, previousMessage: any) => {
   const today = new Date()
   const yesterday = new Date(today)

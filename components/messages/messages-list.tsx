@@ -32,8 +32,9 @@ export const MessagesList = ({
           <div key={message._id}>
             <MessageBox
               currentUser={currentUser}
-              message={message}
               conversation={conversation}
+              message={message}
+              previousMessage={index > 0 ? messages[index - 1] : undefined}
             />
           </div>
         ))}
