@@ -3,7 +3,7 @@ import { Search } from "lucide-react"
 
 export const RightSidebar = () => {
   return (
-    <section className="sticky top-0 flex h-screen w-[30%] flex-col items-stretch px-6">
+    <section className="sticky top-0 flex h-screen w-[30%] flex-col items-stretch px-6 max-lg:hidden">
       <div className="mt-3">
         <div className="relative h-full w-full">
           <label

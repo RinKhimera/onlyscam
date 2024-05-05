@@ -10,7 +10,7 @@ export const ConversationLayout = () => {
       </h1>
 
       <div className="flex h-full">
-        <div className="w-2/5 border-r border-muted">
+        <div className="w-2/5 border-r border-muted max-lg:w-full">
           <div className="flex items-center justify-between border-b border-muted p-4 text-lg font-bold">
             <div>Mes conversations</div>
             <UserListDialog />

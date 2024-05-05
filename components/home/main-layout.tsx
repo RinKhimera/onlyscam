@@ -4,12 +4,12 @@ import { Bookmark, Dot, Heart, MessageCircle } from "lucide-react"
 
 export const MainLayout = () => {
   return (
-    <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted">
+    <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
       <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
         Accueil
       </h1>
 
-      <div className="relative flex items-stretch space-x-3 border-b border-muted px-4 py-5">
+      <div className="relative flex items-stretch space-x-3 border-b border-muted px-4 py-5 max-sm:hidden">
         <Avatar>
           <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
@@ -39,13 +39,15 @@ export const MainLayout = () => {
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-1 max-[500px]:flex-col max-[500px]:items-start max-[500px]:space-x-0">
                 <div className="font-bold">TypeScript Enthusiast</div>
-                <div className="text-muted-foreground">@rin_khimera</div>
-                <div className="text-muted-foreground">
-                  <Dot />
+                <div className="flex items-center space-x-1">
+                  <div className="text-muted-foreground">@rin_khimera</div>
+                  <div className="text-muted-foreground">
+                    <Dot />
+                  </div>
+                  <div className="text-muted-foreground">1h</div>
                 </div>
-                <div className="text-muted-foreground">1h</div>
               </div>
 
               <div className="text-base">
@@ -58,7 +60,7 @@ export const MainLayout = () => {
                 Quae, adipisci!
               </div>
 
-              <div className="mt-2 aspect-square h-96 w-full rounded-xl bg-slate-400"></div>
+              <div className="mt-2 aspect-square max-h-96 w-auto rounded-xl bg-slate-400"></div>
 
               <div className="mt-2 flex w-full items-center justify-between">
                 <div className="flex w-full items-center space-x-4">

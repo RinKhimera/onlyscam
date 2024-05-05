@@ -13,13 +13,13 @@ import {
   SignOutButton,
   UserButton,
 } from "@clerk/nextjs"
-import { EllipsisVertical, Star } from "lucide-react"
+import { EllipsisVertical, PenLine, Star } from "lucide-react"
 import Link from "next/link"
 
 export const LeftSidebar = () => {
   return (
-    <section className="sticky top-0 flex h-screen w-[20%] flex-col items-stretch px-3">
-      <div className="mt-4 flex h-full flex-col items-stretch space-y-4">
+    <section className="sticky top-0 flex h-screen w-[20%] flex-col items-stretch px-3 max-lg:items-center">
+      <div className="mt-4 flex h-full flex-col space-y-4 max-lg:items-center">
         <Link href={"/"} className="px-4 py-2 text-xl">
           <Star />
         </Link>
@@ -28,21 +28,25 @@ export const LeftSidebar = () => {
           <Link
             key={link.title}
             href={link.href}
-            className="flex w-fit items-center justify-start space-x-4 rounded-3xl px-4 py-2 text-xl transition duration-200 hover:bg-foreground/10"
+            className="flex w-fit items-center space-x-4 rounded-3xl px-4 py-2 text-xl transition duration-200 hover:bg-foreground/10"
           >
             <div>{link.icon}</div>
-            <div>{link.title}</div>
+            <div className="max-lg:hidden">{link.title}</div>
           </Link>
         ))}
 
-        <Button className="w-full rounded-full bg-sky-500 py-6 text-xl hover:bg-sky-600">
+        <Button className="w-full rounded-full bg-sky-500 px-5 py-6 text-xl hover:bg-sky-600 max-lg:hidden">
           Publier
         </Button>
+
+        <button className="w-fit rounded-full bg-sky-500 p-3 text-xl transition hover:bg-sky-600 lg:hidden">
+          <PenLine />
+        </button>
       </div>
 
       <Popover>
         <PopoverTrigger asChild>
-          <button className="my-3 flex w-full items-center justify-between rounded-full p-4 transition duration-200 hover:bg-foreground/5">
+          <button className="mb-4 flex w-full items-center justify-between rounded-full p-2 transition duration-200 hover:bg-foreground/10 max-lg:w-fit max-lg:justify-center">
             <div className="flex items-center space-x-2">
               <Avatar>
                 <AvatarImage
@@ -51,12 +55,12 @@ export const LeftSidebar = () => {
                 />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
-              <div className="text-left text-sm">
+              <div className="text-left text-sm max-lg:hidden">
                 <div className="truncate">TypeScript Enthusiast</div>
                 <div className="text-muted-foreground">@rin_khimera</div>
               </div>
             </div>
-            <div>
+            <div className="max-lg:hidden">
               <EllipsisVertical />
             </div>
           </button>
