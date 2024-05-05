@@ -18,6 +18,7 @@ import { Id } from "@/convex/_generated/dataModel"
 import { useConvexAuth, useMutation, useQuery } from "convex/react"
 import { ImageIcon, MailPlus } from "lucide-react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState, useTransition } from "react"
 import { toast } from "sonner"
 
@@ -42,6 +43,8 @@ export const UserListDialog = () => {
   const imgRef = useRef<HTMLInputElement>(null)
   const dialogCloseRef = useRef<HTMLButtonElement>(null)
   const [isPending, startTransition] = useTransition()
+
+  const router = useRouter()
 
   useEffect(() => {
     if (!selectedImage) return setRenderedImage("")
@@ -87,7 +90,7 @@ export const UserListDialog = () => {
         setGroupName("")
         setSelectedImage(null)
 
-        // TODO => Update a global state called "selectedConversation"
+        router.push(`/messages/${conversationId}`)
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {
