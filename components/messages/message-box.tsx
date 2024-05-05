@@ -1,8 +1,16 @@
+import { ChatBubbleAvatar } from "@/components/messages/chat-bubble-avatar"
+import { DateIndicator } from "@/components/messages/date-indicator"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog"
 import { MessageSeenSvg } from "@/lib/svgs"
 import { ConversationProps, MessageProps, UserProps } from "@/types"
+import Image from "next/image"
 import Link from "next/link"
-import { ChatBubbleAvatar } from "./chat-bubble-avatar"
-import { DateIndicator } from "./date-indicator"
+import { useState } from "react"
+import ReactPlayer from "react-player"
 
 type MessageBoxProps = {
   conversation: ConversationProps
@@ -17,6 +25,23 @@ export const MessageBox = ({
   message,
   previousMessage,
 }: MessageBoxProps) => {
+  const [open, setOpen] = useState(false)
+
+  const renderMessageContent = () => {
+    switch (message.messageType) {
+      case "text":
+        return <TextMessage message={message} />
+      case "image":
+        return (
+          <ImageMessage message={message} handleClick={() => setOpen(true)} />
+        )
+      case "video":
+        return <VideoMessage message={message} />
+      default:
+        return null
+    }
+  }
+
   const date = new Date(message._creationTime)
   const hour = date.getHours().toString().padStart(2, "0")
   const minute = date.getMinutes().toString().padStart(2, "0")
@@ -37,7 +62,14 @@ export const MessageBox = ({
             isGroup={isGroup}
           />
           <div className="relative z-20 flex max-w-fit flex-col rounded-3xl rounded-bl-md bg-accent px-4 py-2 shadow-md">
-            <TextMessage message={message} />
+            {renderMessageContent()}
+            {open && (
+              <ImageDialog
+                src={message.content}
+                open={open}
+                onClose={() => setOpen(false)}
+              />
+            )}
             <MessageTime time={time} isFromCurrentUser={isFromCurrentUser} />
           </div>
         </div>
@@ -50,7 +82,14 @@ export const MessageBox = ({
       <DateIndicator message={message} previousMessage={previousMessage} />
       <div className="ml-auto flex w-2/3 gap-1">
         <div className="relative z-20 ml-auto flex max-w-fit flex-col rounded-3xl rounded-br-md bg-blue-700 px-4 py-1.5 shadow-md">
-          <TextMessage message={message} />
+          {renderMessageContent()}
+          {open && (
+            <ImageDialog
+              src={message.content}
+              open={open}
+              onClose={() => setOpen(false)}
+            />
+          )}
           <MessageTime time={time} isFromCurrentUser={isFromCurrentUser} />
         </div>
       </div>
@@ -76,6 +115,68 @@ const TextMessage = ({ message }: { message: MessageProps }) => {
         <p className={`mr-2`}>{message.content}</p>
       )}
     </div>
+  )
+}
+
+const ImageMessage = ({
+  message,
+  handleClick,
+}: {
+  message: MessageProps
+  handleClick: () => void
+}) => {
+  return (
+    <div className="relative m-2 h-[250px] w-[250px]">
+      <Image
+        src={message.content}
+        fill
+        className="cursor-pointer rounded object-cover"
+        alt="image"
+        onClick={handleClick}
+      />
+    </div>
+  )
+}
+
+const VideoMessage = ({ message }: { message: MessageProps }) => {
+  return (
+    <ReactPlayer
+      url={message.content}
+      width="250px"
+      height="250px"
+      controls={true}
+      // light={true}
+    />
+  )
+}
+
+const ImageDialog = ({
+  src,
+  onClose,
+  open,
+}: {
+  open: boolean
+  src: string
+  onClose: () => void
+}) => {
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose()
+      }}
+    >
+      <DialogContent className="min-w-[750px]">
+        <DialogDescription className="relative flex h-[450px] justify-center">
+          <Image
+            src={src}
+            fill
+            className="rounded-lg object-contain"
+            alt="image"
+          />
+        </DialogDescription>
+      </DialogContent>
+    </Dialog>
   )
 }
 
