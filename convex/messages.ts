@@ -92,7 +92,7 @@ export const sendTextMessage = mutation({
 
 export const sendImage = mutation({
   args: {
-    imgId: v.id("_storage"),
+    imgUrl: v.string(),
     sender: v.id("users"),
     conversation: v.id("conversations"),
   },
@@ -102,10 +102,8 @@ export const sendImage = mutation({
       throw new ConvexError("Unauthorized")
     }
 
-    const content = (await ctx.storage.getUrl(args.imgId)) as string
-
     await ctx.db.insert("messages", {
-      content: content,
+      content: args.imgUrl,
       sender: args.sender,
       messageType: "image",
       conversation: args.conversation,

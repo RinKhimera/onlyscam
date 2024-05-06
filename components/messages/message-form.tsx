@@ -12,6 +12,7 @@ import { ConversationProps, UserProps } from "@/types"
 import { useMutation } from "convex/react"
 import EmojiPicker, { Theme } from "emoji-picker-react"
 import { Mic, Send, Smile } from "lucide-react"
+import { CldUploadButton, CldUploadWidget } from "next-cloudinary"
 import { useParams } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -76,7 +77,20 @@ export const MessageForm = ({
           </Popover>
 
           {/* Photos & Videos Picker */}
-          <MediaPopover conversation={conversation} />
+          {/* <MediaPopover conversation={conversation} /> */}
+          <CldUploadButton
+            uploadPreset="onlyscam-preset"
+            options={{
+              // showSkipCropButton: false,
+              cropping: true,
+              croppingAspectRatio: 1,
+              sources: ["local"],
+              multiple: true,
+              maxFiles: 2,
+            }}
+          >
+            Upload an Ima
+          </CldUploadButton>
           {/* <Plus className="text-muted-foreground" /> */}
         </div>
         <form onSubmit={handleSendTextMessage} className="flex w-full gap-3">
