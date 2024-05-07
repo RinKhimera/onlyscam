@@ -1,6 +1,8 @@
 "use client"
 
 import { ClerkProvider, useAuth } from "@clerk/clerk-react"
+import { frFR } from "@clerk/localizations"
+import { dark } from "@clerk/themes"
 import { ConvexReactClient } from "convex/react"
 import { ConvexProviderWithClerk } from "convex/react-clerk"
 import { ReactNode } from "react"
@@ -14,6 +16,10 @@ export default function ConvexClientProvider({
 }) {
   return (
     <ClerkProvider
+      localization={frFR}
+      appearance={{
+        baseTheme: dark,
+      }}
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}
     >
       <ConvexProviderWithClerk client={convex} useAuth={useAuth}>

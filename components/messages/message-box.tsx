@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog"
 import { MessageSeenSvg } from "@/lib/svgs"
 import { ConversationProps, MessageProps, UserProps } from "@/types"
+import { CldImage } from "next-cloudinary"
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
@@ -126,12 +127,22 @@ const ImageMessage = ({
   handleClick: () => void
 }) => {
   return (
-    <div className="relative m-2 h-[250px] w-[250px]">
-      <Image
+    <div className="relative m-2">
+      <CldImage
         src={message.content}
-        fill
         className="cursor-pointer rounded object-cover"
         alt="image"
+        width={500}
+        height={500}
+        crop={{
+          width: 500,
+          height: 500,
+          type: "crop",
+          gravity: "face",
+          // source: true,
+          aspectRatio: "1:1",
+        }}
+        // placeholder="blur"
         onClick={handleClick}
       />
     </div>

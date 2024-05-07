@@ -1,3 +1,5 @@
+"use client"
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -80,24 +82,23 @@ export const MediaPopover = ({
 
   return (
     <>
-      <CldUploadButton
+      <CldUploadWidget
         uploadPreset="onlyscam-preset"
         options={{
           cropping: true,
-          showSkipCropButton: false,
           croppingAspectRatio: 1,
-          maxFiles: 2,
+          // croppingCoordinatesMode: "face",
         }}
         onSuccess={handleSendImage}
       >
-        {/* {({ open }) => {
+        {({ open }) => {
           return (
             <button className="flex items-center p-2" onClick={() => open()}>
               <ImageIcon size={18} className="mr-1" /> Photo
             </button>
           )
-        }} */}
-      </CldUploadButton>
+        }}
+      </CldUploadWidget>
       {/* <DropdownMenu>
         <DropdownMenuTrigger>
           <Plus className="text-muted-foreground" />
