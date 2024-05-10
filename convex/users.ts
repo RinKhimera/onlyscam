@@ -13,6 +13,7 @@ export const createUser = internalMutation({
       name: args.name,
       email: args.email,
       image: args.image,
+      accountType: "USER",
       tokenIdentifier: args.tokenIdentifier,
       isOnline: true,
     })

@@ -3,13 +3,17 @@ import { v } from "convex/values"
 
 export default defineSchema({
   users: defineTable({
-    name: v.optional(v.string()),
+    name: v.string(),
+    username: v.optional(v.string()),
     email: v.string(),
     image: v.string(),
-    tokenIdentifier: v.string(),
+    bio: v.optional(v.string()),
+    socials: v.optional(v.array(v.string())),
+    accountType: v.string(),
     isOnline: v.boolean(),
-    // following: v.array(v.string()),
-    // followers: v.array(v.string()),
+    tokenIdentifier: v.string(),
+    following: v.optional(v.array(v.string())),
+    followers: v.optional(v.array(v.string())),
   }).index("by_tokenIdentifier", ["tokenIdentifier"]),
 
   conversations: defineTable({
