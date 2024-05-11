@@ -8,6 +8,7 @@ import { createInitials } from "@/lib/create-initials"
 import { useConvexAuth, useQuery } from "convex/react"
 import { MapPin } from "lucide-react"
 import Image from "next/image"
+import { UpdateProfileDialog } from "./update-profile"
 
 export const ProfileLayout = () => {
   const { isAuthenticated } = useConvexAuth()
@@ -45,9 +46,7 @@ export const ProfileLayout = () => {
       </div>
 
       <div className="mr-5 mt-4 flex justify-end">
-        <Button variant={"outline"} className="rounded-3xl border-2">
-          Modifier le profil
-        </Button>
+        <UpdateProfileDialog />
       </div>
 
       <div className="mt-4 px-4">

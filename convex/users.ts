@@ -1,4 +1,5 @@
 import { ConvexError, v } from "convex/values"
+import { redirect } from "next/navigation"
 import { internalMutation, mutation, query } from "./_generated/server"
 
 export const createUser = internalMutation({

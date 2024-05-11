@@ -37,7 +37,7 @@ const SignInPage = () => {
             <blockquote className="space-y-2">
               <p className="text-lg">
                 &ldquo;Plateforme intuitive et très sécurisée, parfaite pour
-                partager contenu exclusif et interagir directement avec mes
+                partager du contenu exclusif et interagir directement avec mes
                 abonnés.&rdquo;
               </p>
               <footer className="text-sm">Vanessa Elonguele</footer>

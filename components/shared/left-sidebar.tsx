@@ -1,19 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { UserInfoPopover } from "@/components/shared/user-info-popover"
 import { Button } from "@/components/ui/button"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 import { navigationLinks } from "@/constants"
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignOutButton,
-  UserButton,
-} from "@clerk/nextjs"
-import { EllipsisVertical, PenLine, Star } from "lucide-react"
+import { PenLine, Star } from "lucide-react"
 import Link from "next/link"
 
 export const LeftSidebar = () => {
@@ -44,45 +32,7 @@ export const LeftSidebar = () => {
         </button>
       </div>
 
-      <Popover>
-        <PopoverTrigger asChild>
-          <button className="mb-4 flex w-full items-center justify-between rounded-full p-2 transition duration-200 hover:bg-foreground/10 max-lg:w-fit max-lg:justify-center">
-            <div className="flex items-center space-x-2">
-              <Avatar>
-                <AvatarImage
-                  src="https://github.com/shadcn.png"
-                  alt="@shadcn"
-                />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <div className="text-left text-sm max-lg:hidden">
-                <div className="truncate">TypeScript Enthusiast</div>
-                <div className="text-muted-foreground">@rin_khimera</div>
-              </div>
-            </div>
-            <div className="max-lg:hidden">
-              <EllipsisVertical />
-            </div>
-          </button>
-        </PopoverTrigger>
-        <PopoverContent side="top">
-          <div className="flex flex-col items-center gap-2">
-            <SignedIn>
-              {/* Mount the UserButton component */}
-              <UserButton />
-            </SignedIn>
-
-            <SignedOut>
-              {/* Signed out users get sign in button */}
-              <SignInButton />
-            </SignedOut>
-
-            <SignedIn>
-              <SignOutButton>Se déconnecter</SignOutButton>
-            </SignedIn>
-          </div>
-        </PopoverContent>
-      </Popover>
+      <UserInfoPopover />
     </section>
   )
 }
