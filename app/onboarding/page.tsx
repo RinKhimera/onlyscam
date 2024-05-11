@@ -13,7 +13,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { api } from "@/convex/_generated/api"
-import { onboardingUser } from "@/convex/users"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useConvexAuth, useMutation, useQuery } from "convex/react"

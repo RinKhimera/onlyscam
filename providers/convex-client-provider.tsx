@@ -16,7 +16,7 @@ export default function ConvexClientProvider({
 }) {
   return (
     <ClerkProvider
-      localization={frFR}
+      // localization={frFR}
       appearance={{
         baseTheme: dark,
       }}

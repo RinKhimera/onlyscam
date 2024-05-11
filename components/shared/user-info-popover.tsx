@@ -20,7 +20,6 @@ export const UserInfoPopover = () => {
     api.users.getCurrentUser,
     isAuthenticated ? undefined : "skip",
   )
-  console.log(currentUser)
 
   const router = useRouter()
 

@@ -148,3 +148,37 @@ export const onboardingUser = mutation({
     })
   },
 })
+
+export const updateUserProfile = mutation({
+  args: {
+    name: v.string(),
+    username: v.string(),
+    bio: v.string(),
+    socials: v.array(v.string()),
+    tokenIdentifier: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) {
+      throw new ConvexError("Not authenticated")
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_tokenIdentifier", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique()
+
+    if (!user) {
+      throw new ConvexError("User not found")
+    }
+
+    await ctx.db.patch(user._id, {
+      name: args.name,
+      username: args.username,
+      bio: args.bio,
+      socials: args.socials,
+    })
+  },
+})

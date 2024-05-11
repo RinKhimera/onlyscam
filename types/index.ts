@@ -28,10 +28,16 @@ export type UserProps =
       _id: Id<"users">
       _creationTime: number
       name?: string
+      username?: string
       email: string
-      image: string
-      tokenIdentifier: string
+      image?: string
+      bio?: string
+      socials?: string[] | []
+      following?: string[] | undefined
+      followers?: string[] | undefined
+      accountType: string
       isOnline: boolean
+      tokenIdentifier: string
     }
   | undefined
 

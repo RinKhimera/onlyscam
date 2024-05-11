@@ -1,8 +1,7 @@
-"use client"
-
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -20,27 +19,39 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { api } from "@/convex/_generated/api"
 import { cn } from "@/lib/utils"
 import { profileFormSchema } from "@/schemas/profile"
+import { UserProps } from "@/types"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "convex/react"
 import { CircleX, LoaderCircle } from "lucide-react"
 import { useTransition } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 
-export const UpdateProfileDialog = () => {
+type UpdateProfileDialogProps = {
+  currentUser: UserProps
+}
+
+export const UpdateProfileDialog = ({
+  currentUser,
+}: UpdateProfileDialogProps) => {
+  console.log(currentUser)
+
+  const updateProfile = useMutation(api.users.updateUserProfile)
+
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      username: "",
-      displayName: "",
-      bio: "",
-      urls: [],
+      username: currentUser?.username,
+      displayName: currentUser?.name,
+      bio: currentUser?.bio,
+      urls: (currentUser?.socials || []).map((url) => ({ value: url })),
     },
   })
 
@@ -52,6 +63,13 @@ export const UpdateProfileDialog = () => {
   const onSubmit = async (data: z.infer<typeof profileFormSchema>) => {
     startTransition(async () => {
       try {
+        await updateProfile({
+          name: data.displayName,
+          username: data.username,
+          bio: data.bio,
+          socials: (data.urls || []).map((url) => url.value),
+          tokenIdentifier: currentUser?.tokenIdentifier!,
+        })
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {
@@ -79,7 +97,7 @@ export const UpdateProfileDialog = () => {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="displayName"
@@ -116,28 +134,6 @@ export const UpdateProfileDialog = () => {
               )}
             />
 
-            {/* <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="rin_khimera"
-                    type="email"
-                    disabled
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Vous pouvez gérer les adresses e-mail vérifiées plus tard.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
-
             <FormField
               control={form.control}
               name="bio"
@@ -158,6 +154,7 @@ export const UpdateProfileDialog = () => {
                 </FormItem>
               )}
             />
+
             <div>
               {fields.map((field, index) => (
                 <FormField
@@ -173,6 +170,7 @@ export const UpdateProfileDialog = () => {
                         Vous pouvez ajoutez des liens vers votre site Web, votre
                         blog ou vos profils de réseaux sociaux.
                       </FormDescription>
+
                       <div className="flex gap-2">
                         <FormControl>
                           <Input
@@ -193,6 +191,7 @@ export const UpdateProfileDialog = () => {
                   )}
                 />
               ))}
+
               <Button
                 type="button"
                 variant="outline"
@@ -204,19 +203,23 @@ export const UpdateProfileDialog = () => {
               </Button>
             </div>
 
-            <Button type="submit" disabled={isPending}>
-              {isPending ? (
-                <LoaderCircle className="animate-spin" />
-              ) : (
-                "Compléter l'inscription"
-              )}
-            </Button>
+            <DialogFooter className="flex flex-row items-center justify-between">
+              <DialogClose asChild>
+                <Button type="button" variant="secondary">
+                  Fermer
+                </Button>
+              </DialogClose>
+
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <LoaderCircle className="animate-spin" />
+                ) : (
+                  "Enregister"
+                )}
+              </Button>
+            </DialogFooter>
           </form>
         </Form>
-
-        <DialogFooter>
-          <Button type="submit">Enregister</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
