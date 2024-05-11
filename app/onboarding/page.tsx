@@ -13,10 +13,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { api } from "@/convex/_generated/api"
+import { onboardingUser } from "@/convex/users"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useConvexAuth, useQuery } from "convex/react"
-import { CircleX } from "lucide-react"
+import { useConvexAuth, useMutation, useQuery } from "convex/react"
+import { CircleX, LoaderCircle } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useTransition } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -38,8 +41,9 @@ const profileFormSchema = z.object({
     .max(30, {
       message: "Le nom d'affichage ne doit pas dépasser 30 caractères.",
     }),
+  // email: z.string({ required_error: "Cette entrée est requise." }).email(),
   bio: z
-    .string()
+    .string({ required_error: "Cette entrée est requise." })
     .min(4, {
       message: "La description doit comporter au moins 4 caractères.",
     })
@@ -57,7 +61,7 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-const OnbordingPage = () => {
+const OnboardingPage = () => {
   const { isAuthenticated } = useConvexAuth()
 
   const currentUser = useQuery(
@@ -65,9 +69,16 @@ const OnbordingPage = () => {
     isAuthenticated ? undefined : "skip",
   )
 
+  const setOnboardingUser = useMutation(api.users.onboardingUser)
+
+  console.log(currentUser)
+
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+
   // This can come from your database or API.
   const defaultValues: Partial<ProfileFormValues> = {
-    bio: "I own a computer.",
+    // bio: "I own a computer.",
     urls: [
       // { value: "https://shadcn.com" },
       // { value: "http://twitter.com/shadcn" },
@@ -86,19 +97,45 @@ const OnbordingPage = () => {
     control: form.control,
   })
 
-  function onSubmit(data: ProfileFormValues) {
-    toast.success("You submitted the following values:", {
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+  const onSubmit = async (data: ProfileFormValues) => {
+    startTransition(async () => {
+      try {
+        await setOnboardingUser({
+          name: data.displayName,
+          username: data.username,
+          bio: data.bio,
+          socials: data.urls!.map((url) => url.value),
+          tokenIdentifier: currentUser?.tokenIdentifier!,
+        })
+
+        router.push("/")
+      } catch (error) {
+        console.error(error)
+        toast.error("Une erreur s'est produite !", {
+          description:
+            "Veuillez vérifier votre connexion internet et réessayer",
+        })
+      }
     })
-    console.log(data)
+
+    // toast.success("You submitted the following values:", {
+    //   description: (
+    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+    //     </pre>
+    //   ),
+    // })
+    // console.log(data)
   }
 
+  if (!currentUser) {
+    return <div>Loading...</div> // or your loading component
+  }
+
+  if (currentUser?.username) router.push("/")
+
   return (
-    <div className="container mx-auto my-4 max-w-xl">
+    <div className="flex h-screen items-center justify-center">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -224,11 +261,18 @@ const OnbordingPage = () => {
               Ajouter un lien
             </Button>
           </div>
-          <Button type="submit">Compléter l&apos;inscription</Button>
+
+          <Button type="submit" disabled={isPending}>
+            {isPending ? (
+              <LoaderCircle className="animate-spin" />
+            ) : (
+              "Compléter l'inscription"
+            )}
+          </Button>
         </form>
       </Form>
     </div>
   )
 }
 
-export default OnbordingPage
+export default OnboardingPage

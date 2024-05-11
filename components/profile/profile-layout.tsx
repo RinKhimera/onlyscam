@@ -2,12 +2,12 @@
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import { api } from "@/convex/_generated/api"
 import { createInitials } from "@/lib/create-initials"
 import { useConvexAuth, useQuery } from "convex/react"
 import { MapPin } from "lucide-react"
 import Image from "next/image"
-import { Button } from "../ui/button"
 
 export const ProfileLayout = () => {
   const { isAuthenticated } = useConvexAuth()
@@ -52,9 +52,9 @@ export const ProfileLayout = () => {
 
       <div className="mt-4 px-4">
         <div className="text-2xl font-bold">{currentUser?.name}</div>
-        <div className="text-muted-foreground">@{currentUser?.name}</div>
+        <div className="text-muted-foreground">@{currentUser?.username}</div>
 
-        <div className="mt-3">I build cool stuff for the internet</div>
+        <div className="mt-3">{currentUser?.bio}</div>
         <div className="-ml-0.5 flex items-center gap-1 text-muted-foreground">
           <MapPin size={18} />
           Littoral, Cameroon
