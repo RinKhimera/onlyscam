@@ -152,7 +152,7 @@ export const UserListDialog = () => {
               onClick={() => imgRef.current?.click()}
             >
               <ImageIcon size={20} />
-              Photo du grope
+              Photo du groupe
             </Button>
           </>
         )}

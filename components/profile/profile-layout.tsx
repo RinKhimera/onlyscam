@@ -65,13 +65,6 @@ export const ProfileLayout = () => {
               </Avatar>
             </DialogTrigger>
             <DialogContent className="h-full max-w-[1000px] overflow-auto border-none bg-transparent sm:rounded-none">
-              {/* <DialogHeader>
-                <DialogTitle>Modifier le profil</DialogTitle>
-                <DialogDescription>
-                  Apportez des modifications à votre profil ici. Cliquez sur
-                  Enregistrer lorsque vous avez terminé.
-                </DialogDescription>
-              </DialogHeader> */}
               <Image
                 src={currentUser?.image}
                 alt={currentUser?.name}
@@ -96,7 +89,7 @@ export const ProfileLayout = () => {
         <div className="mt-3">{currentUser?.bio}</div>
         <div className="-ml-0.5 flex items-center gap-1 text-muted-foreground">
           <MapPin size={18} />
-          Littoral, Cameroon
+          {currentUser?.location}
         </div>
 
         {currentUser?.socials?.map((url) => (

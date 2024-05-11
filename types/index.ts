@@ -31,7 +31,9 @@ export type UserProps =
       username?: string
       email: string
       image?: string
+      imageBanner?: string
       bio?: string
+      location?: string
       socials?: string[] | []
       following?: string[] | undefined
       followers?: string[] | undefined

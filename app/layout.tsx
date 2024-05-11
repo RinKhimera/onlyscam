@@ -1,5 +1,6 @@
 import "@/app/globals.css"
 import { Toaster } from "@/components/ui/sonner"
+import { EdgeStoreProvider } from "@/lib/edgestore"
 import { cn } from "@/lib/utils"
 import ConvexClientProvider from "@/providers/convex-client-provider"
 import { ThemeProvider } from "@/providers/theme-provider"
@@ -13,7 +14,7 @@ const fontSans = FontSans({
 
 export const metadata: Metadata = {
   title: "OnlyScam",
-  description: "Le réseau social des créateurs de contenu",
+  description: "Le réseau social des créateurs de contenus",
 }
 
 export default function RootLayout({
@@ -35,7 +36,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ConvexClientProvider>{children}</ConvexClientProvider>
+          <ConvexClientProvider>
+            <EdgeStoreProvider>{children}</EdgeStoreProvider>
+          </ConvexClientProvider>
         </ThemeProvider>
         <Toaster richColors />
       </body>

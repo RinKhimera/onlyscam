@@ -1,3 +1,5 @@
+import { AspectRatio } from "@/components/ui/aspect-ratio"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -21,13 +23,16 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { api } from "@/convex/_generated/api"
+import { useEdgeStore } from "@/lib/edgestore"
 import { cn } from "@/lib/utils"
 import { profileFormSchema } from "@/schemas/profile"
 import { UserProps } from "@/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "convex/react"
 import { CircleX, LoaderCircle } from "lucide-react"
-import { useTransition } from "react"
+import { CldUploadWidget } from "next-cloudinary"
+import Image from "next/image"
+import { useRef, useState, useTransition } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -39,11 +44,14 @@ type UpdateProfileDialogProps = {
 export const UpdateProfileDialog = ({
   currentUser,
 }: UpdateProfileDialogProps) => {
-  console.log(currentUser)
+  const [file, setFile] = useState<File>()
+  const [isPending, startTransition] = useTransition()
+  const imgRef = useRef<HTMLInputElement>(null)
+
+  const { edgestore } = useEdgeStore()
 
   const updateProfile = useMutation(api.users.updateUserProfile)
-
-  const [isPending, startTransition] = useTransition()
+  const updateProfileImage = useMutation(api.users.updateProfileImage)
 
   const form = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
@@ -51,6 +59,7 @@ export const UpdateProfileDialog = ({
       username: currentUser?.username,
       displayName: currentUser?.name,
       bio: currentUser?.bio,
+      location: currentUser?.location,
       urls: (currentUser?.socials || []).map((url) => ({ value: url })),
     },
   })
@@ -67,6 +76,7 @@ export const UpdateProfileDialog = ({
           name: data.displayName,
           username: data.username,
           bio: data.bio,
+          location: data.location,
           socials: (data.urls || []).map((url) => url.value),
           tokenIdentifier: currentUser?.tokenIdentifier!,
         })
@@ -78,6 +88,41 @@ export const UpdateProfileDialog = ({
         })
       }
     })
+  }
+
+  const handleUploadProfile = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    startTransition(async () => {
+      try {
+        if (file) {
+          const res = await edgestore.profileImages.upload({
+            file,
+            onProgressChange: (progress: number) => {
+              // you can use this to show a progress bar
+              console.log(progress)
+            },
+          })
+          // you can run some server action or api here
+          // to add the necessary data to your database
+          console.log(res)
+
+          if (res) {
+            await updateProfileImage({
+              imgUrl: res.url,
+              tokenIdentifier: currentUser?.tokenIdentifier!,
+            })
+          }
+        }
+      } catch (error) {
+        console.error(error)
+        toast.error("Une erreur s'est produite !", {
+          description:
+            "Veuillez vérifier votre connexion internet et réessayer",
+        })
+      }
+    })
+    setFile(e.target.files?.[0])
   }
 
   return (
@@ -96,8 +141,41 @@ export const UpdateProfileDialog = ({
           </DialogDescription>
         </DialogHeader>
 
+        <div className="relative">
+          <div>
+            <AspectRatio ratio={3 / 1} className="bg-muted">
+              <Image
+                src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
+                alt="Photo by Drew Beamer"
+                fill
+                className="object-cover"
+              />
+            </AspectRatio>
+          </div>
+          <div className="absolute -bottom-[48px] left-5">
+            <input
+              type="file"
+              accept="image/*"
+              ref={imgRef}
+              onChange={handleUploadProfile}
+              hidden
+            />
+
+            <Avatar
+              className="size-28 cursor-pointer border-4 border-accent object-none object-center"
+              onClick={() => imgRef.current?.click()}
+            >
+              <AvatarImage src={currentUser?.image} className="object-cover" />
+              <AvatarFallback>XO</AvatarFallback>
+            </Avatar>
+          </div>
+        </div>
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="mt-12 space-y-6"
+          >
             <FormField
               control={form.control}
               name="displayName"
@@ -149,6 +227,28 @@ export const UpdateProfileDialog = ({
                   </FormControl>
                   <FormDescription>
                     Une courte biographie qui apparaîtra sur votre profil.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Localisation</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Quelque part entre rêve et réalité"
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Votre localisation actuelle. Cela peut être une ville ou un
+                    pays.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

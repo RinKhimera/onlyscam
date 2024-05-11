@@ -26,6 +26,14 @@ export const profileFormSchema = z.object({
     .max(150, {
       message: "La description ne doit pas dépasser 150 caractères.",
     }),
+  location: z
+    .string({ required_error: "Cette entrée est requise." })
+    .min(2, {
+      message: "La location doit comporter au moins 2 caractères.",
+    })
+    .max(40, {
+      message: "La location ne doit pas dépasser 40 caractères.",
+    }),
   urls: z
     .array(
       z.object({
