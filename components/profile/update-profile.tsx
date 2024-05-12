@@ -44,7 +44,7 @@ type UpdateProfileDialogProps = {
 export const UpdateProfileDialog = ({
   currentUser,
 }: UpdateProfileDialogProps) => {
-  const [file, setFile] = useState<File>()
+  // const [file, setFile] = useState<File>()
   const [isPending, startTransition] = useTransition()
   const imgRef = useRef<HTMLInputElement>(null)
 
@@ -90,11 +90,11 @@ export const UpdateProfileDialog = ({
     })
   }
 
-  const handleUploadProfile = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleUploadProfile = (e: React.ChangeEvent<HTMLInputElement>) => {
     startTransition(async () => {
       try {
+        const file = e.target.files?.[0]
+
         if (file) {
           const res = await edgestore.profileImages.upload({
             file,
@@ -122,7 +122,6 @@ export const UpdateProfileDialog = ({
         })
       }
     })
-    setFile(e.target.files?.[0])
   }
 
   return (
