@@ -216,3 +216,30 @@ export const updateProfileImage = mutation({
     })
   },
 })
+export const updateBannerImage = mutation({
+  args: {
+    bannerUrl: v.string(),
+    tokenIdentifier: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) {
+      throw new ConvexError("Not authenticated")
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_tokenIdentifier", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique()
+
+    if (!user) {
+      throw new ConvexError("User not found")
+    }
+
+    await ctx.db.patch(user._id, {
+      imageBanner: args.bannerUrl,
+    })
+  },
+})

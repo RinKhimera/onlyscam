@@ -78,20 +78,6 @@ export const MessageForm = ({
 
           {/* Photos & Videos Picker */}
           <MediaPopover conversation={conversation} />
-          {/* <CldUploadButton
-            uploadPreset="onlyscam-preset"
-            options={{
-              // showSkipCropButton: false,
-              cropping: true,
-              croppingAspectRatio: 1,
-              sources: ["local"],
-              language: "fr",
-              multiple: true,
-              maxFiles: 2,
-            }}
-          >
-            Upload an Ima
-          </CldUploadButton> */}
           {/* <Plus className="text-muted-foreground" /> */}
         </div>
         <form onSubmit={handleSendTextMessage} className="flex w-full gap-3">
