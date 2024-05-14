@@ -6,7 +6,7 @@ import Link from "next/link"
 const SignInPage = () => {
   return (
     <>
-      <div className="container relative hidden h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+      <div className="container relative grid h-screen flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0">
         <Link
           href="/auth/sign-up"
           className={cn(
@@ -45,7 +45,7 @@ const SignInPage = () => {
           </div>
         </div>
         <div className="lg:p-8">
-          <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+          <div className="flex w-full justify-center">
             <SignIn
               path="/auth/sign-in"
               // forceRedirectUrl={"/onboarding"}
