@@ -16,7 +16,9 @@ export default defineSchema({
     tokenIdentifier: v.string(),
     following: v.optional(v.array(v.string())),
     followers: v.optional(v.array(v.string())),
-  }).index("by_tokenIdentifier", ["tokenIdentifier"]),
+  })
+    .index("by_tokenIdentifier", ["tokenIdentifier"])
+    .index("by_username", ["username"]),
 
   conversations: defineTable({
     participants: v.array(v.id("users")),

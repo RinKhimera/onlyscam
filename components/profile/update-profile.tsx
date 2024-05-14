@@ -1,6 +1,4 @@
 import { UpdateImages } from "@/components/profile/update-images"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -22,22 +20,19 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { api } from "@/convex/_generated/api"
-import { useEdgeStore } from "@/lib/edgestore"
 import { cn } from "@/lib/utils"
 import { profileFormSchema } from "@/schemas/profile"
 import { UserProps } from "@/types"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { CircleX, Info, LoaderCircle, SwitchCamera, X } from "lucide-react"
-import { CldUploadWidget } from "next-cloudinary"
-import Image from "next/image"
-import { useRef, useState, useTransition } from "react"
+import { useTransition } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
-import { Label } from "../ui/label"
 
 type UpdateProfileDialogProps = {
   currentUser: UserProps
@@ -47,6 +42,7 @@ export const UpdateProfileDialog = ({
   currentUser,
 }: UpdateProfileDialogProps) => {
   // const [file, setFile] = useState<File>()
+  // const [username, setUsername] = useState("craveXanax")
   const [isPending, startTransition] = useTransition()
 
   const updateProfile = useMutation(api.users.updateUserProfile)
@@ -67,19 +63,32 @@ export const UpdateProfileDialog = ({
     control: form.control,
   })
 
+  const { watch } = form
+  const watchUsername = watch("username")
+
+  const checkUsername = useQuery(api.users.getAvailableUsername, {
+    username: watchUsername,
+  })
+
   const onSubmit = async (data: z.infer<typeof profileFormSchema>) => {
     startTransition(async () => {
       try {
-        await updateProfile({
-          name: data.displayName,
-          username: data.username,
-          bio: data.bio,
-          location: data.location,
-          socials: (data.urls || []).map((url) => url.value),
-          tokenIdentifier: currentUser?.tokenIdentifier!,
-        })
+        if (checkUsername === true) {
+          await updateProfile({
+            name: data.displayName,
+            username: data.username,
+            bio: data.bio,
+            location: data.location,
+            socials: (data.urls || []).map((url) => url.value),
+            tokenIdentifier: currentUser?.tokenIdentifier!,
+          })
 
-        toast.success("Vos modifications ont été enregistré")
+          toast.success("Vos modifications ont été enregistré")
+        } else if (checkUsername === false) {
+          toast.error("Cet identifiant est déjà pris !", {
+            description: "Veuillez en choisir un autre",
+          })
+        }
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {
@@ -149,7 +158,10 @@ export const UpdateProfileDialog = ({
                     Votre identifiant est unique et servira toujours à vous
                     retrouver.
                   </FormDescription>
-                  <FormMessage />
+                  <FormMessage>
+                    {checkUsername === false &&
+                      "Cet identifiant est déjà pris. Veuillez en choisir un autre."}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -197,6 +209,15 @@ export const UpdateProfileDialog = ({
               )}
             />
 
+            {fields.length === 0 && (
+              <FormItem>
+                <FormLabel>URLs</FormLabel>
+                <FormDescription>
+                  Vous pouvez ajoutez des liens vers votre site Web, votre blog
+                  ou vos profils de réseaux sociaux.
+                </FormDescription>
+              </FormItem>
+            )}
             <div>
               {fields.map((field, index) => (
                 <FormField
@@ -204,7 +225,7 @@ export const UpdateProfileDialog = ({
                   key={field.id}
                   name={`urls.${index}.value`}
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="mb-0">
                       <FormLabel className={cn(index !== 0 && "sr-only")}>
                         URLs
                       </FormLabel>

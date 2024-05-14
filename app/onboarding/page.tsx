@@ -1,5 +1,6 @@
 "use client"
 
+import { UpdateImages } from "@/components/profile/update-images"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -11,54 +12,19 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { api } from "@/convex/_generated/api"
 import { cn } from "@/lib/utils"
+import { profileFormSchema } from "@/schemas/profile"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useConvexAuth, useMutation, useQuery } from "convex/react"
-import { CircleX, LoaderCircle } from "lucide-react"
+import { CircleX, Info, LoaderCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useTransition } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
-
-const profileFormSchema = z.object({
-  displayName: z
-    .string({ required_error: "Cette entrée est requise." })
-    .min(2, {
-      message: "Le nom d'affichage doit comporter au moins 2 caractères.",
-    })
-    .max(30, {
-      message: "Le nom d'affichage ne doit pas dépasser 30 caractères.",
-    }),
-  username: z
-    .string({ required_error: "Cette entrée est requise." })
-    .min(2, {
-      message: "Le nom d'affichage doit comporter au moins 2 caractères.",
-    })
-    .max(30, {
-      message: "Le nom d'affichage ne doit pas dépasser 30 caractères.",
-    }),
-  // email: z.string({ required_error: "Cette entrée est requise." }).email(),
-  bio: z
-    .string({ required_error: "Cette entrée est requise." })
-    .min(4, {
-      message: "La description doit comporter au moins 4 caractères.",
-    })
-    .max(150, {
-      message: "La description ne doit pas dépasser 150 caractères.",
-    }),
-  urls: z
-    .array(
-      z.object({
-        value: z.string().url({ message: "Veuillez saisir une URL valide." }),
-      }),
-    )
-    .optional(),
-})
-
-type ProfileFormValues = z.infer<typeof profileFormSchema>
 
 const OnboardingPage = () => {
   const { isAuthenticated } = useConvexAuth()
@@ -68,27 +34,20 @@ const OnboardingPage = () => {
     isAuthenticated ? undefined : "skip",
   )
 
-  const setOnboardingUser = useMutation(api.users.onboardingUser)
-
-  console.log(currentUser)
-
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
-  // This can come from your database or API.
-  const defaultValues: Partial<ProfileFormValues> = {
-    // bio: "I own a computer.",
-    urls: [
-      // { value: "https://shadcn.com" },
-      // { value: "http://twitter.com/shadcn" },
-      { value: "" },
-    ],
-  }
+  const updateProfile = useMutation(api.users.updateUserProfile)
 
-  const form = useForm<ProfileFormValues>({
+  const form = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues,
-    mode: "onChange",
+    defaultValues: {
+      username: "",
+      displayName: "",
+      bio: "",
+      location: "",
+      urls: [].map((url) => ({ value: url })),
+    },
   })
 
   const { fields, append, remove } = useFieldArray({
@@ -96,18 +55,33 @@ const OnboardingPage = () => {
     control: form.control,
   })
 
-  const onSubmit = async (data: ProfileFormValues) => {
+  const { watch } = form
+  const watchUsername = watch("username")
+
+  const checkUsername = useQuery(api.users.getAvailableUsername, {
+    username: watchUsername,
+  })
+
+  const onSubmit = async (data: z.infer<typeof profileFormSchema>) => {
     startTransition(async () => {
       try {
-        await setOnboardingUser({
-          name: data.displayName,
-          username: data.username,
-          bio: data.bio,
-          socials: data.urls!.map((url) => url.value),
-          tokenIdentifier: currentUser?.tokenIdentifier!,
-        })
+        if (checkUsername === true) {
+          await updateProfile({
+            name: data.displayName,
+            username: data.username,
+            bio: data.bio,
+            location: data.location,
+            socials: (data.urls || []).map((url) => url.value),
+            tokenIdentifier: currentUser?.tokenIdentifier!,
+          })
 
-        router.push("/")
+          router.push("/")
+          // toast.success("Vos modifications ont été enregistré")
+        } else if (checkUsername === false) {
+          toast.error("Cet identifiant est déjà pris !", {
+            description: "Veuillez en choisir un autre",
+          })
+        }
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {
@@ -122,12 +96,32 @@ const OnboardingPage = () => {
     return <div>Loading...</div> // or your loading component
   }
 
-  if (currentUser?.username) router.push("/")
+  // if (currentUser?.username) router.push("/")
 
   return (
-    <div className="flex h-screen items-center justify-center">
+    <div className="container mx-auto my-4 max-w-2xl">
+      <div className="mb-4">
+        <div className="text-3xl font-semibold leading-none tracking-tight max-sm:text-xl">
+          Finalisation de votre profil
+        </div>
+        <div className="mt-2 text-sm text-muted-foreground">
+          Veuillez compléter vos informations pour la finalisation de votre
+          profil. Pas de soucis, vous pourrez les modifier à tout moment.
+        </div>
+      </div>
+
+      <div className="mb-3 flex items-center justify-between">
+        <Label>Photo de bannière et de profil</Label>
+        <Info size={20} />
+      </div>
+
+      <UpdateImages currentUser={currentUser} />
+
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="mt-16 space-y-6"
+        >
           <FormField
             control={form.control}
             name="displayName"
@@ -159,32 +153,13 @@ const OnboardingPage = () => {
                   Votre identifiant est unique et servira toujours à vous
                   retrouver.
                 </FormDescription>
-                <FormMessage />
+                <FormMessage>
+                  {checkUsername === false &&
+                    "Cet identifiant est déjà pris. Veuillez en choisir un autre."}
+                </FormMessage>
               </FormItem>
             )}
           />
-
-          {/* <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="rin_khimera"
-                    type="email"
-                    disabled
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Vous pouvez gérer les adresses e-mail vérifiées plus tard.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
 
           <FormField
             control={form.control}
@@ -194,7 +169,7 @@ const OnboardingPage = () => {
                 <FormLabel>Bio</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Parle nous un peu de toi..."
+                    placeholder="La vie est dure. Puis tu meurs. Ensuite, ils vous jettent de la terre au visage. Ensuite, les vers vous mangent. Soyez reconnaissant si cela se produit dans cet ordre..."
                     className="resize-none"
                     {...field}
                   />
@@ -206,6 +181,38 @@ const OnboardingPage = () => {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="location"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Localisation</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Quelque part entre rêve et réalité"
+                    className="resize-none"
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Votre localisation actuelle. Cela peut être une ville ou un
+                  pays.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {fields.length === 0 && (
+            <FormItem>
+              <FormLabel>URLs</FormLabel>
+              <FormDescription>
+                Vous pouvez ajoutez des liens vers votre site Web, votre blog ou
+                vos profils de réseaux sociaux.
+              </FormDescription>
+            </FormItem>
+          )}
           <div>
             {fields.map((field, index) => (
               <FormField
@@ -213,7 +220,7 @@ const OnboardingPage = () => {
                 key={field.id}
                 name={`urls.${index}.value`}
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="mb-0">
                     <FormLabel className={cn(index !== 0 && "sr-only")}>
                       URLs
                     </FormLabel>
@@ -221,11 +228,12 @@ const OnboardingPage = () => {
                       Vous pouvez ajoutez des liens vers votre site Web, votre
                       blog ou vos profils de réseaux sociaux.
                     </FormDescription>
+
                     <div className="flex gap-2">
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder="https://github.com/RinKhimera"
+                          placeholder="https://samuelpokam.com"
                         />
                       </FormControl>
                       <Button
@@ -241,6 +249,7 @@ const OnboardingPage = () => {
                 )}
               />
             ))}
+
             <Button
               type="button"
               variant="outline"
@@ -252,13 +261,15 @@ const OnboardingPage = () => {
             </Button>
           </div>
 
-          <Button type="submit" disabled={isPending}>
-            {isPending ? (
-              <LoaderCircle className="animate-spin" />
-            ) : (
-              "Compléter l'inscription"
-            )}
-          </Button>
+          <div className="flex justify-end">
+            <Button type="submit" disabled={isPending}>
+              {isPending ? (
+                <LoaderCircle className="animate-spin" />
+              ) : (
+                "Compléter l'inscription"
+              )}
+            </Button>
+          </div>
         </form>
       </Form>
     </div>
