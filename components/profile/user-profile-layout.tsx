@@ -2,42 +2,46 @@
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { api } from "@/convex/_generated/api"
 import { createInitials } from "@/lib/create-initials"
-import { useConvexAuth, useQuery } from "convex/react"
+import { useQuery } from "convex/react"
 import { Link as LucideLink, MapPin } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { UpdateProfileDialog } from "./update-profile"
+import { notFound, useRouter } from "next/navigation"
 
-export const ProfileLayout = () => {
-  const { isAuthenticated } = useConvexAuth()
+export const UserProfileLayout = ({
+  params,
+}: {
+  params: { username: string }
+}) => {
+  const router = useRouter()
 
-  const currentUser = useQuery(
-    api.users.getCurrentUser,
-    isAuthenticated ? undefined : "skip",
-  )
+  const userProfile = useQuery(api.users.getUserProfile, {
+    username: params.username,
+  })
 
-  if (!currentUser) {
-    return <ProfileLayoutSkeleton />
+  console.log(userProfile)
+
+  if (userProfile === undefined) {
+    return (
+      <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
+        <div className="mt-8 flex items-center justify-center border-t border-muted">
+          <div className="mt-16 h-full text-center text-xl text-muted-foreground">
+            Loading...
+          </div>
+        </div>
+      </main>
+    )
   }
+
+  if (userProfile === null) notFound()
 
   return (
     <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
       <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
-        {currentUser?.name}
+        {userProfile?.name}
       </h1>
 
       <div className="relative">
@@ -46,10 +50,10 @@ export const ProfileLayout = () => {
             <Image
               className="object-cover"
               src={
-                (currentUser?.imageBanner as string) ||
+                (userProfile?.imageBanner as string) ||
                 "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
               }
-              alt={currentUser?.name as string}
+              alt={userProfile?.name as string}
               fill
             />
           </AspectRatio>
@@ -59,21 +63,21 @@ export const ProfileLayout = () => {
             <DialogTrigger asChild>
               <Avatar className="size-36 cursor-pointer border-4 border-accent object-none object-center">
                 <AvatarImage
-                  src={currentUser?.image}
+                  src={userProfile?.image}
                   className="object-cover"
                 />
                 <AvatarFallback>
-                  {createInitials(currentUser?.name)}
+                  {createInitials(userProfile?.name)}
                 </AvatarFallback>
               </Avatar>
             </DialogTrigger>
             <DialogContent className="h-full max-w-[1000px] overflow-auto border-none bg-transparent sm:rounded-none">
               <Image
-                src={currentUser?.image}
-                alt={currentUser?.name}
+                src={userProfile?.image}
+                alt={userProfile?.name}
                 fill
                 placeholder="blur"
-                blurDataURL={currentUser?.image}
+                blurDataURL={userProfile?.image}
                 className="mx-auto h-full w-auto object-contain"
               />
             </DialogContent>
@@ -81,21 +85,17 @@ export const ProfileLayout = () => {
         </div>
       </div>
 
-      <div className="mr-5 mt-4 flex justify-end">
-        <UpdateProfileDialog currentUser={currentUser} />
-      </div>
+      <div className="mt-[72px] px-4">
+        <div className="text-2xl font-bold">{userProfile?.name}</div>
+        <div className="text-muted-foreground">@{userProfile?.username}</div>
 
-      <div className="mt-4 px-4">
-        <div className="text-2xl font-bold">{currentUser?.name}</div>
-        <div className="text-muted-foreground">@{currentUser?.username}</div>
-
-        <div className="mt-3">{currentUser?.bio}</div>
+        <div className="mt-3">{userProfile?.bio}</div>
         <div className="-ml-0.5 flex items-center gap-1 text-muted-foreground">
           <MapPin size={18} />
-          {currentUser?.location}
+          {userProfile?.location}
         </div>
 
-        {currentUser?.socials?.map((url) => (
+        {userProfile?.socials?.map((url) => (
           <div
             key={url}
             className="-ml-0.5 flex items-center gap-1 text-muted-foreground"
@@ -122,40 +122,4 @@ export const ProfileLayout = () => {
     </main>
   )
 }
-
-const ProfileLayoutSkeleton = () => {
-  return (
-    <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
-      <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
-        <Skeleton className="h-8 w-[300px]" />
-      </h1>
-
-      <div className="relative">
-        <div>
-          <AspectRatio ratio={3 / 1}>
-            <Skeleton className="size-full" />
-          </AspectRatio>
-        </div>
-        <div className="absolute -bottom-[65px] left-5">
-          <Skeleton className="size-36 rounded-full" />
-        </div>
-      </div>
-
-      <div className="mr-5 mt-5 flex justify-end">
-        <Skeleton className="h-8 w-[180px]" />
-      </div>
-
-      <div className="mt-6 space-y-6 px-4">
-        <div className="space-y-2">
-          <Skeleton className="h-6 w-[280px]" />
-          <Skeleton className="h-4 w-[150px]" />
-        </div>
-
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[300px]" />
-          <Skeleton className="h-4 w-[200px]" />
-        </div>
-      </div>
-    </main>
-  )
-}
+// <div>My Page: {params.username} </div>

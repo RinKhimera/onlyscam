@@ -1,7 +1,14 @@
+"use client"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { api } from "@/convex/_generated/api"
+import { useQuery } from "convex/react"
 import { Search } from "lucide-react"
+import Link from "next/link"
 
 export const RightSidebar = () => {
+  const suggestedUsers = useQuery(api.users.getUsers)
+
   return (
     <section className="sticky top-0 flex h-screen w-[30%] flex-col items-stretch px-6 max-lg:hidden">
       <div className="mt-3">
@@ -23,27 +30,32 @@ export const RightSidebar = () => {
       <div className="my-4 flex flex-col rounded-xl bg-muted">
         <h3 className="my-4 px-4 text-xl font-bold">Suggestions</h3>
         <div>
-          {Array.from({ length: 4 }).map((_, index) => (
+          {(suggestedUsers || []).map((user, index) => (
             <div
               key={index}
               className="transition duration-200 last:rounded-b-xl hover:bg-muted-foreground/15"
             >
-              <button className="flex h-full w-full items-center justify-between p-4">
+              <Link
+                href={`/${user.username}`}
+                className="flex h-full w-full items-center justify-between p-4"
+              >
                 <div className="flex items-center space-x-2">
                   <Avatar>
                     <AvatarImage
-                      src="https://github.com/shadcn.png"
-                      alt="@shadcn"
+                      src={user.image || "https://github.com/shadcn.png"}
+                      alt={user.name}
                     />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarFallback>XO</AvatarFallback>
                   </Avatar>
 
                   <div className="text-left text-sm">
-                    <div className="truncate">TypeScript Enthusiast</div>
-                    <div className="text-muted-foreground">@rin_khimera</div>
+                    <div className="truncate">{user.name}</div>
+                    <div className="text-muted-foreground">
+                      @{user.username}
+                    </div>
                   </div>
                 </div>
-              </button>
+              </Link>
             </div>
           ))}
         </div>
