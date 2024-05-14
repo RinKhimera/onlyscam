@@ -115,37 +115,19 @@ export const setUserOffline = internalMutation({
   },
 })
 
-export const onboardingUser = mutation({
-  args: {
-    name: v.string(),
-    username: v.string(),
-    bio: v.string(),
-    socials: v.array(v.string()),
-    tokenIdentifier: v.string(),
-  },
+export const getUserProfile = query({
+  args: { username: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) {
-      throw new ConvexError("Not authenticated")
-    }
-
     const user = await ctx.db
       .query("users")
-      .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier),
-      )
+      .withIndex("by_username", (q) => q.eq("username", args.username))
       .unique()
 
-    if (!user) {
-      throw new ConvexError("User not found")
-    }
+    // if (!user) {
+    //   throw new ConvexError("User not found")
+    // }
 
-    await ctx.db.patch(user._id, {
-      name: args.name,
-      username: args.username,
-      bio: args.bio,
-      socials: args.socials,
-    })
+    return user
   },
 })
 
