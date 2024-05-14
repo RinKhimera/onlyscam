@@ -121,7 +121,7 @@ export const UpdateImages = ({ currentUser }: { currentUser: UserProps }) => {
             fill
           />
 
-          <div className="absolute inset-0 flex items-center justify-center gap-6 bg-black/60 opacity-0 transition duration-300 hover:opacity-100">
+          <div className="absolute inset-0 flex items-center justify-center gap-6 bg-black/60 transition duration-300 hover:opacity-100 md:opacity-0">
             <div
               className={cn(
                 "flex size-11 cursor-pointer items-center justify-center rounded-full bg-accent text-white transition hover:bg-accent/60",

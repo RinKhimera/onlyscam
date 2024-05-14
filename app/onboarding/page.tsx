@@ -1,6 +1,7 @@
 "use client"
 
 import { UpdateImages } from "@/components/profile/update-images"
+import { ImageUploadInfo } from "@/components/shared/image-upload-info"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -96,7 +97,7 @@ const OnboardingPage = () => {
     return <div>Loading...</div> // or your loading component
   }
 
-  // if (currentUser?.username) router.push("/")
+  if (currentUser?.username) router.push("/")
 
   return (
     <div className="container mx-auto my-4 max-w-2xl">
@@ -110,9 +111,9 @@ const OnboardingPage = () => {
         </div>
       </div>
 
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-2 flex items-center justify-between">
         <Label>Photo de bannière et de profil</Label>
-        <Info size={20} />
+        <ImageUploadInfo />
       </div>
 
       <UpdateImages currentUser={currentUser} />
