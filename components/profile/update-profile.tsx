@@ -1,4 +1,5 @@
 import { UpdateImages } from "@/components/profile/update-images"
+import { ImageUploadInfo } from "@/components/shared/image-upload-info"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -41,8 +42,6 @@ type UpdateProfileDialogProps = {
 export const UpdateProfileDialog = ({
   currentUser,
 }: UpdateProfileDialogProps) => {
-  // const [file, setFile] = useState<File>()
-  // const [username, setUsername] = useState("craveXanax")
   const [isPending, startTransition] = useTransition()
 
   const updateProfile = useMutation(api.users.updateUserProfile)
@@ -117,7 +116,7 @@ export const UpdateProfileDialog = ({
 
         <div className="flex items-center justify-between">
           <Label>Photo de bannière et de profil</Label>
-          <Info size={20} />
+          <ImageUploadInfo />
         </div>
 
         <UpdateImages currentUser={currentUser} />

@@ -2,12 +2,16 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { api } from "@/convex/_generated/api"
-import { useQuery } from "convex/react"
+import { useConvexAuth, useQuery } from "convex/react"
 import { Search } from "lucide-react"
 import Link from "next/link"
 
 export const RightSidebar = () => {
-  const suggestedUsers = useQuery(api.users.getUsers)
+  const { isAuthenticated } = useConvexAuth()
+  const suggestedUsers = useQuery(
+    api.users.getUsers,
+    isAuthenticated ? undefined : "skip",
+  )
 
   return (
     <section className="sticky top-0 flex h-screen w-[30%] flex-col items-stretch px-6 max-lg:hidden">
