@@ -1,39 +1,39 @@
 "use client"
 
+import { UpdateProfileDialog } from "@/components/profile/update-profile"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { Skeleton } from "@/components/ui/skeleton"
 import { api } from "@/convex/_generated/api"
 import { createInitials } from "@/lib/create-initials"
-import { useQuery } from "convex/react"
+import { cn } from "@/lib/utils"
+import { useConvexAuth, useQuery } from "convex/react"
 import { Link as LucideLink, MapPin } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { notFound, useRouter } from "next/navigation"
+import { notFound } from "next/navigation"
 
 export const UserProfileLayout = ({
   params,
 }: {
   params: { username: string }
 }) => {
-  const router = useRouter()
+  const { isAuthenticated } = useConvexAuth()
 
   const userProfile = useQuery(api.users.getUserProfile, {
     username: params.username,
   })
 
-  console.log(userProfile)
+  const currentUser = useQuery(
+    api.users.getCurrentUser,
+    isAuthenticated ? undefined : "skip",
+  )
+
+  console.log(currentUser)
 
   if (userProfile === undefined) {
-    return (
-      <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
-        <div className="mt-8 flex items-center justify-center border-t border-muted">
-          <div className="mt-16 h-full text-center text-xl text-muted-foreground">
-            Loading...
-          </div>
-        </div>
-      </main>
-    )
+    return <ProfileLayoutSkeleton />
   }
 
   if (userProfile === null) notFound()
@@ -85,7 +85,17 @@ export const UserProfileLayout = ({
         </div>
       </div>
 
-      <div className="mt-[72px] px-4">
+      {currentUser?.username === params.username && (
+        <div className="mr-5 mt-4 flex justify-end">
+          <UpdateProfileDialog currentUser={currentUser} />
+        </div>
+      )}
+
+      <div
+        className={cn("mt-[72px] px-4", {
+          "mt-4": currentUser?.username === params.username,
+        })}
+      >
         <div className="text-2xl font-bold">{userProfile?.name}</div>
         <div className="text-muted-foreground">@{userProfile?.username}</div>
 
@@ -122,4 +132,40 @@ export const UserProfileLayout = ({
     </main>
   )
 }
-// <div>My Page: {params.username} </div>
+
+const ProfileLayoutSkeleton = () => {
+  return (
+    <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
+      <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
+        <Skeleton className="h-8 w-[300px]" />
+      </h1>
+
+      <div className="relative">
+        <div>
+          <AspectRatio ratio={3 / 1}>
+            <Skeleton className="size-full rounded-none" />
+          </AspectRatio>
+        </div>
+        <div className="absolute -bottom-[65px] left-5">
+          <Skeleton className="size-36 rounded-full" />
+        </div>
+      </div>
+
+      <div className="mr-5 mt-5 flex justify-end">
+        <Skeleton className="h-8 w-[180px]" />
+      </div>
+
+      <div className="mt-6 space-y-6 px-4">
+        <div className="space-y-2">
+          <Skeleton className="h-6 w-[280px]" />
+          <Skeleton className="h-4 w-[150px]" />
+        </div>
+
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[300px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    </main>
+  )
+}
