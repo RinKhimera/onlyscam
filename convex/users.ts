@@ -228,28 +228,29 @@ export const updateBannerImage = mutation({
 export const getAvailableUsername = query({
   args: {
     username: v.string(),
+    tokenIdentifier: v.string(),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) {
-      throw new ConvexError("Not authenticated")
-    }
+    // const identity = await ctx.auth.getUserIdentity()
+    // if (!identity) {
+    //   throw new ConvexError("Not authenticated")
+    // }
 
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier),
-      )
-      .unique()
+    // const user = await ctx.db
+    //   .query("users")
+    //   .withIndex("by_tokenIdentifier", (q) =>
+    //     q.eq("tokenIdentifier", identity.tokenIdentifier),
+    //   )
+    //   .unique()
 
-    if (!user) {
-      throw new ConvexError("User not found")
-    }
+    // if (!user) {
+    //   throw new ConvexError("User not found")
+    // }
 
     const existingUsername = await ctx.db
       .query("users")
       .withIndex("by_username", (q) => q.eq("username", args.username))
-      .filter((q) => q.neq(q.field("username"), user.username))
+      .filter((q) => q.neq(q.field("tokenIdentifier"), args.tokenIdentifier))
       .unique()
 
     return !existingUsername

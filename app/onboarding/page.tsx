@@ -59,10 +59,6 @@ const OnboardingPage = () => {
   const { watch } = form
   const watchUsername = watch("username")
 
-  const checkUsername = useQuery(api.users.getAvailableUsername, {
-    username: watchUsername,
-  })
-
   const onSubmit = async (data: z.infer<typeof profileFormSchema>) => {
     startTransition(async () => {
       try {
@@ -92,6 +88,11 @@ const OnboardingPage = () => {
       }
     })
   }
+
+  const checkUsername = useQuery(api.users.getAvailableUsername, {
+    username: watchUsername || "",
+    tokenIdentifier: currentUser?.tokenIdentifier! || "",
+  })
 
   if (!currentUser) {
     return <div>Loading...</div> // or your loading component

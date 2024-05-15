@@ -66,7 +66,8 @@ export const UpdateProfileDialog = ({
   const watchUsername = watch("username")
 
   const checkUsername = useQuery(api.users.getAvailableUsername, {
-    username: watchUsername,
+    username: watchUsername || "",
+    tokenIdentifier: currentUser?.tokenIdentifier! || "",
   })
 
   const onSubmit = async (data: z.infer<typeof profileFormSchema>) => {
