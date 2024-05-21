@@ -9,10 +9,12 @@ import Link from "next/link"
 export const RightSidebar = () => {
   const { isAuthenticated } = useConvexAuth()
 
-  const suggestedUsers = useQuery(
+  const users = useQuery(
     api.users.getUsers,
     isAuthenticated ? undefined : "skip",
   )
+
+  const suggestedUsers = users?.filter((user) => Boolean(user.username))
 
   return (
     <section className="sticky top-0 flex h-screen w-[30%] flex-col items-stretch px-6 max-lg:hidden">

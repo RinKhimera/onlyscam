@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils"
 import { profileFormSchema } from "@/schemas/profile"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useConvexAuth, useMutation, useQuery } from "convex/react"
-import { CircleX, Info, LoaderCircle } from "lucide-react"
+import { CircleX, LoaderCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useTransition } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
@@ -59,10 +59,6 @@ const OnboardingPage = () => {
   const { watch } = form
   const watchUsername = watch("username")
 
-  const checkUsername = useQuery(api.users.getAvailableUsername, {
-    username: watchUsername,
-  })
-
   const onSubmit = async (data: z.infer<typeof profileFormSchema>) => {
     startTransition(async () => {
       try {
@@ -92,6 +88,11 @@ const OnboardingPage = () => {
       }
     })
   }
+
+  const checkUsername = useQuery(api.users.getAvailableUsername, {
+    username: watchUsername || "",
+    tokenIdentifier: currentUser?.tokenIdentifier! || "",
+  })
 
   if (!currentUser) {
     return <div>Loading...</div> // or your loading component

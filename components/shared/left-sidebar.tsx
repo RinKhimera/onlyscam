@@ -1,10 +1,43 @@
+"use client"
+
 import { UserInfoPopover } from "@/components/shared/user-info-popover"
 import { Button } from "@/components/ui/button"
-import { navigationLinks } from "@/constants"
-import { PenLine, Star } from "lucide-react"
+import { api } from "@/convex/_generated/api"
+import { useConvexAuth, useQuery } from "convex/react"
+import { Bell, Hash, Home, Mail, PenLine, Star, UserRound } from "lucide-react"
 import Link from "next/link"
 
 export const LeftSidebar = () => {
+  const { isAuthenticated } = useConvexAuth()
+
+  const currentUser = useQuery(
+    api.users.getCurrentUser,
+    isAuthenticated ? undefined : "skip",
+  )
+
+  const navigationLinks = [
+    { title: "Accueil", href: "/", icon: <Home /> },
+    {
+      title: "Explorer",
+      href: "/explore",
+      icon: <Hash />,
+    },
+    {
+      title: "Notifications",
+      href: "/notifications",
+      icon: <Bell />,
+    },
+    {
+      title: "Messages",
+      href: "/messages",
+      icon: <Mail />,
+    },
+    {
+      title: "Profile",
+      href: currentUser ? `/${currentUser.username}` : "",
+      icon: <UserRound />,
+    },
+  ]
   return (
     <section className="sticky top-0 flex h-screen w-[20%] flex-col items-stretch px-3 max-lg:items-center">
       <div className="mt-4 flex h-full flex-col space-y-4 max-lg:items-center">
@@ -32,7 +65,7 @@ export const LeftSidebar = () => {
         </button>
       </div>
 
-      <UserInfoPopover />
+      <UserInfoPopover currentUser={currentUser} />
     </section>
   )
 }
