@@ -24,7 +24,10 @@
     "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.2",
+    "@types/vimeo": "^2.1.8",
+    "@vimeo/vimeo": "^3.0.2",
     "class-variance-authority": "^0.7.0",
+    "cloudinary": "^2.2.0",
     "clsx": "^2.1.1",
     "convex": "^1.11.2",
     "emoji-picker-react": "^4.9.2",
@@ -40,6 +43,7 @@
     "svix": "^1.21.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "vimeo": "^2.3.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {

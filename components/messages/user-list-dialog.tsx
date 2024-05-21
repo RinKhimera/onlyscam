@@ -14,7 +14,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
-// import { DialogClose } from "@radix-ui/react-dialog"
 import { useConvexAuth, useMutation, useQuery } from "convex/react"
 import { ImageIcon, MailPlus } from "lucide-react"
 import Image from "next/image"
@@ -37,12 +36,12 @@ export const UserListDialog = () => {
   )
 
   const [selectedUsers, setSelectedUsers] = useState<Id<"users">[]>([])
-  const [groupName, setGroupName] = useState("")
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [groupName, setGroupName] = useState("")
   const [renderedImage, setRenderedImage] = useState("")
+  const [isPending, startTransition] = useTransition()
   const imgRef = useRef<HTMLInputElement>(null)
   const dialogCloseRef = useRef<HTMLButtonElement>(null)
-  const [isPending, startTransition] = useTransition()
 
   const router = useRouter()
 
@@ -179,20 +178,18 @@ export const UserListDialog = () => {
                 )}
 
                 <AvatarImage
-                  src={user.image}
+                  src={user.image || "https://github.com/shadcn.png"}
+                  alt={user.name}
                   className="rounded-full object-cover"
                 />
                 <AvatarFallback>
-                  <div className="bg-gray-tertiary h-full w-full animate-pulse rounded-full"></div>
+                  <div className="h-full w-full animate-pulse rounded-full bg-muted"></div>
                 </AvatarFallback>
               </Avatar>
 
-              <div className="w-full ">
-                <div className="flex items-center justify-between">
-                  <p className="text-md font-medium">
-                    {user.name || user.email.split("@")[0]}
-                  </p>
-                </div>
+              <div className="text-left text-sm">
+                <div className="truncate">{user.name}</div>
+                <div className="text-muted-foreground">@{user.username}</div>
               </div>
             </div>
           ))}
