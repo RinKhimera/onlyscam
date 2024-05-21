@@ -1,6 +1,6 @@
 "use client"
 
-import { submitUpload, uploadImage } from "@/actions/upload-cloudinary"
+import { CldUploadWidget } from "next-cloudinary"
 
 export const ExploreLayout = () => {
   return (
@@ -9,23 +9,26 @@ export const ExploreLayout = () => {
         Explorer
       </h1>
 
-      <input
-        type="file"
-        // accept="image/*"
-        // ref={imgRef}
-        onChange={async (e) => {
-          const file = e.target.files?.[0]
-          if (file) {
-            const reader = new FileReader()
-            reader.onloadend = async () => {
-              const base64data = reader.result
-              await uploadImage(base64data as string | ArrayBuffer)
-            }
-            reader.readAsDataURL(file)
-          }
+      <CldUploadWidget
+        uploadPreset="post-videos"
+        signatureEndpoint="/api/sign-cloudinary-params"
+        options={{
+          sources: ["local", "google_drive", "url", "camera"],
+          publicId: "profile_buddies204",
         }}
-        // hidden
-      />
+        onSuccess={(result, { widget }) => {
+          console.log(result?.info) // { public_id, secure_url, etc }
+          widget.close()
+        }}
+      >
+        {({ open }) => {
+          return (
+            <button className="w-fit bg-red-50/50" onClick={() => open()}>
+              Upload an Image
+            </button>
+          )
+        }}
+      </CldUploadWidget>
     </main>
   )
 }
