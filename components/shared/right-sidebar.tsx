@@ -1,10 +1,9 @@
 "use client"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { SuggestionCard } from "@/components/shared/suggestion-card"
 import { api } from "@/convex/_generated/api"
 import { useConvexAuth, useQuery } from "convex/react"
 import { Search } from "lucide-react"
-import Link from "next/link"
 
 export const RightSidebar = () => {
   const { isAuthenticated } = useConvexAuth()
@@ -17,7 +16,7 @@ export const RightSidebar = () => {
   const suggestedUsers = users?.filter((user) => Boolean(user.username))
 
   return (
-    <section className="sticky top-0 flex h-screen w-[30%] flex-col items-stretch px-6 max-lg:hidden">
+    <section className="sticky top-0 flex h-screen w-[30%] flex-col items-stretch overflow-auto pl-6 pr-2 max-lg:hidden">
       <div className="mt-3">
         <div className="relative h-full w-full">
           <label
@@ -34,36 +33,13 @@ export const RightSidebar = () => {
           />
         </div>
       </div>
-      <div className="my-4 flex flex-col rounded-xl bg-muted">
-        <h3 className="my-4 px-4 text-xl font-bold">Suggestions</h3>
+
+      <div className="my-4 flex flex-col rounded-xl">
+        <h3 className="mb-4 text-xl font-bold">Suggestions</h3>
+
         <div>
           {(suggestedUsers || []).map((user, index) => (
-            <div
-              key={index}
-              className="transition duration-200 last:rounded-b-xl hover:bg-muted-foreground/15"
-            >
-              <Link
-                href={`/${user.username}`}
-                className="flex h-full w-full items-center justify-between p-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <Avatar>
-                    <AvatarImage
-                      src={user.image || "https://github.com/shadcn.png"}
-                      alt={user.name}
-                    />
-                    <AvatarFallback>XO</AvatarFallback>
-                  </Avatar>
-
-                  <div className="text-left text-sm">
-                    <div className="truncate">{user.name}</div>
-                    <div className="text-muted-foreground">
-                      @{user.username}
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </div>
+            <SuggestionCard key={index} user={user} />
           ))}
         </div>
       </div>

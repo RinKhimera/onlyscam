@@ -40,6 +40,7 @@ export const ConversationBox = ({
             <div className="h-full w-full animate-pulse rounded-full"></div>
           </AvatarFallback>
         </Avatar>
+
         <div className="w-full">
           <div className="flex items-center">
             <h3 className="text-xs font-medium lg:text-sm">
@@ -69,6 +70,7 @@ export const ConversationBox = ({
           </p>
         </div>
       </div>
+
       <hr className="bg-gray-primary mx-10 h-[1px]" />
     </>
   )
