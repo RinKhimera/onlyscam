@@ -66,8 +66,8 @@ export const UserProfileLayout = ({
                   src={userProfile?.image}
                   className="object-cover"
                 />
-                <AvatarFallback>
-                  {createInitials(userProfile?.name)}
+                <AvatarFallback className="size-11">
+                  <div className="animate-pulse rounded-full bg-gray-500"></div>
                 </AvatarFallback>
               </Avatar>
             </DialogTrigger>

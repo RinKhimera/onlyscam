@@ -1,9 +1,11 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
 import { CldUploadWidget } from "next-cloudinary"
 import { useRouter } from "next/navigation"
+import { useEffect, useRef } from "react"
+import Textarea from "react-expanding-textarea"
 import { v4 as uuidv4 } from "uuid"
-import { Button } from "../ui/button"
 
 export const ExploreLayout = async () => {
   const router = useRouter()
@@ -42,8 +44,15 @@ export const ExploreLayout = async () => {
       <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
         Explorer
       </h1>
+      <Textarea
+        className="textarea"
+        defaultValue="Lorem ipsum dolor sit amet, ..."
+        id="my-textarea"
+        name="pet[notes]"
+        placeholder="Enter additional notes..."
+      />
 
-      {/* <CldUploadWidget
+      <CldUploadWidget
         uploadPreset="post-videos"
         signatureEndpoint="/api/sign-cloudinary-params"
         options={{
@@ -62,7 +71,7 @@ export const ExploreLayout = async () => {
             </button>
           )
         }}
-      </CldUploadWidget> */}
+      </CldUploadWidget>
 
       <Button onClick={fetchData}>Payer</Button>
     </main>

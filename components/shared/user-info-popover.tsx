@@ -35,7 +35,9 @@ export const UserInfoPopover = ({
                 src={currentUser?.image}
                 alt={currentUser?.username}
               />
-              <AvatarFallback>XO</AvatarFallback>
+              <AvatarFallback className="size-11">
+                <div className="animate-pulse rounded-full bg-gray-500"></div>
+              </AvatarFallback>
             </Avatar>
             <div className="text-left text-sm max-lg:hidden">
               <div className="truncate">{currentUser?.name}</div>

@@ -20,6 +20,22 @@ export default defineSchema({
     .index("by_tokenIdentifier", ["tokenIdentifier"])
     .index("by_username", ["username"]),
 
+  posts: defineTable({
+    author: v.id("users"),
+    content: v.string(),
+    medias: v.array(v.string()),
+    likes: v.array(v.id("users")),
+    comments: v.array(v.id("comments")),
+  }).index("by_author", ["author"]),
+
+  comments: defineTable({
+    author: v.id("users"),
+    post: v.id("posts"),
+    content: v.string(),
+    likes: v.array(v.id("users")),
+    // subComments: v.optional(v.array(v.id("comments"))),
+  }),
+
   conversations: defineTable({
     participants: v.array(v.id("users")),
     isGroup: v.boolean(),
