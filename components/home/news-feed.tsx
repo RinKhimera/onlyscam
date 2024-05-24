@@ -8,7 +8,6 @@ import { fr } from "date-fns/locale"
 import { Bookmark, Dot, Heart, MessageCircle } from "lucide-react"
 import { CldImage } from "next-cloudinary"
 import Image from "next/image"
-import { getPlaiceholder } from "plaiceholder"
 import React from "react"
 
 export const NewsFeed = () => {

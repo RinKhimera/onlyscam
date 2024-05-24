@@ -1,5 +1,7 @@
 "use client"
 
+import { SubscribeDialog } from "@/components/profile/subscribe-dialog"
+import { UnsubscribeDialog } from "@/components/profile/unsubscribe-dialog"
 import { UpdateProfileDialog } from "@/components/profile/update-profile"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -12,7 +14,6 @@ import { Link as LucideLink, MapPin } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { SubscribeDialog } from "./subscribe-dialog"
 
 export const UserProfileLayout = ({
   params,
@@ -88,11 +89,14 @@ export const UserProfileLayout = ({
       {currentUser?.username === params.username ? (
         <div className="mr-5 mt-4 flex justify-end">
           <UpdateProfileDialog currentUser={currentUser} />
-          {/* <SubscribeDialog userProfile={userProfile} /> */}
         </div>
       ) : (
         <div className="mr-5 mt-4 flex justify-end">
-          <SubscribeDialog userProfile={userProfile} />
+          {userProfile.followers?.includes(currentUser._id) ? (
+            <UnsubscribeDialog userProfile={userProfile} />
+          ) : (
+            <SubscribeDialog userProfile={userProfile} />
+          )}
         </div>
       )}
 

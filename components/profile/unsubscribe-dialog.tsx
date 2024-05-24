@@ -12,7 +12,7 @@ import {
 import { api } from "@/convex/_generated/api"
 import { UserProps } from "@/types"
 import { useMutation } from "convex/react"
-import { Check, LoaderCircle } from "lucide-react"
+import { LoaderCircle } from "lucide-react"
 import Image from "next/image"
 import { useTransition } from "react"
 import { toast } from "sonner"
@@ -21,19 +21,19 @@ type SubscribeDialogProps = {
   userProfile: UserProps
 }
 
-export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
+export const UnsubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
   const [isPending, startTransition] = useTransition()
 
-  const followUser = useMutation(api.users.followUser)
+  const unfollowUser = useMutation(api.users.unfollowUser)
 
-  const handleFollow = () => {
+  const handleUnfollow = () => {
     startTransition(async () => {
       try {
-        await followUser({
+        await unfollowUser({
           creatorId: userProfile!._id,
         })
 
-        toast.success("Vous suivez désormais ce createur")
+        toast.success("Vous vous êtes désabonné ce createur")
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {
@@ -47,12 +47,7 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          variant={"outline"}
-          className="rounded-3xl border-2 border-primary"
-        >
-          S&apos;abonner
-        </Button>
+        <Button className="rounded-3xl border-2">Abonné</Button>
       </DialogTrigger>
       <DialogContent className="h-5/6 max-w-md overflow-auto p-0">
         <div className="relative flex flex-col justify-evenly px-4">
@@ -84,11 +79,11 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
           </div>
 
           <DialogTitle className="mt-5 text-center text-xl">
-            Abonnez-vous et bénéficiez des avantages suivants :
+            Se désabonner de {userProfile?.name} ?
           </DialogTitle>
 
           <DialogDescription className="text-base">
-            <div className="flex gap-1">
+            {/* <div className="flex gap-1">
               <Check className="shrink-0 text-primary" />
               <div>Accès complet au contenu de cet utilisateur</div>
             </div>
@@ -99,21 +94,19 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
             <div className="flex gap-1">
               <Check className="shrink-0 text-primary" />
               <div>Annuler votre abonnement à tout moment</div>
+            </div> */}
+            <div>
+              Cela mettra fin à votre abonnement à {userProfile?.name}. Vous
+              devrez vous abonner à nouveau pour accéder à son contenu.
             </div>
           </DialogDescription>
 
           <DialogFooter>
-            <Button
-              className="flex w-full justify-between text-lg"
-              onClick={handleFollow}
-            >
+            <Button className="w-full text-lg" onClick={handleUnfollow}>
               {isPending ? (
                 <LoaderCircle className="animate-spin" />
               ) : (
-                <>
-                  <div>S&apos;ABONNER</div>
-                  <div className="font-bold">500 XAF</div>
-                </>
+                "Se désabonner"
               )}
             </Button>
           </DialogFooter>
