@@ -6,13 +6,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
 import { api } from "@/convex/_generated/api"
-import { createInitials } from "@/lib/create-initials"
 import { cn } from "@/lib/utils"
 import { useConvexAuth, useQuery } from "convex/react"
 import { Link as LucideLink, MapPin } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { SubscribeDialog } from "./subscribe-dialog"
 
 export const UserProfileLayout = ({
   params,
@@ -32,7 +32,7 @@ export const UserProfileLayout = ({
 
   console.log(currentUser)
 
-  if (userProfile === undefined) {
+  if (userProfile === undefined || currentUser === undefined) {
     return <ProfileLayoutSkeleton />
   }
 
@@ -58,10 +58,10 @@ export const UserProfileLayout = ({
             />
           </AspectRatio>
         </div>
-        <div className="absolute -bottom-[65px] left-5">
+        <div className="absolute -bottom-[65px] left-5 max-sm:-bottom-[38px]">
           <Dialog>
             <DialogTrigger asChild>
-              <Avatar className="size-36 cursor-pointer border-4 border-accent object-none object-center">
+              <Avatar className="size-36 cursor-pointer border-4 border-accent object-none object-center max-sm:size-24">
                 <AvatarImage
                   src={userProfile?.image}
                   className="object-cover"
@@ -85,17 +85,18 @@ export const UserProfileLayout = ({
         </div>
       </div>
 
-      {currentUser?.username === params.username && (
+      {currentUser?.username === params.username ? (
         <div className="mr-5 mt-4 flex justify-end">
           <UpdateProfileDialog currentUser={currentUser} />
+          {/* <SubscribeDialog userProfile={userProfile} /> */}
+        </div>
+      ) : (
+        <div className="mr-5 mt-4 flex justify-end">
+          <SubscribeDialog userProfile={userProfile} />
         </div>
       )}
 
-      <div
-        className={cn("mt-[72px] px-4", {
-          "mt-4": currentUser?.username === params.username,
-        })}
-      >
+      <div className={cn("mt-4 px-4")}>
         <div className="text-2xl font-bold">{userProfile?.name}</div>
         <div className="text-muted-foreground">@{userProfile?.username}</div>
 

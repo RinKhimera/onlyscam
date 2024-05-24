@@ -1,11 +1,10 @@
-"use client"
-
+import Image from "next/image"
 import { useSearchParams } from "next/navigation"
 import { Suspense } from "react"
 import { v4 as uuidv4 } from "uuid"
 import { Button } from "../ui/button"
 
-export const NotificationsLayout = () => {
+export const NotificationsLayout = async () => {
   // const searchParams = useSearchParams()
   // const depositId = searchParams.get("depositId")
 

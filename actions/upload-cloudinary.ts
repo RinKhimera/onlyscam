@@ -28,6 +28,21 @@ export const uploadImage = async (imagePath: string | File | ArrayBuffer) => {
   }
 }
 
+export const deleteAsset = async (publicId: string) => {
+  try {
+    // Upload the image
+    const result = await cloudinary.uploader.destroy(publicId, {
+      invalidate: true,
+    })
+    console.log(result)
+
+    return result
+  } catch (error) {
+    console.error(error)
+    // "videos-pre/1500x500_-_Copie"
+  }
+}
+
 // const imagePath =
 //   "https://cloudinary-devs.github.io/cld-docs-assets/assets/images/happy_people.jpg"
 

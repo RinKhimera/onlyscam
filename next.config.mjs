@@ -1,22 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    remotePatterns: [
-      {
-        hostname: "prestigious-donkey-523.convex.cloud",
-      },
-      {
-        hostname: "images.unsplash.com",
-      },
-      {
-        hostname: "res.cloudinary.com",
-      },
-      {
-        hostname: "img.clerk.com",
-      },
-      {
-        hostname: "files.edgestore.dev",
-      },
+    domains: [
+      "prestigious-donkey-523.convex.cloud",
+      "images.unsplash.com",
+      "res.cloudinary.com",
+      "img.clerk.com",
+      "files.edgestore.dev",
     ],
   },
 }

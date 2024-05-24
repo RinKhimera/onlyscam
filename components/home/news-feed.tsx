@@ -7,6 +7,8 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { Bookmark, Dot, Heart, MessageCircle } from "lucide-react"
 import { CldImage } from "next-cloudinary"
+import Image from "next/image"
+import { getPlaiceholder } from "plaiceholder"
 import React from "react"
 
 export const NewsFeed = () => {
@@ -73,25 +75,27 @@ export const NewsFeed = () => {
                 ))}
             </div> */}
 
-            {post.medias.map((media) => (
-              <CldImage
-                key={media}
-                src={media}
-                alt={""}
-                width={500}
-                height={500}
-                // fill
-                // crop={"thumb"}
-                // gravity="center"
-                sizes="(max-width: 768px) 100vw,
+            {post.medias.map((media) => {
+              return (
+                <CldImage
+                  key={media}
+                  src={media}
+                  alt={""}
+                  width={500}
+                  height={500}
+                  // fill
+                  // crop={"thumb"}
+                  // gravity="center"
+                  sizes="(max-width: 768px) 100vw,
                           (max-width: 1200px) 50vw,
                           33vw"
-                loading="lazy"
-                placeholder="blur"
-                blurDataURL="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
-                className="mt-2 max-h-[550px] rounded-md object-cover"
-              />
-            ))}
+                  loading="lazy"
+                  placeholder="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                  // blurDataURL={base64}
+                  className="mt-2 max-h-[550px] rounded-md object-cover"
+                />
+              )
+            })}
 
             <div className="mt-2 flex w-full items-center justify-between">
               <div className="flex w-full items-center space-x-4">

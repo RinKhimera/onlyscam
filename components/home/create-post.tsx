@@ -1,5 +1,6 @@
 "use client"
 
+import { deleteAsset } from "@/actions/upload-cloudinary"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,8 +14,12 @@ import { api } from "@/convex/_generated/api"
 import { postFormSchema } from "@/schemas/post"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useConvexAuth, useMutation, useQuery } from "convex/react"
-import { ImagePlus, LoaderCircle } from "lucide-react"
-import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary"
+import { CircleX, ImagePlus, LoaderCircle } from "lucide-react"
+import {
+  CldImage,
+  CldUploadWidget,
+  CloudinaryUploadWidgetInfo,
+} from "next-cloudinary"
 import { useState, useTransition } from "react"
 import Textarea from "react-expanding-textarea"
 import { useForm } from "react-hook-form"
@@ -22,7 +27,8 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 export const CreatePost = () => {
-  const [medias, setMedias] = useState<string[]>([])
+  const [medias, setMedias] = useState<string>("")
+  const [publicId, setPublicId] = useState<string>("")
   const [isPending, startTransition] = useTransition()
 
   const { isAuthenticated } = useConvexAuth()
@@ -31,6 +37,8 @@ export const CreatePost = () => {
     api.users.getCurrentUser,
     isAuthenticated ? undefined : "skip",
   )
+
+  console.log(currentUser?._id, currentUser?.username)
 
   const createPost = useMutation(api.posts.createPost)
 
@@ -45,7 +53,7 @@ export const CreatePost = () => {
   const onSubmit = async (data: z.infer<typeof postFormSchema>) => {
     startTransition(async () => {
       try {
-        data.media = medias
+        data.media = medias ? [medias] : []
 
         await createPost({
           content: data.content,
@@ -59,7 +67,8 @@ export const CreatePost = () => {
           media: [],
         })
 
-        setMedias([])
+        setPublicId("")
+        setMedias("")
 
         toast.success("Votre publication a été partagée")
       } catch (error) {
@@ -96,42 +105,84 @@ export const CreatePost = () => {
                       {...field}
                     />
 
-                    <div className="mt-8 flex w-full items-center justify-between">
-                      <div className="-ml-2 text-blue-500">
-                        <CldUploadWidget
-                          uploadPreset="post-videos"
-                          signatureEndpoint="/api/sign-cloudinary-params"
-                          options={{
-                            sources: ["local", "google_drive", "url", "camera"],
-                            // publicId: "profile_buddies204",
-                          }}
-                          onSuccess={(result, { widget }) => {
-                            const data =
-                              result.info as CloudinaryUploadWidgetInfo
-
-                            setMedias((prevMedias) => {
-                              if (!prevMedias.includes(data.secure_url)) {
-                                return [...prevMedias, data.secure_url]
-                              } else {
-                                return prevMedias
-                              }
-                            })
-                            // widget.close()
+                    {medias && (
+                      <div className="relative w-fit">
+                        <Button
+                          size={"icon"}
+                          className="absolute right-[10px] top-3 size-8 bg-muted"
+                          onClick={async () => {
+                            setMedias("")
+                            setPublicId("")
+                            deleteAsset(publicId)
                           }}
                         >
-                          {({ open }) => {
-                            return (
-                              <button
-                                type="button"
-                                className="rounded-full p-2 transition hover:bg-blue-600/15 hover:text-blue-500"
-                                onClick={() => open()}
-                              >
-                                <ImagePlus size={20} />
-                              </button>
-                            )
-                          }}
-                        </CldUploadWidget>
+                          <CircleX size={22} />
+                        </Button>
+                        <CldImage
+                          src={medias}
+                          alt={""}
+                          width={500}
+                          height={500}
+                          // fill
+                          // crop={"thumb"}
+                          // gravity="center"
+                          sizes="(max-width: 768px) 100vw,
+                          (max-width: 1200px) 50vw,
+                          33vw"
+                          placeholder="data:image/gif;base64,R0lGODlhAwAEAPAAAAAAAAAAACH5BAEAAAAALAAAAAADAAQAAAIDhI9WADs="
+                          // blurDataURL={base64}
+                          className="mt-2 max-h-[550px] rounded-md object-cover"
+                        />
                       </div>
+                    )}
+
+                    <div className="mt-8 flex w-full items-center justify-between">
+                      {currentUser !== undefined && (
+                        <div className="-ml-2 text-blue-500">
+                          <CldUploadWidget
+                            uploadPreset="post-assets"
+                            signatureEndpoint="/api/sign-cloudinary-params"
+                            options={{
+                              sources: [
+                                "local",
+                                "camera",
+                                "google_drive",
+                                "url",
+                              ],
+                              multiple: false,
+                              // publicId: `post-${currentUser?.username}`,
+                            }}
+                            onSuccess={(result, { widget }) => {
+                              const data =
+                                result.info as CloudinaryUploadWidgetInfo
+
+                              // setMedias((prevMedias) => {
+                              //   if (!prevMedias.includes(data.secure_url)) {
+                              //     return [...prevMedias, data.secure_url]
+                              //   } else {
+                              //     return prevMedias
+                              //   }
+                              // })
+
+                              setMedias(data.secure_url)
+                              setPublicId(data.public_id)
+                              widget.close()
+                            }}
+                          >
+                            {({ open }) => {
+                              return (
+                                <button
+                                  type="button"
+                                  className="rounded-full p-2 transition hover:bg-blue-600/15 hover:text-blue-500"
+                                  onClick={() => open()}
+                                >
+                                  <ImagePlus size={20} />
+                                </button>
+                              )
+                            }}
+                          </CldUploadWidget>
+                        </div>
+                      )}
 
                       <Button
                         type="submit"
