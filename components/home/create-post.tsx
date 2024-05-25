@@ -1,5 +1,3 @@
-"use client"
-
 import { deleteAsset } from "@/actions/upload-cloudinary"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -11,9 +9,10 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { api } from "@/convex/_generated/api"
+import { Doc } from "@/convex/_generated/dataModel"
 import { postFormSchema } from "@/schemas/post"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useConvexAuth, useMutation, useQuery } from "convex/react"
+import { useMutation } from "convex/react"
 import { CircleX, ImagePlus, LoaderCircle } from "lucide-react"
 import {
   CldImage,
@@ -26,19 +25,10 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 
-export const CreatePost = () => {
+export const CreatePost = ({ currentUser }: { currentUser: Doc<"users"> }) => {
   const [medias, setMedias] = useState<string>("")
   const [publicId, setPublicId] = useState<string>("")
   const [isPending, startTransition] = useTransition()
-
-  const { isAuthenticated } = useConvexAuth()
-
-  const currentUser = useQuery(
-    api.users.getCurrentUser,
-    isAuthenticated ? undefined : "skip",
-  )
-
-  console.log(currentUser?._id, currentUser?.username)
 
   const createPost = useMutation(api.posts.createPost)
 

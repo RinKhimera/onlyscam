@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { api } from "@/convex/_generated/api"
+import { cn } from "@/lib/utils"
 import { UserProps } from "@/types"
 import { useMutation } from "convex/react"
 import { Check, LoaderCircle } from "lucide-react"
@@ -104,7 +105,9 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
 
           <DialogFooter>
             <Button
-              className="flex w-full justify-between text-lg"
+              className={cn("w-full", "text-lg", {
+                "justify-between": !isPending,
+              })}
               onClick={handleFollow}
             >
               {isPending ? (

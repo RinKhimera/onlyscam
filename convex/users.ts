@@ -1,5 +1,4 @@
 import { ConvexError, v } from "convex/values"
-import { redirect } from "next/navigation"
 import { internalMutation, mutation, query } from "./_generated/server"
 
 export const createUser = internalMutation({
@@ -46,7 +45,7 @@ export const getCurrentUser = query({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
-      throw new ConvexError("Unauthorized")
+      throw new ConvexError("Not authenticated")
     }
 
     const user = await ctx.db
@@ -67,7 +66,7 @@ export const getUsers = query({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
-      throw new ConvexError("Unauthorized")
+      throw new ConvexError("Not authenticated")
     }
 
     const users = await ctx.db.query("users").collect()
@@ -122,10 +121,6 @@ export const getUserProfile = query({
       .query("users")
       .withIndex("by_username", (q) => q.eq("username", args.username))
       .unique()
-
-    // if (!user) {
-    //   throw new ConvexError("User not found")
-    // }
 
     return user
   },
