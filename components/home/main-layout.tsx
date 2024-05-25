@@ -4,6 +4,7 @@ import { CreatePost } from "@/components/home/create-post"
 import { NewsFeed } from "@/components/home/news-feed"
 import { api } from "@/convex/_generated/api"
 import { useConvexAuth, useQuery } from "convex/react"
+import { Loader } from "lucide-react"
 
 export const MainLayout = () => {
   const { isAuthenticated } = useConvexAuth()
@@ -15,8 +16,8 @@ export const MainLayout = () => {
 
   if (currentUser === undefined)
     return (
-      <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
-        <div>Loading</div>
+      <main className="flex h-full min-h-screen w-[50%] flex-col items-center justify-center border-l border-r border-muted max-lg:w-[80%]">
+        <Loader className="animate-spin text-primary" size={60} />
       </main>
     )
 

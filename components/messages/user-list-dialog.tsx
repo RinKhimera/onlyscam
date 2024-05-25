@@ -159,8 +159,7 @@ export const UserListDialog = () => {
           {users?.map((user) => (
             <div
               key={user._id}
-              className={`flex cursor-pointer items-center gap-3 rounded p-2 transition-all 
-								duration-300 ease-in-out active:scale-95
+              className={`flex cursor-pointer items-center gap-3 rounded p-2 transition-all duration-300 ease-in-out active:scale-95
 							${selectedUsers.includes(user._id) ? "bg-sky-600" : ""}`}
               onClick={() => {
                 if (selectedUsers.includes(user._id)) {
@@ -176,7 +175,6 @@ export const UserListDialog = () => {
                 {user.isOnline && (
                   <div className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full border-2 border-foreground bg-green-500" />
                 )}
-
                 <AvatarImage
                   src={user.image || "https://github.com/shadcn.png"}
                   alt={user.name}

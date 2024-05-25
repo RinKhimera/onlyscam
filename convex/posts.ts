@@ -73,6 +73,34 @@ export const deletePost = mutation({
   },
 })
 
+export const getPost = query({
+  args: {
+    postId: v.id("posts"),
+  },
+  handler: async (ctx, args) => {
+    const post = await ctx.db
+      .query("posts")
+      .filter((q) => q.eq(q.field("_id"), args.postId))
+      .unique()
+
+    if (!post) throw new ConvexError("Post not found")
+
+    const author = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("_id"), post.author))
+      .unique()
+
+    if (!author) throw new ConvexError("Author not found")
+
+    const postWithAuthor = {
+      ...post,
+      author,
+    }
+
+    return postWithAuthor
+  },
+})
+
 export const getUserPosts = query({
   args: {},
   handler: async (ctx, args) => {

@@ -4,6 +4,8 @@ import { Id } from "@/convex/_generated/dataModel"
 import clsx from "clsx"
 import { useMutation } from "convex/react"
 import { Heart } from "lucide-react"
+import { useTransition } from "react"
+import { toast } from "sonner"
 
 type LikeButtonProps = {
   postId: Id<"posts">
@@ -16,21 +18,44 @@ export const LikeButton = ({
   postLikes,
   currentUserId,
 }: LikeButtonProps) => {
+  const [isPending, startTransition] = useTransition()
+
   const likePost = useMutation(api.posts.likePost)
   const unlikePost = useMutation(api.posts.unlikePost)
 
   const handleLike = async () => {
-    await likePost({ postId })
+    startTransition(async () => {
+      try {
+        await likePost({ postId })
+      } catch (error) {
+        console.error(error)
+        toast.error("Une erreur s'est produite !", {
+          description:
+            "Veuillez vérifier votre connexion internet et réessayer",
+        })
+      }
+    })
   }
 
   const handleUnlike = async () => {
-    await unlikePost({ postId })
+    startTransition(async () => {
+      try {
+        await unlikePost({ postId })
+      } catch (error) {
+        console.error(error)
+        toast.error("Une erreur s'est produite !", {
+          description:
+            "Veuillez vérifier votre connexion internet et réessayer",
+        })
+      }
+    })
   }
 
   return (
     <Button
       variant={"ghost"}
       size={"icon"}
+      disabled={isPending}
       onClick={() => {
         if (postLikes.includes(currentUserId)) {
           handleUnlike()
