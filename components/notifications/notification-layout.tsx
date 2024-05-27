@@ -1,55 +1,54 @@
 "use client"
 
 import Image from "next/image"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense } from "react"
+import { toast } from "sonner"
 import { v4 as uuidv4 } from "uuid"
 import { Button } from "../ui/button"
 
-export const NotificationsLayout = async () => {
-  // const searchParams = useSearchParams()
-  // const depositId = searchParams.get("depositId")
+export const NotificationsLayout = () => {
+  const router = useRouter()
 
-  // const fetchData = async () => {
-  //   const resp = await fetch(
-  //     `https://api.sandbox.pawapay.cloud/deposits/${depositId}`,
-  //     {
-  //       method: "GET",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${process.env.NEXT_PUBLIC_PAWAPAY_SANDBOX_API_TOKEN}`,
-  //       },
-  //     },
-  //   )
-
-  //   const data = await resp.text()
-  //   console.log(data, depositId)
-  // }
+  const apiURL =
+    process.env.NODE_ENV === "production"
+      ? "https://onlyscam.vercel.app/api/status"
+      : "http://localhost:3000/api/status"
+  const searchParams = useSearchParams()
+  const depositId = searchParams.get("depositId")
 
   const handleClick = async () => {
     try {
-      const depositId = uuidv4()
+      // const depositId = "2d75dd7d-6e24-42d8-96e4-f2cf7f42a9bf"
 
-      const resp = await fetch("http://localhost:3000/api/deposits", {
+      const resp = await fetch(`${apiURL}`, {
+        // Include depositId in the URL as a query parameter
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           depositId: depositId,
-          returnUrl: "https://onlyscam.vercel.app/notifications",
-          statementDescription: "Note of 4 to 22 chars",
-          amount: "100",
-          msisdn: "233593456789",
-          country: "ZMB",
-          reason: "Ticket to festival",
         }),
       })
 
       const data = await resp.json()
-      console.log(data.data)
+
+      const status = data.data[0].status
+      console.log(data)
+
+      if (status === "COMPLETED") {
+        toast.success("Votre transaction a été effectuée avec succès !")
+      } else {
+        toast.error("Votre transaction a échouée !", {
+          description: "Veuillez réessayer plus tard",
+        })
+      }
     } catch (error) {
       console.error(error)
+      toast.error("Une erreur s'est produite !", {
+        description: "Veuillez vérifier votre connexion internet et réessayer",
+      })
     }
   }
   // async function run() {

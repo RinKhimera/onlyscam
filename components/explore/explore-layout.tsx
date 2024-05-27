@@ -10,16 +10,19 @@ import { v4 as uuidv4 } from "uuid"
 export const ExploreLayout = () => {
   const router = useRouter()
 
-  const fetchData = async () => {
-    const depositId = uuidv4()
+  const apiURL =
+    process.env.NODE_ENV === "production"
+      ? "https://onlyscam.vercel.app/api/deposits"
+      : "http://localhost:3000/api/deposits"
 
-    const resp = await fetch(
-      `https://api.sandbox.pawapay.cloud/v1/widget/sessions`,
-      {
+  const handleClick = async () => {
+    try {
+      const depositId = uuidv4()
+
+      const resp = await fetch(apiURL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_PAWAPAY_SANDBOX_API_TOKEN}`,
         },
         body: JSON.stringify({
           depositId: depositId,
@@ -30,13 +33,15 @@ export const ExploreLayout = () => {
           country: "CMR",
           reason: "Abonnement mensuel Fantribe",
         }),
-      },
-    )
+      })
 
-    const data = await resp.json()
-    console.log(data, depositId)
+      const data = await resp.json()
+      console.log(data, depositId)
 
-    router.push(data.redirectUrl)
+      router.push(data.data.redirectUrl)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -44,36 +49,8 @@ export const ExploreLayout = () => {
       <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
         Explorer
       </h1>
-      <Textarea
-        className="textarea"
-        defaultValue="Lorem ipsum dolor sit amet, ..."
-        id="my-textarea"
-        name="pet[notes]"
-        placeholder="Enter additional notes..."
-      />
 
-      <CldUploadWidget
-        uploadPreset="post-videos"
-        signatureEndpoint="/api/sign-cloudinary-params"
-        options={{
-          sources: ["local", "google_drive", "url", "camera"],
-          publicId: "profile_buddies204",
-        }}
-        onSuccess={(result, { widget }) => {
-          console.log(result?.info) // { public_id, secure_url, etc }
-          widget.close()
-        }}
-      >
-        {({ open }) => {
-          return (
-            <button className="w-fit bg-red-50/50" onClick={() => open()}>
-              Upload an Image
-            </button>
-          )
-        }}
-      </CldUploadWidget>
-
-      <Button onClick={fetchData}>Payer</Button>
+      <Button onClick={handleClick}>Payer</Button>
     </main>
   )
 }
