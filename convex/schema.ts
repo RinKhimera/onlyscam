@@ -34,7 +34,7 @@ export default defineSchema({
     content: v.string(),
     likes: v.array(v.id("users")),
     // subComments: v.optional(v.array(v.id("comments"))),
-  }),
+  }).index("by_post", ["post"]),
 
   conversations: defineTable({
     participants: v.array(v.id("users")),

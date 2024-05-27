@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react"
 import Textarea from "react-expanding-textarea"
 import { v4 as uuidv4 } from "uuid"
 
-export const ExploreLayout = async () => {
+export const ExploreLayout = () => {
   const router = useRouter()
 
   const fetchData = async () => {
@@ -25,10 +25,10 @@ export const ExploreLayout = async () => {
           depositId: depositId,
           returnUrl: "https://onlyscam.vercel.app/notifications",
           statementDescription: "Note of 4 to 22 chars",
-          amount: "100",
-          msisdn: "233593456789",
-          country: "ZMB",
-          reason: "Ticket to festival",
+          amount: "500",
+          // msisdn: "233593456789",
+          country: "CMR",
+          reason: "Abonnement mensuel Fantribe",
         }),
       },
     )
@@ -36,7 +36,7 @@ export const ExploreLayout = async () => {
     const data = await resp.json()
     console.log(data, depositId)
 
-    // router.push(data.redirectUrl)
+    router.push(data.redirectUrl)
   }
 
   return (

@@ -56,11 +56,11 @@ export const LeftSidebar = () => {
           </Link>
         ))}
 
-        <Button className="w-full rounded-full bg-sky-500 px-5 py-6 text-xl hover:bg-sky-600 max-lg:hidden">
+        <Button className="w-full rounded-full bg-primary px-5 py-6 text-xl hover:bg-primary/80 max-lg:hidden">
           Publier
         </Button>
 
-        <button className="w-fit rounded-full bg-sky-500 p-3 text-xl transition hover:bg-sky-600 lg:hidden">
+        <button className="w-fit rounded-full bg-primary p-3 text-xl transition hover:bg-primary/80 lg:hidden">
           <PenLine />
         </button>
       </div>

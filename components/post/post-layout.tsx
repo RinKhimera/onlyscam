@@ -9,11 +9,19 @@ import { cn } from "@/lib/utils"
 import { useConvexAuth, useQuery } from "convex/react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { Bookmark, Ellipsis, Link as LucideLink, MapPin } from "lucide-react"
+import {
+  Bookmark,
+  Ellipsis,
+  Loader,
+  Link as LucideLink,
+  MapPin,
+} from "lucide-react"
 import { CldImage } from "next-cloudinary"
 import Link from "next/link"
 import { notFound, useParams } from "next/navigation"
 import React from "react"
+import { CommentFeed } from "./comment-feed"
+import { CreateComment } from "./create-comment"
 
 export const PostLayout = () => {
   const params = useParams<{ username: string; postId: Id<"posts"> }>()
@@ -38,7 +46,17 @@ export const PostLayout = () => {
     postAuthor === undefined ||
     currentUser === undefined
   )
-    return <div>Loading</div>
+    return (
+      <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
+        <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
+          Publication
+        </h1>
+
+        <div className="flex flex-1 flex-col items-center justify-center">
+          <Loader className="animate-spin text-primary" size={60} />
+        </div>
+      </main>
+    )
 
   if (post === null || postAuthor === null) notFound()
 
@@ -143,6 +161,9 @@ export const PostLayout = () => {
           </div>
         </div>
       </div>
+
+      <CreateComment currentUser={currentUser} postId={post._id} />
+      <CommentFeed postId={post._id} />
     </main>
   )
 }
