@@ -8,7 +8,7 @@ const PostDetailsPage = ({ params }: { params: { username: string } }) => {
       <div className="relative flex h-full w-full max-w-screen-xl">
         <LeftSidebar />
         <PostLayout />
-        <SubscriptionSidebar />
+        <SubscriptionSidebar params={params} />
       </div>
     </div>
   )
