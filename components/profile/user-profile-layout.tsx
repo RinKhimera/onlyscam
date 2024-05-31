@@ -3,6 +3,7 @@
 import { SubscribeDialog } from "@/components/profile/subscribe-dialog"
 import { UnsubscribeDialog } from "@/components/profile/unsubscribe-dialog"
 import { UpdateProfileDialog } from "@/components/profile/update-profile"
+import { UserPosts } from "@/components/profile/user-posts"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
@@ -30,8 +31,6 @@ export const UserProfileLayout = ({
     api.users.getCurrentUser,
     isAuthenticated ? undefined : "skip",
   )
-
-  console.log(currentUser)
 
   if (userProfile === undefined || currentUser === undefined) {
     return <ProfileLayoutSkeleton />
@@ -100,7 +99,7 @@ export const UserProfileLayout = ({
         </div>
       )}
 
-      <div className={cn("mt-4 px-4")}>
+      <div className="border-b border-muted px-4 py-4">
         <div className="text-2xl font-bold">{userProfile?.name}</div>
         <div className="text-muted-foreground">@{userProfile?.username}</div>
 
@@ -129,11 +128,7 @@ export const UserProfileLayout = ({
         ))}
       </div>
 
-      <div className="mt-8 flex items-center justify-center border-t border-muted">
-        <div className="mt-16 h-full text-center text-xl text-muted-foreground">
-          Pas de posts pour le moment
-        </div>
-      </div>
+      <UserPosts username={params.username} currentUserId={currentUser._id} />
     </main>
   )
 }

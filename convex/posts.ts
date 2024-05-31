@@ -102,16 +102,13 @@ export const getPost = query({
 })
 
 export const getUserPosts = query({
-  args: {},
+  args: {
+    username: v.string(),
+  },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) throw new ConvexError("Not authenticated")
-
     const author = await ctx.db
       .query("users")
-      .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier),
-      )
+      .withIndex("by_username", (q) => q.eq("username", args.username))
       .unique()
 
     if (!author) throw new ConvexError("User not found")
@@ -119,6 +116,7 @@ export const getUserPosts = query({
     const posts = await ctx.db
       .query("posts")
       .withIndex("by_author", (q) => q.eq("author", author._id))
+      .order("desc")
       .collect()
 
     const postsWithAuthor = await Promise.all(
