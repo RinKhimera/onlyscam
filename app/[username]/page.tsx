@@ -1,6 +1,5 @@
 import { UserProfileLayout } from "@/components/profile/user-profile-layout"
 import { LeftSidebar } from "@/components/shared/left-sidebar"
-import { RightSidebar } from "@/components/shared/right-sidebar"
 import { SubscriptionSidebar } from "@/components/shared/subscription-sidebar"
 
 const UserProfilePage = ({ params }: { params: { username: string } }) => {
@@ -9,8 +8,7 @@ const UserProfilePage = ({ params }: { params: { username: string } }) => {
       <div className="relative flex h-full w-full max-w-screen-xl">
         <LeftSidebar />
         <UserProfileLayout params={params} />
-        {/* <RightSidebar /> */}
-        <SubscriptionSidebar />
+        <SubscriptionSidebar params={params} />
       </div>
     </div>
   )

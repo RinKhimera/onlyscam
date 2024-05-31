@@ -1,7 +1,6 @@
 import { PostLayout } from "@/components/post/post-layout"
-import { UserProfileLayout } from "@/components/profile/user-profile-layout"
 import { LeftSidebar } from "@/components/shared/left-sidebar"
-import { RightSidebar } from "@/components/shared/right-sidebar"
+import { SubscriptionSidebar } from "@/components/shared/subscription-sidebar"
 
 const PostDetailsPage = ({ params }: { params: { username: string } }) => {
   return (
@@ -9,7 +8,7 @@ const PostDetailsPage = ({ params }: { params: { username: string } }) => {
       <div className="relative flex h-full w-full max-w-screen-xl">
         <LeftSidebar />
         <PostLayout />
-        <RightSidebar />
+        <SubscriptionSidebar />
       </div>
     </div>
   )

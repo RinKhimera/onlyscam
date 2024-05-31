@@ -84,19 +84,15 @@ export const UserProfileLayout = ({
         </div>
       </div>
 
-      {currentUser?.username === params.username ? (
-        <div className="mr-5 mt-4 flex justify-end">
-          <UpdateProfileDialog currentUser={currentUser} />
-        </div>
-      ) : (
-        <div className="mr-5 mt-4 flex justify-end">
-          {userProfile.followers?.includes(currentUser._id) ? (
-            <UnsubscribeDialog userProfile={userProfile} />
-          ) : (
-            <SubscribeDialog userProfile={userProfile} />
-          )}
-        </div>
-      )}
+      <>
+        {currentUser?.username === params.username ? (
+          <div className="mr-5 mt-4 flex justify-end">
+            <UpdateProfileDialog currentUser={currentUser} />
+          </div>
+        ) : (
+          <div className="mt-[68px]"></div>
+        )}
+      </>
 
       <div className="border-b border-muted px-4 py-4">
         <div className="text-2xl font-bold">{userProfile?.name}</div>
@@ -108,23 +104,38 @@ export const UserProfileLayout = ({
           {userProfile?.location}
         </div>
 
-        {userProfile?.socials?.map((url) => (
-          <div
-            key={url}
-            className="-ml-0.5 flex items-center gap-1 text-muted-foreground"
-          >
-            <LucideLink size={18} />
-
-            <Link
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-blue-500 hover:underline"
+        <>
+          {userProfile?.socials?.map((url) => (
+            <div
+              key={url}
+              className="-ml-0.5 flex items-center gap-1 text-muted-foreground"
             >
-              {url}
-            </Link>
-          </div>
-        ))}
+              <LucideLink size={18} />
+
+              <Link
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-blue-500 hover:underline"
+              >
+                {url}
+              </Link>
+            </div>
+          ))}
+        </>
+      </div>
+
+      <div className="border-b border-muted px-4 py-4">
+        <div className="text-2xl font-semibold leading-none tracking-tight">
+          Abonnement
+        </div>
+        <div className="mb-1">
+          {userProfile.followers?.includes(currentUser._id) ? (
+            <UnsubscribeDialog userProfile={userProfile} />
+          ) : (
+            <SubscribeDialog userProfile={userProfile} />
+          )}
+        </div>
       </div>
 
       <UserPosts username={params.username} currentUserId={currentUser._id} />

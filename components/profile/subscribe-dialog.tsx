@@ -48,11 +48,11 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          variant={"outline"}
-          className="rounded-3xl border-2 border-primary"
-        >
-          S&apos;abonner
+        <Button className="mt-3 w-full justify-between rounded-3xl border-2 border-primary text-lg">
+          <>
+            <div>S&apos;ABONNER</div>
+            <div className="font-bold">500 XAF</div>
+          </>
         </Button>
       </DialogTrigger>
       <DialogContent className="h-5/6 max-w-md overflow-auto p-0">

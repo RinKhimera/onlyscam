@@ -47,7 +47,15 @@ export const UnsubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="rounded-3xl border-2">Abonné</Button>
+        <Button
+          variant={"outline"}
+          className="mt-3 w-full justify-between rounded-3xl border-2 border-muted text-lg"
+        >
+          <>
+            <div>ABONNÉ</div>
+            <div className="font-bold">500 XAF</div>
+          </>
+        </Button>
       </DialogTrigger>
       <DialogContent className="h-5/6 max-w-md overflow-auto p-0">
         <div className="relative flex flex-col justify-evenly px-4">

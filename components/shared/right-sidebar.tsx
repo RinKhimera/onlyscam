@@ -16,7 +16,7 @@ export const RightSidebar = () => {
   const suggestedUsers = users?.filter((user) => Boolean(user.username))
 
   return (
-    <section className="sticky top-0 flex h-screen w-[30%] flex-col items-stretch overflow-auto pl-6 pr-2 max-lg:hidden">
+    <section className="flex h-screen w-[30%] flex-col items-stretch overflow-auto pl-6 pr-2 max-lg:hidden">
       <div className="mt-3">
         <div className="relative h-full w-full">
           <label
