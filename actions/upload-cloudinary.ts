@@ -39,16 +39,5 @@ export const deleteAsset = async (publicId: string) => {
     return result
   } catch (error) {
     console.error(error)
-    // "videos-pre/1500x500_-_Copie"
   }
 }
-
-// const imagePath =
-//   "https://cloudinary-devs.github.io/cld-docs-assets/assets/images/happy_people.jpg"
-
-// export const submitUpload = async () => {
-//   // Upload the image
-//   await uploadImage(imagePath)
-
-//   // Log the image tag to the console
-// }

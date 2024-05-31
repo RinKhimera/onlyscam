@@ -1,4 +1,3 @@
-import { deleteAsset } from "@/actions/upload-cloudinary"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,13 +12,8 @@ import { Doc, Id } from "@/convex/_generated/dataModel"
 import { commentFormSchema } from "@/schemas/comment"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "convex/react"
-import { CircleX, ImagePlus, LoaderCircle } from "lucide-react"
-import {
-  CldImage,
-  CldUploadWidget,
-  CloudinaryUploadWidgetInfo,
-} from "next-cloudinary"
-import { useState, useTransition } from "react"
+import { LoaderCircle } from "lucide-react"
+import { useTransition } from "react"
 import Textarea from "react-expanding-textarea"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -49,7 +43,6 @@ export const CreateComment = ({
         await createComment({
           postId: postId,
           content: data.content,
-          likes: [],
         })
 
         form.reset({

@@ -5,7 +5,6 @@ export const createComment = mutation({
   args: {
     postId: v.id("posts"),
     content: v.string(),
-    likes: v.array(v.id("users")),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
@@ -20,9 +19,7 @@ export const createComment = mutation({
       )
       .unique()
 
-    if (!user) {
-      throw new ConvexError("User not found")
-    }
+    if (!user) throw new ConvexError("User not found")
 
     const postToComment = await ctx.db
       .query("posts")
@@ -50,9 +47,7 @@ export const deleteComment = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
-    if (!identity) {
-      throw new ConvexError("Not authenticated")
-    }
+    if (!identity) throw new ConvexError("Not authenticated")
 
     const user = await ctx.db
       .query("users")
@@ -61,31 +56,24 @@ export const deleteComment = mutation({
       )
       .unique()
 
-    if (!user) {
-      throw new ConvexError("User not found")
-    }
+    if (!user) throw new ConvexError("User not found")
 
     const comment = await ctx.db
       .query("comments")
-      .filter((q) => q.eq(q.field("_id"), args.commentId))
+      .withIndex("by_id", (q) => q.eq("_id", args.commentId))
       .unique()
 
-    if (!comment) {
-      throw new ConvexError("Comment not found")
-    }
+    if (!comment) throw new ConvexError("Comment not found")
 
-    if (comment.author !== user._id) {
-      throw new ConvexError("Unauthorized")
-    }
+    if (comment.author !== user._id)
+      throw new ConvexError("User not authorized to delete this comment")
 
     const post = await ctx.db
       .query("posts")
-      .filter((q) => q.eq(q.field("_id"), comment.post))
+      .withIndex("by_id", (q) => q.eq("_id", comment.post))
       .unique()
 
-    if (!post) {
-      throw new ConvexError("Post not found")
-    }
+    if (!post) throw new ConvexError("Post not found")
 
     await ctx.db.delete(args.commentId)
 

@@ -1,5 +1,6 @@
 import { CommentButton } from "@/components/home/comment-button"
 import { LikeButton } from "@/components/home/like-button"
+import { CommentEllipsis } from "@/components/post/comment-ellipsis"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { api } from "@/convex/_generated/api"
 import { Doc, Id } from "@/convex/_generated/dataModel"
@@ -53,7 +54,7 @@ export const CommentFeed = ({ postId }: { postId: Id<"posts"> }) => {
                   })}
                 </>
 
-                <Ellipsis />
+                <CommentEllipsis commentId={comment._id} />
               </div>
             </div>
             <div className="mt-1 flex flex-col sm:ml-[52px]">

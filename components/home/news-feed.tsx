@@ -10,6 +10,7 @@ import { Bookmark, Ellipsis } from "lucide-react"
 import { CldImage } from "next-cloudinary"
 import Link from "next/link"
 import React from "react"
+import { PostEllipsis } from "./post-ellipsis"
 
 export const NewsFeed = ({ currentUser }: { currentUser: Doc<"users"> }) => {
   const getPosts = useQuery(api.posts.getAllPosts)
@@ -48,7 +49,7 @@ export const NewsFeed = ({ currentUser }: { currentUser: Doc<"users"> }) => {
                   })}
                 </>
 
-                <Ellipsis />
+                <PostEllipsis postId={post._id} />
               </div>
             </div>
 
