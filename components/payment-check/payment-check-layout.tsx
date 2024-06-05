@@ -1,5 +1,3 @@
-"use client"
-
 import { buttonVariants } from "@/components/ui/button"
 import { api } from "@/convex/_generated/api"
 import { useQuery } from "@tanstack/react-query"
@@ -29,7 +27,6 @@ export const PaymentCheckLayout = () => {
     })
 
     const data = await resp.json()
-    // console.log(data.data[0])
 
     return data.data[0]
   }
