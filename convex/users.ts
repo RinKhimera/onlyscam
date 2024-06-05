@@ -237,9 +237,7 @@ export const getAvailableUsername = query({
 })
 
 export const followUser = mutation({
-  args: {
-    creatorId: v.id("users"),
-  },
+  args: { creatorId: v.id("users") },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
@@ -259,25 +257,27 @@ export const followUser = mutation({
 
     const userToFollow = await ctx.db
       .query("users")
-      .filter((q) => q.eq(q.field("_id"), args.creatorId))
+      .withIndex("by_id", (q) => q.eq("_id", args.creatorId))
       .unique()
 
     if (!userToFollow) throw new ConvexError("User to follow not found")
 
-    await ctx.db.patch(user._id, {
-      following: [...(user.following || []), userToFollow._id],
-    })
+    if (!user.following?.includes(userToFollow._id)) {
+      await ctx.db.patch(user._id, {
+        following: [...(user.following || []), userToFollow._id],
+      })
+    }
 
-    await ctx.db.patch(userToFollow._id, {
-      followers: [...(userToFollow.followers || []), user._id],
-    })
+    if (!userToFollow.followers?.includes(user._id)) {
+      await ctx.db.patch(userToFollow._id, {
+        followers: [...(userToFollow.followers || []), user._id],
+      })
+    }
   },
 })
 
 export const unfollowUser = mutation({
-  args: {
-    creatorId: v.id("users"),
-  },
+  args: { creatorId: v.id("users") },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
@@ -297,7 +297,7 @@ export const unfollowUser = mutation({
 
     const userToUnfollow = await ctx.db
       .query("users")
-      .filter((q) => q.eq(q.field("_id"), args.creatorId))
+      .withIndex("by_id", (q) => q.eq("_id", args.creatorId))
       .unique()
 
     if (!userToUnfollow) throw new ConvexError("User to unfollow not found")

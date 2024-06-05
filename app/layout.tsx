@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { EdgeStoreProvider } from "@/lib/edgestore"
 import { cn } from "@/lib/utils"
 import ConvexClientProvider from "@/providers/convex-client-provider"
+import TanstackClientProvider from "@/providers/tanstack-provider"
 import { ThemeProvider } from "@/providers/theme-provider"
 import type { Metadata } from "next"
 import { Open_Sans as FontSans } from "next/font/google"
@@ -37,7 +38,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ConvexClientProvider>
-            <EdgeStoreProvider>{children}</EdgeStoreProvider>
+            <EdgeStoreProvider>
+              <TanstackClientProvider>{children}</TanstackClientProvider>
+            </EdgeStoreProvider>
           </ConvexClientProvider>
         </ThemeProvider>
         <Toaster richColors />
