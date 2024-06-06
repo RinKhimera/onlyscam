@@ -3,30 +3,28 @@ import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
 import { cn } from "@/lib/utils"
 import { useMutation } from "convex/react"
-import { Heart } from "lucide-react"
+import { Bookmark } from "lucide-react"
 import { useTransition } from "react"
 import { toast } from "sonner"
 
-type LikeButtonProps = {
+type BookmarkButtonProps = {
   postId: Id<"posts">
-  postLikes: Id<"users">[]
-  currentUserId: Id<"users">
+  currentUserBookmark: Id<"posts">[]
 }
 
-export const LikeButton = ({
+export const BookmarkButton = ({
   postId,
-  postLikes,
-  currentUserId,
-}: LikeButtonProps) => {
+  currentUserBookmark,
+}: BookmarkButtonProps) => {
   const [isPending, startTransition] = useTransition()
 
-  const likePost = useMutation(api.posts.likePost)
-  const unlikePost = useMutation(api.posts.unlikePost)
+  const addBookmark = useMutation(api.posts.addBookmark)
+  const removeBookmark = useMutation(api.posts.removeBookmark)
 
-  const handleLike = async () => {
+  const handleAddBookmark = async () => {
     startTransition(async () => {
       try {
-        await likePost({ postId })
+        await addBookmark({ postId })
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {
@@ -37,10 +35,10 @@ export const LikeButton = ({
     })
   }
 
-  const handleUnlike = async () => {
+  const handleRemoveBookmark = async () => {
     startTransition(async () => {
       try {
-        await unlikePost({ postId })
+        await removeBookmark({ postId })
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {
@@ -57,20 +55,20 @@ export const LikeButton = ({
       size={"icon"}
       disabled={isPending}
       onClick={() => {
-        if (postLikes.includes(currentUserId)) {
-          handleUnlike()
+        if (currentUserBookmark.includes(postId)) {
+          handleRemoveBookmark()
         } else {
-          handleLike()
+          handleAddBookmark()
         }
       }}
       className={cn(
-        "size-8 rounded-full hover:bg-pink-600/15 hover:text-rose-500",
-        { "text-rose-500": postLikes.includes(currentUserId) },
+        "size-8 rounded-full hover:bg-blue-600/15 hover:text-blue-500",
+        { "text-blue-500": currentUserBookmark.includes(postId) },
       )}
     >
-      <Heart
+      <Bookmark
         size={20}
-        fill={postLikes.includes(currentUserId) ? "red" : undefined}
+        fill={currentUserBookmark.includes(postId) ? "blue" : undefined}
       />
     </Button>
   )

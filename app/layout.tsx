@@ -14,7 +14,7 @@ const fontSans = FontSans({
 })
 
 export const metadata: Metadata = {
-  title: "OnlyScam",
+  title: "FanTribe",
   description: "Le réseau social des créateurs de contenus",
 }
 

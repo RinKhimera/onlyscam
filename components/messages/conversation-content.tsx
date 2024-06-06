@@ -34,7 +34,7 @@ export const ConversationContent = () => {
   if (!currentConversation) router.push("/messages")
 
   return (
-    <div className="flex h-full w-3/5 flex-col">
+    <div className="flex h-full w-full flex-col lg:w-3/5">
       <div className="sticky top-0 z-10 w-full">
         {/* Header */}
         <div className="flex justify-between bg-muted/50 p-3">

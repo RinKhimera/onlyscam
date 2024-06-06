@@ -95,9 +95,7 @@ export const getPost = query({
 })
 
 export const getUserPosts = query({
-  args: {
-    username: v.string(),
-  },
+  args: { username: v.string() },
   handler: async (ctx, args) => {
     const author = await ctx.db
       .query("users")
@@ -130,6 +128,46 @@ export const getUserPosts = query({
   },
 })
 
+export const getUserBookmark = query({
+  args: {},
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new ConvexError("Not authenticated")
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_tokenIdentifier", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique()
+
+    if (!user) throw new ConvexError("User not found")
+
+    const bookmarksWithAuthor = await Promise.all(
+      user.bookmarks?.map(async (bookmark) => {
+        const post = await ctx.db
+          .query("posts")
+          .withIndex("by_id", (q) => q.eq("_id", bookmark))
+          .unique()
+
+        if (!post) return null
+
+        const author = await ctx.db
+          .query("users")
+          .withIndex("by_id", (q) => q.eq("_id", post.author))
+          .unique()
+
+        return {
+          ...post,
+          author,
+        }
+      }) || [],
+    )
+
+    return bookmarksWithAuthor
+  },
+})
+
 export const getAllPosts = query({
   args: {},
   handler: async (ctx, args) => {
@@ -154,9 +192,7 @@ export const getAllPosts = query({
 })
 
 export const likePost = mutation({
-  args: {
-    postId: v.id("posts"),
-  },
+  args: { postId: v.id("posts") },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) throw new ConvexError("Not authenticated")
@@ -184,9 +220,7 @@ export const likePost = mutation({
 })
 
 export const unlikePost = mutation({
-  args: {
-    postId: v.id("posts"),
-  },
+  args: { postId: v.id("posts") },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) throw new ConvexError("Not authenticated")
@@ -209,6 +243,50 @@ export const unlikePost = mutation({
 
     await ctx.db.patch(args.postId, {
       likes: post.likes?.filter((id) => id !== user._id) || [],
+    })
+  },
+})
+
+export const addBookmark = mutation({
+  args: { postId: v.id("posts") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new ConvexError("Not authenticated")
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_tokenIdentifier", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique()
+
+    if (!user) throw new ConvexError("User not found")
+
+    if (!user.bookmarks?.includes(args.postId)) {
+      await ctx.db.patch(user._id, {
+        bookmarks: [args.postId, ...(user.bookmarks || [])],
+      })
+    }
+  },
+})
+
+export const removeBookmark = mutation({
+  args: { postId: v.id("posts") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new ConvexError("Not authenticated")
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_tokenIdentifier", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique()
+
+    if (!user) throw new ConvexError("User not found")
+
+    await ctx.db.patch(user._id, {
+      bookmarks: user.bookmarks?.filter((id) => id !== args.postId) || [],
     })
   },
 })

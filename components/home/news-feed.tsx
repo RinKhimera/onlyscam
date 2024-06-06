@@ -1,16 +1,16 @@
+import { BookmarkButton } from "@/components/home/bookmark-button"
 import { CommentButton } from "@/components/home/comment-button"
 import { LikeButton } from "@/components/home/like-button"
+import { PostEllipsis } from "@/components/home/post-ellipsis"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
 import { useQuery } from "convex/react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { Bookmark, Ellipsis } from "lucide-react"
 import { CldImage } from "next-cloudinary"
 import Link from "next/link"
 import React from "react"
-import { PostEllipsis } from "./post-ellipsis"
 
 export const NewsFeed = ({ currentUser }: { currentUser: Doc<"users"> }) => {
   const getPosts = useQuery(api.posts.getAllPosts)
@@ -101,10 +101,10 @@ export const NewsFeed = ({ currentUser }: { currentUser: Doc<"users"> }) => {
                   />
                   <CommentButton postId={post._id} />
                 </div>
-
-                <button className="rounded-full p-2 transition hover:bg-blue-600/15 hover:text-blue-500">
-                  <Bookmark size={20} />
-                </button>
+                <BookmarkButton
+                  postId={post._id}
+                  currentUserBookmark={currentUser.bookmarks || []}
+                />
               </div>
 
               <Link href={`/${post.author?.username}/post/${post._id}`}>

@@ -59,7 +59,7 @@ export const MessageForm = ({
           {/* Emoji Picker */}
           <Popover>
             <PopoverTrigger>
-              <Smile className="text-muted-foreground" />
+              <Smile className="text-muted-foreground transition hover:text-white" />
             </PopoverTrigger>
             <PopoverContent
               className="w-auto"
@@ -84,7 +84,7 @@ export const MessageForm = ({
           <div className="flex-1">
             <Input
               type="text"
-              placeholder="Type a message"
+              placeholder="Ecrivez un message..."
               className="bg-gray-tertiary w-full rounded-lg py-2 text-sm shadow-sm focus-visible:ring-transparent"
               value={msgText}
               onChange={(e) => setMsgText(e.target.value)}
@@ -105,7 +105,7 @@ export const MessageForm = ({
                 size={"sm"}
                 className="bg-transparent text-foreground hover:bg-transparent"
               >
-                <Mic className="text-muted-foreground" />
+                <Mic className="text-muted-foreground transition hover:text-white" />
               </Button>
             )}
           </div>

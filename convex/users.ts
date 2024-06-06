@@ -240,9 +240,7 @@ export const followUser = mutation({
   args: { creatorId: v.id("users") },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
-    if (!identity) {
-      throw new ConvexError("Not authenticated")
-    }
+    if (!identity) throw new ConvexError("Not authenticated")
 
     const user = await ctx.db
       .query("users")
@@ -251,9 +249,7 @@ export const followUser = mutation({
       )
       .unique()
 
-    if (!user) {
-      throw new ConvexError("User not found")
-    }
+    if (!user) throw new ConvexError("User not found")
 
     const userToFollow = await ctx.db
       .query("users")
@@ -280,9 +276,7 @@ export const unfollowUser = mutation({
   args: { creatorId: v.id("users") },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
-    if (!identity) {
-      throw new ConvexError("Not authenticated")
-    }
+    if (!identity) throw new ConvexError("Not authenticated")
 
     const user = await ctx.db
       .query("users")
@@ -291,9 +285,7 @@ export const unfollowUser = mutation({
       )
       .unique()
 
-    if (!user) {
-      throw new ConvexError("User not found")
-    }
+    if (!user) throw new ConvexError("User not found")
 
     const userToUnfollow = await ctx.db
       .query("users")

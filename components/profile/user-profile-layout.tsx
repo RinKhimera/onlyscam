@@ -125,18 +125,22 @@ export const UserProfileLayout = ({
         </>
       </div>
 
-      <div className="border-b border-muted px-4 py-4">
-        <div className="text-2xl font-semibold leading-none tracking-tight">
-          Abonnement
-        </div>
-        <div className="mb-1">
-          {userProfile.followers?.includes(currentUser._id) ? (
-            <UnsubscribeDialog userProfile={userProfile} />
-          ) : (
-            <SubscribeDialog userProfile={userProfile} />
-          )}
-        </div>
-      </div>
+      <>
+        {currentUser?.username !== params.username && (
+          <div className="border-b border-muted px-4 py-4">
+            <div className="text-2xl font-semibold leading-none tracking-tight">
+              Abonnement
+            </div>
+            <div className="mb-1">
+              {userProfile.followers?.includes(currentUser._id) ? (
+                <UnsubscribeDialog userProfile={userProfile} />
+              ) : (
+                <SubscribeDialog userProfile={userProfile} />
+              )}
+            </div>
+          </div>
+        )}
+      </>
 
       <UserPosts username={params.username} currentUserId={currentUser._id} />
     </main>

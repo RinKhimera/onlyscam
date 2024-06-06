@@ -10,7 +10,7 @@ export const ConversationIdLayout = () => {
       </h1>
 
       <div className="flex flex-1 overflow-auto">
-        <div className="flex h-full w-2/5 flex-col border-r border-muted">
+        <div className="hidden h-full w-2/5 flex-col border-r border-muted lg:flex">
           <div className="flex items-center justify-between border-b border-muted p-4 text-lg font-bold">
             <div>Mes conversations</div>
             <UserListDialog />

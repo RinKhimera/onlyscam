@@ -4,7 +4,16 @@ import { UserInfoPopover } from "@/components/shared/user-info-popover"
 import { Button } from "@/components/ui/button"
 import { api } from "@/convex/_generated/api"
 import { useConvexAuth, useQuery } from "convex/react"
-import { Bell, Hash, Home, Mail, PenLine, Star, UserRound } from "lucide-react"
+import {
+  Bell,
+  Bookmark,
+  Hash,
+  Home,
+  Mail,
+  PenLine,
+  Star,
+  UserRound,
+} from "lucide-react"
 import Link from "next/link"
 
 export const LeftSidebar = () => {
@@ -31,6 +40,11 @@ export const LeftSidebar = () => {
       title: "Messages",
       href: "/messages",
       icon: <Mail />,
+    },
+    {
+      title: "Collections",
+      href: "/collections",
+      icon: <Bookmark />,
     },
     {
       title: "Profile",

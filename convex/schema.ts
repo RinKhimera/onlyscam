@@ -11,6 +11,7 @@ export default defineSchema({
     bio: v.optional(v.string()),
     location: v.optional(v.string()),
     socials: v.optional(v.array(v.string())),
+    bookmarks: v.optional(v.array(v.id("posts"))),
     accountType: v.string(),
     isOnline: v.boolean(),
     tokenIdentifier: v.string(),

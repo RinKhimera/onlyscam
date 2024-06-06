@@ -87,6 +87,8 @@ export const MediaPopover = ({
         options={{
           cropping: true,
           croppingAspectRatio: 1,
+          sources: ["local", "camera", "google_drive", "url"],
+          multiple: false,
           // croppingCoordinatesMode: "face",
         }}
         onSuccess={handleSendImage}
@@ -94,7 +96,10 @@ export const MediaPopover = ({
         {({ open }) => {
           return (
             <button className="flex items-center p-2" onClick={() => open()}>
-              <ImageIcon size={18} className="mr-1" /> Photo
+              <ImageIcon
+                size={22}
+                className="text-muted-foreground transition hover:text-white"
+              />
             </button>
           )
         }}
