@@ -39,7 +39,7 @@ export const UserCollections = ({
             >
               <div className="flex w-full flex-col">
                 <div className="flex items-center justify-between">
-                  <Link href={`/${post.author?.username}`}>
+                  <Link href={`/${post?.author?.username}`}>
                     <div className="flex items-center gap-3">
                       <Avatar>
                         <AvatarImage
