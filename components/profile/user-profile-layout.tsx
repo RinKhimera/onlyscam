@@ -1,5 +1,4 @@
-"use client"
-
+import { RenewDialog } from "@/components/profile/renew-dialog"
 import { SubscribeDialog } from "@/components/profile/subscribe-dialog"
 import { UnsubscribeDialog } from "@/components/profile/unsubscribe-dialog"
 import { UpdateProfileDialog } from "@/components/profile/update-profile"
@@ -9,29 +8,34 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
 import { api } from "@/convex/_generated/api"
-import { useConvexAuth, useQuery } from "convex/react"
+import { Doc } from "@/convex/_generated/dataModel"
+import { useQuery } from "convex/react"
+import { isPast } from "date-fns"
 import { Link as LucideLink, MapPin } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
+type UserProfileLayoutProps = {
+  params: { username: string }
+  currentUser: Doc<"users"> | undefined
+  userProfile: Doc<"users"> | undefined | null
+}
+
 export const UserProfileLayout = ({
   params,
-}: {
-  params: { username: string }
-}) => {
-  const { isAuthenticated } = useConvexAuth()
-
-  const userProfile = useQuery(api.users.getUserProfile, {
-    username: params.username,
+  currentUser,
+  userProfile,
+}: UserProfileLayoutProps) => {
+  const subscriptionStatus = useQuery(api.subscriptions.getFollowSubscription, {
+    creatorUsername: params.username,
   })
 
-  const currentUser = useQuery(
-    api.users.getCurrentUser,
-    isAuthenticated ? undefined : "skip",
-  )
-
-  if (userProfile === undefined || currentUser === undefined) {
+  if (
+    userProfile === undefined ||
+    currentUser === undefined ||
+    subscriptionStatus === undefined
+  ) {
     return <ProfileLayoutSkeleton />
   }
 
@@ -132,8 +136,12 @@ export const UserProfileLayout = ({
               Abonnement
             </div>
             <div className="mb-1">
-              {userProfile.followers?.includes(currentUser._id) ? (
-                <UnsubscribeDialog userProfile={userProfile} />
+              {subscriptionStatus ? (
+                isPast(new Date(subscriptionStatus.endDate)) ? (
+                  <RenewDialog userProfile={userProfile} />
+                ) : (
+                  <UnsubscribeDialog userProfile={userProfile} />
+                )
               ) : (
                 <SubscribeDialog userProfile={userProfile} />
               )}

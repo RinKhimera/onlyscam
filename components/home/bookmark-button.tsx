@@ -25,6 +25,7 @@ export const BookmarkButton = ({
     startTransition(async () => {
       try {
         await addBookmark({ postId })
+        toast.success("La publication a été ajoutée à vos collections")
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {
@@ -39,6 +40,7 @@ export const BookmarkButton = ({
     startTransition(async () => {
       try {
         await removeBookmark({ postId })
+        toast.success("La publication a été retirée de vos collections")
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {

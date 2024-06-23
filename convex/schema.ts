@@ -55,4 +55,16 @@ export default defineSchema({
       v.literal("video"),
     ),
   }).index("by_conversation", ["conversation"]),
+
+  subscriptions: defineTable({
+    startDate: v.number(),
+    endDate: v.number(),
+    serviceType: v.string(),
+    amountPaid: v.number(),
+    subscriber: v.id("users"),
+    creator: v.id("users"),
+  })
+    .index("by_subscriber", ["subscriber"])
+    .index("by_creator", ["creator"])
+    .index("by_creator_subscriber", ["creator", "subscriber"]),
 })

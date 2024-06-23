@@ -9,31 +9,65 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { api } from "@/convex/_generated/api"
+import { cn } from "@/lib/utils"
 import { UserProps } from "@/types"
-import { useMutation } from "convex/react"
-import { LoaderCircle } from "lucide-react"
+import { Check, LoaderCircle } from "lucide-react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { useTransition } from "react"
 import { toast } from "sonner"
+import { v4 as uuidv4 } from "uuid"
 
-type SubscribeDialogProps = {
+type RenewDialogProps = {
   userProfile: UserProps
 }
 
-export const UnsubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
+export const RenewDialog = ({ userProfile }: RenewDialogProps) => {
+  const router = useRouter()
+
+  const apiURL =
+    process.env.NODE_ENV === "production"
+      ? "https://onlyscam.vercel.app/api/deposits"
+      : "http://localhost:3000/api/deposits"
+
   const [isPending, startTransition] = useTransition()
 
-  const unfollowUser = useMutation(api.subscriptions.unfollowUser)
-
-  const handleUnfollow = () => {
+  const handleFollow = () => {
     startTransition(async () => {
       try {
-        await unfollowUser({
-          creatorId: userProfile!._id,
+        const depositId = uuidv4()
+
+        const resp = await fetch(apiURL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            depositId: depositId,
+            returnUrl: "https://onlyscam.vercel.app/payment-check",
+            statementDescription: "Abonnement mensuel",
+            amount: "500",
+            // msisdn: "233593456789",
+            country: "CMR",
+            reason: `Abonnement mensuel Fantribe - ${userProfile?.username}`,
+            metadata: [
+              {
+                fieldName: "creatorUsername",
+                fieldValue: userProfile?.username,
+              },
+              {
+                fieldName: "creatorId",
+                fieldValue: userProfile?._id,
+                isPII: true,
+              },
+            ],
+          }),
         })
 
-        toast.success("Vous vous êtes désabonné ce createur")
+        const data = await resp.json()
+        console.log(data, depositId)
+
+        router.push(data.data.redirectUrl)
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {
@@ -47,12 +81,9 @@ export const UnsubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          variant={"outline"}
-          className="mt-3 w-full justify-between rounded-3xl border-2 border-muted text-lg"
-        >
+        <Button className="mt-3 w-full justify-between rounded-3xl border-2 border-primary text-lg">
           <>
-            <div>ABONNÉ</div>
+            <div>EXPIRÉ</div>
             <div className="font-bold">500 XAF</div>
           </>
         </Button>
@@ -87,11 +118,11 @@ export const UnsubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
           </div>
 
           <DialogTitle className="mt-5 text-center text-xl">
-            Se désabonner de {userProfile?.name} ?
+            Renouvelez votre abonnement pour profiter de tous les avantages :
           </DialogTitle>
 
           <DialogDescription className="text-base">
-            {/* <div className="flex gap-1">
+            <div className="flex gap-1">
               <Check className="shrink-0 text-primary" />
               <div>Accès complet au contenu de cet utilisateur</div>
             </div>
@@ -102,19 +133,23 @@ export const UnsubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
             <div className="flex gap-1">
               <Check className="shrink-0 text-primary" />
               <div>Annuler votre abonnement à tout moment</div>
-            </div> */}
-            <div>
-              Cela mettra fin à votre abonnement à {userProfile?.name}. Vous
-              devrez vous abonner à nouveau pour accéder à son contenu.
             </div>
           </DialogDescription>
 
           <DialogFooter>
-            <Button className="w-full text-lg" onClick={handleUnfollow}>
+            <Button
+              className={cn("w-full", "text-lg", {
+                "justify-between": !isPending,
+              })}
+              onClick={handleFollow}
+            >
               {isPending ? (
                 <LoaderCircle className="animate-spin" />
               ) : (
-                "Se désabonner"
+                <>
+                  <div>S&apos;ABONNER</div>
+                  <div className="font-bold">500 XAF</div>
+                </>
               )}
             </Button>
           </DialogFooter>

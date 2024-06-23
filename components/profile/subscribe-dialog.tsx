@@ -9,10 +9,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { api } from "@/convex/_generated/api"
 import { cn } from "@/lib/utils"
 import { UserProps } from "@/types"
-import { useMutation } from "convex/react"
 import { Check, LoaderCircle } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -33,8 +31,6 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
       : "http://localhost:3000/api/deposits"
 
   const [isPending, startTransition] = useTransition()
-
-  const followUser = useMutation(api.users.followUser)
 
   const handleFollow = () => {
     startTransition(async () => {
@@ -72,12 +68,6 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
         console.log(data, depositId)
 
         router.push(data.data.redirectUrl)
-
-        // await followUser({
-        //   creatorId: userProfile!._id,
-        // })
-
-        // toast.success("Vous suivez désormais ce createur")
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {

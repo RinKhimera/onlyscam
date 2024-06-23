@@ -6,7 +6,7 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 
 export const PaymentCheckLayout = () => {
-  const followUser = useMutation(api.users.followUser)
+  const followUser = useMutation(api.subscriptions.followUser)
 
   const searchParams = useSearchParams()
   const depositId = searchParams.get("depositId")

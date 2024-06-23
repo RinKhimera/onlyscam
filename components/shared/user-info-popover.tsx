@@ -1,3 +1,5 @@
+"use client"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Popover,
@@ -5,21 +7,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Skeleton } from "@/components/ui/skeleton"
-import { api } from "@/convex/_generated/api"
-import { UserProps } from "@/types"
-import { SignedIn, SignOutButton, UserButton } from "@clerk/nextjs"
-import { useConvexAuth, useQuery } from "convex/react"
+import { Doc } from "@/convex/_generated/dataModel"
+import { SignOutButton, SignedIn, UserButton } from "@clerk/nextjs"
 import { EllipsisVertical } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 export const UserInfoPopover = ({
   currentUser,
 }: {
-  currentUser: UserProps
+  currentUser: Doc<"users"> | undefined
 }) => {
   const router = useRouter()
 
-  if (!currentUser) {
+  if (currentUser === undefined) {
     return <UserInfoSkeleton />
   }
 
