@@ -6,7 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Doc } from "@/convex/_generated/dataModel"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { CldImage } from "next-cloudinary"
+import { CldImage, CldVideoPlayer } from "next-cloudinary"
+import "next-cloudinary/dist/cld-video-player.css"
 import Link from "next/link"
 import React from "react"
 
@@ -73,25 +74,45 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
 
           <>
             {post.medias.map((media) => {
-              return (
-                <CldImage
-                  key={media}
-                  src={media}
-                  alt={""}
-                  width={500}
-                  height={500}
-                  // fill
-                  // crop={"thumb"}
-                  // gravity="center"
-                  sizes="(max-width: 768px) 100vw,
-                           (max-width: 1200px) 50vw,
-                           33vw"
-                  loading="lazy"
-                  placeholder="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-                  // blurDataURL={base64}
-                  className="mt-2 max-h-[550px] rounded-md object-cover"
-                />
+              const isVideo = media.startsWith(
+                "https://res.cloudinary.com/onlyscam/video/",
               )
+              if (isVideo) {
+                return (
+                  <CldVideoPlayer
+                    key={media}
+                    width={1620}
+                    height={1080}
+                    src={media}
+                    sourceTypes={["hls"]}
+                    logo={false}
+                    transformation={{
+                      streaming_profile: "hd",
+                    }}
+                    className="mt-2 rounded-md"
+                  />
+                )
+              } else {
+                return (
+                  <CldImage
+                    key={media}
+                    src={media}
+                    alt={""}
+                    width={500}
+                    height={500}
+                    // fill
+                    // crop={"thumb"}
+                    // gravity="center"
+                    sizes="(max-width: 768px) 100vw,
+                 (max-width: 1200px) 50vw,
+                 33vw"
+                    loading="lazy"
+                    placeholder="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                    // blurDataURL={base64}
+                    className="mt-2 max-h-[550px] rounded-md object-cover"
+                  />
+                )
+              }
             })}
           </>
 
