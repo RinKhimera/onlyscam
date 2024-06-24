@@ -1,6 +1,6 @@
 import { ExploreLayout } from "@/components/explore/explore-layout"
 import { LeftSidebar } from "@/components/shared/left-sidebar"
-import { RightSidebar } from "@/components/shared/right-sidebar"
+import { SuggestionSidebar } from "@/components/shared/suggestion-sidebar"
 
 const ExplorePage = () => {
   return (
@@ -8,7 +8,7 @@ const ExplorePage = () => {
       <div className="relative flex h-full w-full max-w-screen-xl">
         <LeftSidebar />
         <ExploreLayout />
-        <RightSidebar />
+        <SuggestionSidebar />
       </div>
     </div>
   )

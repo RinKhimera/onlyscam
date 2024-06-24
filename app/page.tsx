@@ -1,6 +1,6 @@
 import { MainLayout } from "@/components/home/main-layout"
 import { LeftSidebar } from "@/components/shared/left-sidebar"
-import { RightSidebar } from "@/components/shared/right-sidebar"
+import { SuggestionSidebar } from "@/components/shared/suggestion-sidebar"
 
 export default function Home() {
   return (
@@ -8,7 +8,7 @@ export default function Home() {
       <div className="relative flex h-full w-full max-w-screen-xl">
         <LeftSidebar />
         <MainLayout />
-        <RightSidebar />
+        <SuggestionSidebar />
       </div>
     </div>
   )

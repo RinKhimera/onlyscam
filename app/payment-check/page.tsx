@@ -2,7 +2,7 @@
 
 import { PaymentCheckLayout } from "@/components/payment-check/payment-check-layout"
 import { LeftSidebar } from "@/components/shared/left-sidebar"
-import { RightSidebar } from "@/components/shared/right-sidebar"
+import { SuggestionSidebar } from "@/components/shared/suggestion-sidebar"
 import { Suspense } from "react"
 
 const PaymentCheckPage = () => {
@@ -13,7 +13,7 @@ const PaymentCheckPage = () => {
         <Suspense>
           <PaymentCheckLayout />
         </Suspense>
-        <RightSidebar />
+        <SuggestionSidebar />
       </div>
     </div>
   )

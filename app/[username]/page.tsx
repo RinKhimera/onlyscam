@@ -3,6 +3,7 @@
 import { UserProfileLayout } from "@/components/profile/user-profile-layout"
 import { LeftSidebar } from "@/components/shared/left-sidebar"
 import { SubscriptionSidebar } from "@/components/shared/subscription-sidebar"
+import { SuggestionSidebar } from "@/components/shared/suggestion-sidebar"
 import { api } from "@/convex/_generated/api"
 import { useConvexAuth, useQuery } from "convex/react"
 
@@ -27,11 +28,18 @@ const UserProfilePage = ({ params }: { params: { username: string } }) => {
           currentUser={currentUser}
           userProfile={userProfile}
         />
-        <SubscriptionSidebar
-          params={params}
-          currentUser={currentUser}
-          userProfile={userProfile}
-        />
+
+        <>
+          {currentUser?.username !== params.username ? (
+            <SubscriptionSidebar
+              params={params}
+              currentUser={currentUser}
+              userProfile={userProfile}
+            />
+          ) : (
+            <SuggestionSidebar />
+          )}
+        </>
       </div>
     </div>
   )

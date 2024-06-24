@@ -41,29 +41,25 @@ export const SubscriptionSidebar = ({
 
   return (
     <section className="mt-4 flex h-screen w-[30%] flex-col items-stretch overflow-auto pl-6 pr-2 max-lg:hidden">
-      <>
-        {currentUser?.username !== params.username && (
-          <Card className="w-[350px] bg-transparent">
-            <CardHeader>
-              <CardTitle>Abonnement</CardTitle>
-              <CardDescription>
-                Abonnez-vous pour accéder à ses contenus exclusifs
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="-mt-6">
-              {subscriptionStatus ? (
-                isPast(new Date(subscriptionStatus.endDate)) ? (
-                  <RenewDialog userProfile={userProfile} />
-                ) : (
-                  <UnsubscribeDialog userProfile={userProfile} />
-                )
-              ) : (
-                <SubscribeDialog userProfile={userProfile} />
-              )}
-            </CardContent>
-          </Card>
-        )}
-      </>
+      <Card className="w-[350px] bg-transparent">
+        <CardHeader>
+          <CardTitle>Abonnement</CardTitle>
+          <CardDescription>
+            Abonnez-vous pour accéder à ses contenus exclusifs
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="-mt-6">
+          {subscriptionStatus ? (
+            isPast(new Date(subscriptionStatus.endDate)) ? (
+              <RenewDialog userProfile={userProfile} />
+            ) : (
+              <UnsubscribeDialog userProfile={userProfile} />
+            )
+          ) : (
+            <SubscribeDialog userProfile={userProfile} />
+          )}
+        </CardContent>
+      </Card>
     </section>
   )
 }

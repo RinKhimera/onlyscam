@@ -1,6 +1,6 @@
 import { CollectionsLayout } from "@/components/collections/collections-layout"
 import { LeftSidebar } from "@/components/shared/left-sidebar"
-import { RightSidebar } from "@/components/shared/right-sidebar"
+import { SuggestionSidebar } from "@/components/shared/suggestion-sidebar"
 
 const CollectionsPage = () => {
   return (
@@ -8,7 +8,7 @@ const CollectionsPage = () => {
       <div className="relative flex h-full w-full max-w-screen-xl">
         <LeftSidebar />
         <CollectionsLayout />
-        <RightSidebar />
+        <SuggestionSidebar />
       </div>
     </div>
   )
