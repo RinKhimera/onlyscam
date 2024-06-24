@@ -3,7 +3,6 @@
 import { UserInfoPopover } from "@/components/shared/user-info-popover"
 import { Button } from "@/components/ui/button"
 import { api } from "@/convex/_generated/api"
-import { Doc } from "@/convex/_generated/dataModel"
 import { useConvexAuth, useQuery } from "convex/react"
 import {
   Bell,
@@ -16,10 +15,6 @@ import {
   UserRound,
 } from "lucide-react"
 import Link from "next/link"
-
-// type LeftSidebarProps = {
-//   currentUser: Doc<"users"> | undefined
-// }
 
 export const LeftSidebar = () => {
   const { isAuthenticated } = useConvexAuth()

@@ -21,7 +21,7 @@ const UserProfilePage = ({ params }: { params: { username: string } }) => {
   return (
     <div className="relative flex h-full w-full items-center justify-center">
       <div className="relative flex h-full w-full max-w-screen-xl">
-        <LeftSidebar currentUser={currentUser} />
+        <LeftSidebar />
         <UserProfileLayout
           params={params}
           currentUser={currentUser}
