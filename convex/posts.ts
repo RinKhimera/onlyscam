@@ -216,6 +216,14 @@ export const likePost = mutation({
     await ctx.db.patch(args.postId, {
       likes: [...(post.likes || []), user._id],
     })
+
+    await ctx.db.insert("notifications", {
+      type: "like",
+      recipientId: post.author,
+      sender: user._id,
+      post: args.postId,
+      read: false,
+    })
   },
 })
 
@@ -244,6 +252,17 @@ export const unlikePost = mutation({
     await ctx.db.patch(args.postId, {
       likes: post.likes?.filter((id) => id !== user._id) || [],
     })
+
+    const existingNotification = await ctx.db
+      .query("notifications")
+      .withIndex("by_type_post_sender", (q) =>
+        q.eq("type", "like").eq("post", args.postId).eq("sender", user._id),
+      )
+      .unique()
+
+    if (existingNotification !== null) {
+      await ctx.db.delete(existingNotification._id)
+    }
   },
 })
 
@@ -290,68 +309,3 @@ export const removeBookmark = mutation({
     })
   },
 })
-
-// export const addComment = mutation({
-//   args: {
-//     postId: v.id("posts"),
-//     content: v.string(),
-//   },
-//   handler: async (ctx, args) => {
-//     const identity = await ctx.auth.getUserIdentity()
-//     if (!identity) throw new ConvexError("Not authenticated")
-
-//     const user = await ctx.db
-//       .query("users")
-//       .withIndex("by_tokenIdentifier", (q) =>
-//         q.eq("tokenIdentifier", identity.tokenIdentifier),
-//       )
-//       .unique()
-
-//     if (!user) throw new ConvexError("User not found")
-
-//     const post = await ctx.db
-//       .query("posts")
-//       .filter((q) => q.eq(q.field("_id"), args.postId))
-//       .unique()
-
-//     if (!post) throw new ConvexError("Post not found")
-
-//     await ctx.db.insert("comments", {
-//       author: user._id,
-//       post: args.postId,
-//       content: args.content,
-//       likes: [],
-//     })
-//   },
-// })
-
-// export const deleteComment = mutation({
-//   args: {
-//     commentId: v.id("comments"),
-//   },
-//   handler: async (ctx, args) => {
-//     const identity = await ctx.auth.getUserIdentity()
-//     if (!identity) throw new ConvexError("Not authenticated")
-
-//     const user = await ctx.db
-//       .query("users")
-//       .withIndex("by_tokenIdentifier", (q) =>
-//         q.eq("tokenIdentifier", identity.tokenIdentifier),
-//       )
-//       .unique()
-
-//     if (!user) throw new ConvexError("User not found")
-
-//     const comment = await ctx.db
-//       .query("comments")
-//       .filter((q) => q.eq(q.field("_id"), args.commentId))
-//       .unique()
-
-//     if (!comment) throw new ConvexError("Comment not found")
-
-//     if (comment.author !== user._id)
-//       throw new ConvexError("User not authorized to delete this comment")
-
-//     await ctx.db.delete(args.commentId)
-//   },
-// })

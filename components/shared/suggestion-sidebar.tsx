@@ -35,7 +35,7 @@ export const SuggestionSidebar = () => {
   const userGroups = chunkArray(suggestedUsers || [], 3)
 
   return (
-    <section className="flex h-screen w-[30%] flex-col items-stretch overflow-auto pl-6 pr-2 max-lg:hidden">
+    <section className="sticky top-0 h-screen w-[30%] items-stretch overflow-auto pl-6 pr-2 max-lg:hidden">
       <div className="mt-3">
         <div className="relative h-full w-full">
           <label
@@ -44,6 +44,7 @@ export const SuggestionSidebar = () => {
           >
             <Search />
           </label>
+
           <input
             id="searchBox"
             type="text"
@@ -51,31 +52,31 @@ export const SuggestionSidebar = () => {
             className="h-full w-full rounded-xl border-none bg-muted py-4 pl-14 pr-4 outline-none"
           />
         </div>
-      </div>
 
-      <Carousel className="static my-4 w-full">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-xl font-bold">Suggestions</h3>
+        <Carousel className="static my-4 w-full">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-xl font-bold">Suggestions</h3>
 
-          <div className="flex gap-2">
-            <CarouselPrevious
-              variant="ghost"
-              className="static translate-y-0"
-            />
-            <CarouselNext variant="ghost" className="static translate-y-0" />
+            <div className="flex gap-2">
+              <CarouselPrevious
+                variant="ghost"
+                className="static translate-y-0"
+              />
+              <CarouselNext variant="ghost" className="static translate-y-0" />
+            </div>
           </div>
-        </div>
 
-        <CarouselContent>
-          {userGroups.map((group, index) => (
-            <CarouselItem key={index}>
-              {group.map((user) => (
-                <SuggestionCard key={user._id} user={user} />
-              ))}
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
+          <CarouselContent>
+            {userGroups.map((group, index) => (
+              <CarouselItem key={index}>
+                {group.map((user) => (
+                  <SuggestionCard key={user._id} user={user} />
+                ))}
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      </div>
     </section>
   )
 }

@@ -67,4 +67,14 @@ export default defineSchema({
     .index("by_subscriber", ["subscriber"])
     .index("by_creator", ["creator"])
     .index("by_creator_subscriber", ["creator", "subscriber"]),
+
+  notifications: defineTable({
+    type: v.string(), // "like", "comment", "newSubscription", "renewSubscription", "newPost from followings"
+    recipientId: v.id("users"),
+    sender: v.id("users"),
+    post: v.optional(v.id("posts")),
+    read: v.boolean(),
+  })
+    .index("by_recipient", ["recipientId"])
+    .index("by_type_post_sender", ["type", "post", "sender"]),
 })

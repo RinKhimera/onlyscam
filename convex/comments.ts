@@ -38,6 +38,14 @@ export const createComment = mutation({
     await ctx.db.patch(args.postId, {
       comments: [...(postToComment.comments || []), comment],
     })
+
+    await ctx.db.insert("notifications", {
+      type: "comment",
+      recipientId: postToComment.author,
+      sender: user._id,
+      post: args.postId,
+      read: false,
+    })
   },
 })
 

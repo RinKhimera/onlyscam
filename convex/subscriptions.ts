@@ -68,6 +68,14 @@ export const followUser = mutation({
       await ctx.db.patch(existingSubscription._id, {
         endDate: endDate,
       })
+
+      await ctx.db.insert("notifications", {
+        type: "renewSubscription",
+        recipientId: args.creatorId,
+        sender: user._id,
+        // post: args.postId,
+        read: false,
+      })
     }
 
     if (!existingSubscription) {
@@ -78,6 +86,14 @@ export const followUser = mutation({
         amountPaid: 500,
         subscriber: user._id,
         creator: args.creatorId,
+      })
+
+      await ctx.db.insert("notifications", {
+        type: "newSubsciption",
+        recipientId: args.creatorId,
+        sender: user._id,
+        // post: args.postId,
+        read: false,
       })
     }
   },

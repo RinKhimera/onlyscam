@@ -40,8 +40,8 @@ export const SubscriptionSidebar = ({
   if (userProfile === null) notFound()
 
   return (
-    <section className="mt-4 flex h-screen w-[30%] flex-col items-stretch overflow-auto pl-6 pr-2 max-lg:hidden">
-      <Card className="w-[350px] bg-transparent">
+    <section className="sticky top-0 h-screen w-[30%] items-stretch overflow-auto pl-6 pr-2 max-lg:hidden">
+      <Card className="mt-4 w-[350px] bg-transparent">
         <CardHeader>
           <CardTitle>Abonnement</CardTitle>
           <CardDescription>
