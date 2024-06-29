@@ -15,8 +15,8 @@ export default defineSchema({
     accountType: v.string(),
     isOnline: v.boolean(),
     tokenIdentifier: v.string(),
-    following: v.optional(v.array(v.string())),
-    followers: v.optional(v.array(v.string())),
+    following: v.optional(v.array(v.id("users"))),
+    followers: v.optional(v.array(v.id("users"))),
   })
     .index("by_tokenIdentifier", ["tokenIdentifier"])
     .index("by_username", ["username"]),
@@ -73,8 +73,10 @@ export default defineSchema({
     recipientId: v.id("users"),
     sender: v.id("users"),
     post: v.optional(v.id("posts")),
+    comment: v.optional(v.id("comments")),
     read: v.boolean(),
   })
     .index("by_recipient", ["recipientId"])
-    .index("by_type_post_sender", ["type", "post", "sender"]),
+    .index("by_type_post_sender", ["type", "post", "sender"])
+    .index("by_type_comment_sender", ["type", "comment", "sender"]),
 })

@@ -41,7 +41,7 @@ export const followUser = mutation({
   args: { creatorId: v.id("users") },
   handler: async (ctx, args) => {
     const startDate = new Date().getTime()
-    const endDate = addDays(startDate, 30).getTime() // Ajoute 30 jours à startDate
+    const endDate = addDays(startDate, 30).getTime()
 
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) throw new ConvexError("Not authenticated")
@@ -64,11 +64,13 @@ export const followUser = mutation({
       .filter((q) => q.eq(q.field("serviceType"), "follow"))
       .unique()
 
+    // Si l'abonnement existe, le renouvelle
     if (existingSubscription) {
       await ctx.db.patch(existingSubscription._id, {
         endDate: endDate,
       })
 
+      // Crée une notification pour le renouvellement de l'abonnement
       await ctx.db.insert("notifications", {
         type: "renewSubscription",
         recipientId: args.creatorId,
@@ -78,6 +80,7 @@ export const followUser = mutation({
       })
     }
 
+    // Si l'abonnement n'existe pas, le crée
     if (!existingSubscription) {
       await ctx.db.insert("subscriptions", {
         startDate: startDate,
@@ -88,6 +91,7 @@ export const followUser = mutation({
         creator: args.creatorId,
       })
 
+      // Crée une notification pour le nouvel abonnement
       await ctx.db.insert("notifications", {
         type: "newSubsciption",
         recipientId: args.creatorId,

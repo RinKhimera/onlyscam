@@ -25,20 +25,31 @@ export const createPost = mutation({
       throw new ConvexError("User not found")
     }
 
-    await ctx.db.insert("posts", {
+    // Insérer le post dans la base de données
+    const postId = await ctx.db.insert("posts", {
       author: user._id,
       content: args.content,
       medias: args.medias,
       likes: [],
       comments: [],
     })
+
+    // Envoyer une notification à tous les followers
+    const userFollowers = user.followers || []
+    for (const followerId of userFollowers) {
+      await ctx.db.insert("notifications", {
+        type: "newPost",
+        recipientId: followerId,
+        sender: user._id,
+        post: postId,
+        read: false,
+      })
+    }
   },
 })
 
 export const deletePost = mutation({
-  args: {
-    postId: v.id("posts"),
-  },
+  args: { postId: v.id("posts") },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) throw new ConvexError("Not authenticated")
@@ -52,6 +63,7 @@ export const deletePost = mutation({
 
     if (!user) throw new ConvexError("User not found")
 
+    // Trouver le post à supprimer
     const post = await ctx.db
       .query("posts")
       .withIndex("by_id", (q) => q.eq("_id", args.postId))
@@ -59,10 +71,23 @@ export const deletePost = mutation({
 
     if (!post) throw new ConvexError("Post not found")
 
+    // Vérifier si l'utilisateur est autorisé à supprimer le post
     if (post.author !== user._id)
       throw new ConvexError("User not authorized to delete this post")
 
+    // Supprimer le post dans la database
     await ctx.db.delete(args.postId)
+
+    // Supprimer toutes les notifications associées à ce post
+    const existingNewPostNotification = await ctx.db
+      .query("notifications")
+      .withIndex("by_type_post_sender", (q) =>
+        q.eq("type", "newPost").eq("post", args.postId).eq("sender", user._id),
+      )
+      .collect()
+    for (const notification of existingNewPostNotification) {
+      await ctx.db.delete(notification._id)
+    }
   },
 })
 
@@ -206,6 +231,7 @@ export const likePost = mutation({
 
     if (!user) throw new ConvexError("User not found")
 
+    // Trouver le post à liker
     const post = await ctx.db
       .query("posts")
       .filter((q) => q.eq(q.field("_id"), args.postId))
@@ -213,17 +239,21 @@ export const likePost = mutation({
 
     if (!post) throw new ConvexError("Post not found")
 
+    // Ajouter l'utilisateur à la liste des likes
     await ctx.db.patch(args.postId, {
       likes: [...(post.likes || []), user._id],
     })
 
-    await ctx.db.insert("notifications", {
-      type: "like",
-      recipientId: post.author,
-      sender: user._id,
-      post: args.postId,
-      read: false,
-    })
+    // Envoyer une notification au propriétaire du post
+    if (post.author !== user._id) {
+      await ctx.db.insert("notifications", {
+        type: "like",
+        recipientId: post.author,
+        sender: user._id,
+        post: args.postId,
+        read: false,
+      })
+    }
   },
 })
 
@@ -249,19 +279,21 @@ export const unlikePost = mutation({
 
     if (!post) throw new ConvexError("Post not found")
 
+    // Supprimer l'utilisateur de la liste des likes
     await ctx.db.patch(args.postId, {
       likes: post.likes?.filter((id) => id !== user._id) || [],
     })
 
-    const existingNotification = await ctx.db
+    // Supprimer la notification de like s'il existe
+    const existingLikeNotification = await ctx.db
       .query("notifications")
       .withIndex("by_type_post_sender", (q) =>
         q.eq("type", "like").eq("post", args.postId).eq("sender", user._id),
       )
       .unique()
 
-    if (existingNotification !== null) {
-      await ctx.db.delete(existingNotification._id)
+    if (existingLikeNotification !== null) {
+      await ctx.db.delete(existingLikeNotification._id)
     }
   },
 })

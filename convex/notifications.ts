@@ -23,32 +23,28 @@ export const getUserNotifications = query({
 
     const userNotificationsWithDetails = await Promise.all(
       userNotifications.map(async (notification) => {
-        if (notification.type === "newSubscription" || "renewSubscription") {
-          const sender = await ctx.db
-            .query("users")
-            .withIndex("by_id", (q) => q.eq("_id", notification.sender!))
-            .unique()
+        const sender = await ctx.db
+          .query("users")
+          .withIndex("by_id", (q) => q.eq("_id", notification.sender))
+          .unique()
 
-          return { ...notification, sender }
-        }
-        // (
-        //   notification.type === "like" ||
-        //   "comment" ||
-        //   "newPost from followings"
-        // )
-        else {
-          const sender = await ctx.db
-            .query("users")
-            .withIndex("by_id", (q) => q.eq("_id", notification.sender!))
-            .unique()
-
-          const post = await ctx.db
+        let post
+        if (notification.post) {
+          post = await ctx.db
             .query("posts")
             .withIndex("by_id", (q) => q.eq("_id", notification.post!))
             .unique()
-
-          return { ...notification, post, sender }
         }
+
+        let comment
+        if (notification.comment) {
+          comment = await ctx.db
+            .query("comments")
+            .withIndex("by_id", (q) => q.eq("_id", notification.comment!))
+            .unique()
+        }
+
+        return { ...notification, sender, post, comment }
       }),
     )
 
