@@ -66,12 +66,40 @@ export const NotificationsLayout = () => {
 
             if (notification.type === "comment") {
               return (
-                <div
+                <Link
                   key={notification._id}
-                  className="flex space-x-4 border-b px-4 pb-2 pt-4"
+                  href={`/${notification.sender?.username}/post/${notification.post?._id}`}
+                  className="flex flex-col gap-2 border-b px-4 py-2.5"
                 >
-                  {notification.sender?.name} a commenté votre post
-                </div>
+                  <div className="flex items-center gap-3">
+                    <Heart className="text-rose-500" size={32} fill="red" />
+                    <Link href={`/${notification.sender?.username}`}>
+                      <Avatar className="size-9">
+                        <AvatarImage
+                          src={notification.sender?.image}
+                          alt={notification.sender?.name}
+                        />
+                        <AvatarFallback className="size-11">
+                          <div className="animate-pulse rounded-full bg-gray-500"></div>
+                        </AvatarFallback>
+                      </Avatar>
+                    </Link>
+                  </div>
+
+                  <div>
+                    <Link
+                      href={`/${notification.sender?.username}`}
+                      className="font-semibold hover:underline"
+                    >
+                      {notification.sender?.name}
+                    </Link>{" "}
+                    a commenté votre post.
+                  </div>
+
+                  <div className="text-sm text-muted-foreground">
+                    {notification.post?.content}
+                  </div>
+                </Link>
               )
             }
 
