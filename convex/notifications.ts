@@ -19,6 +19,7 @@ export const getUserNotifications = query({
     const userNotifications = await ctx.db
       .query("notifications")
       .withIndex("by_recipient", (q) => q.eq("recipientId", user._id))
+      .order("desc")
       .collect()
 
     const userNotificationsWithDetails = await Promise.all(

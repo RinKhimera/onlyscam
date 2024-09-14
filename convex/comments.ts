@@ -32,7 +32,7 @@ export const createComment = mutation({
     // Créer le commentaire
     const comment = await ctx.db.insert("comments", {
       author: user._id,
-      post: args.postId,
+      post: postToComment._id,
       content: args.content,
       likes: [],
     })

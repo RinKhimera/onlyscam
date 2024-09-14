@@ -72,9 +72,9 @@ export default defineSchema({
     type: v.string(), // "like", "comment", "newSubscription", "renewSubscription", "newPost from followings"
     recipientId: v.id("users"),
     sender: v.id("users"),
+    read: v.boolean(),
     post: v.optional(v.id("posts")),
     comment: v.optional(v.id("comments")),
-    read: v.boolean(),
   })
     .index("by_recipient", ["recipientId"])
     .index("by_type_post_sender", ["type", "post", "sender"])

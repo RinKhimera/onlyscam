@@ -93,7 +93,7 @@ export const followUser = mutation({
 
       // Crée une notification pour le nouvel abonnement
       await ctx.db.insert("notifications", {
-        type: "newSubsciption",
+        type: "newSubscription",
         recipientId: args.creatorId,
         sender: user._id,
         // post: args.postId,
