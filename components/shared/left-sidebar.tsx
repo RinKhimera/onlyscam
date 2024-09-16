@@ -1,9 +1,6 @@
-"use client"
-
 import { UserInfoPopover } from "@/components/shared/user-info-popover"
 import { Button } from "@/components/ui/button"
-import { api } from "@/convex/_generated/api"
-import { useConvexAuth, useQuery } from "convex/react"
+import { Doc } from "@/convex/_generated/dataModel"
 import {
   Bell,
   Bookmark,
@@ -16,14 +13,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-export const LeftSidebar = () => {
-  const { isAuthenticated } = useConvexAuth()
-
-  const currentUser = useQuery(
-    api.users.getCurrentUser,
-    isAuthenticated ? undefined : "skip",
-  )
-
+export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
   const navigationLinks = [
     { title: "Accueil", href: "/", icon: <Home /> },
     {

@@ -1,3 +1,5 @@
+"use server"
+
 import { ConvexError, v } from "convex/values"
 import { mutation, query } from "./_generated/server"
 
@@ -45,10 +47,45 @@ export const getUserNotifications = query({
             .unique()
         }
 
-        return { ...notification, sender, post, comment }
+        const recipientId = await ctx.db
+          .query("users")
+          .withIndex("by_id", (q) => q.eq("_id", notification.recipientId))
+          .unique()
+
+        return { ...notification, sender, post, comment, recipientId }
       }),
     )
 
     return userNotificationsWithDetails
+  },
+})
+
+export const markNotificationAsRead = mutation({
+  args: { notificationId: v.id("notifications") },
+  handler: async (ctx, args) => {
+    // Trouver la notif à marquer comme lue
+    const notification = await ctx.db
+      .query("notifications")
+      .withIndex("by_id", (q) => q.eq("_id", args.notificationId))
+      .unique()
+
+    if (!notification) throw new ConvexError("Notification not found")
+
+    await ctx.db.patch(notification._id, { read: true })
+  },
+})
+
+export const markNotificationAsUnread = mutation({
+  args: { notificationId: v.id("notifications") },
+  handler: async (ctx, args) => {
+    // Trouver la notif à marquer comme non lue
+    const notification = await ctx.db
+      .query("notifications")
+      .withIndex("by_id", (q) => q.eq("_id", args.notificationId))
+      .unique()
+
+    if (!notification) throw new ConvexError("Notification not found")
+
+    await ctx.db.patch(notification._id, { read: false })
   },
 })

@@ -1,10 +1,14 @@
 import { PostCard } from "@/components/shared/post-card"
 import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
-import { useQuery } from "convex/react"
+import { fetchQuery } from "convex/nextjs"
 
-export const NewsFeed = ({ currentUser }: { currentUser: Doc<"users"> }) => {
-  const getPosts = useQuery(api.posts.getAllPosts)
+export const NewsFeed = async ({
+  currentUser,
+}: {
+  currentUser: Doc<"users">
+}) => {
+  const getPosts = await fetchQuery(api.posts.getAllPosts)
 
   return (
     <div className="flex flex-col">

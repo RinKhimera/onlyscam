@@ -1,5 +1,3 @@
-"use client"
-
 import { SuggestionCard } from "@/components/shared/suggestion-card"
 import {
   Carousel,
@@ -9,7 +7,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import { api } from "@/convex/_generated/api"
-import { useConvexAuth, useQuery } from "convex/react"
+import { fetchQuery } from "convex/nextjs"
 import { Search } from "lucide-react"
 
 // Fonction pour diviser le tableau en sous-tableaux de taille n
@@ -21,13 +19,14 @@ const chunkArray = (array: any[], size: number): any[][] => {
   return chunkedArr
 }
 
-export const SuggestionSidebar = () => {
-  const { isAuthenticated } = useConvexAuth()
-
-  const users = useQuery(
-    api.users.getUsers,
-    isAuthenticated ? undefined : "skip",
-  )
+export const SuggestionSidebar = async ({
+  authToken,
+}: {
+  authToken: string | undefined
+}) => {
+  const users = await fetchQuery(api.users.getUsers, undefined, {
+    token: authToken,
+  })
 
   const suggestedUsers = users?.filter((user) => Boolean(user.username))
 

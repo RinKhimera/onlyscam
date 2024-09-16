@@ -1,5 +1,3 @@
-"use client"
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Popover,
@@ -10,21 +8,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Doc } from "@/convex/_generated/dataModel"
 import { SignOutButton, SignedIn, UserButton } from "@clerk/nextjs"
 import { EllipsisVertical } from "lucide-react"
-import { useRouter } from "next/navigation"
 
 export const UserInfoPopover = ({
   currentUser,
 }: {
   currentUser: Doc<"users"> | undefined
 }) => {
-  const router = useRouter()
-
-  if (currentUser === undefined) {
-    return <UserInfoSkeleton />
-  }
-
-  if (!currentUser?.username) router.push("/onboarding")
-
   return (
     <Popover>
       <PopoverTrigger asChild>

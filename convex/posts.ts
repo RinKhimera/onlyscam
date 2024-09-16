@@ -1,3 +1,5 @@
+"use server"
+
 import { ConvexError, v } from "convex/values"
 import { mutation, query } from "./_generated/server"
 
@@ -93,6 +95,7 @@ export const deletePost = mutation({
 
 export const getPost = query({
   args: {
+    username: v.string(),
     postId: v.id("posts"),
   },
   handler: async (ctx, args) => {
@@ -109,6 +112,9 @@ export const getPost = query({
       .unique()
 
     if (!author) throw new ConvexError("Author not found")
+
+    if (author.username !== args.username)
+      throw new ConvexError("Author does not match username")
 
     const postWithAuthor = {
       ...post,

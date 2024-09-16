@@ -1,3 +1,5 @@
+"use client"
+
 import { deleteAsset } from "@/actions/upload-cloudinary"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"

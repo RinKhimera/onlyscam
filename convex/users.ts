@@ -1,3 +1,5 @@
+"use server"
+
 import { ConvexError, v } from "convex/values"
 import { internalMutation, mutation, query } from "./_generated/server"
 

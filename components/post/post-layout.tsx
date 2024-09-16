@@ -10,29 +10,8 @@ import React from "react"
 import { CommentFeed } from "./comment-feed"
 import { CreateComment } from "./create-comment"
 
-export const PostLayout = () => {
-  const params = useParams<{ username: string; postId: Id<"posts"> }>()
-
-  const { isAuthenticated } = useConvexAuth()
-
-  const post = useQuery(api.posts.getPost, {
-    postId: params.postId,
-  })
-
-  const postAuthor = useQuery(api.users.getUserProfile, {
-    username: params.username,
-  })
-
-  const currentUser = useQuery(
-    api.users.getCurrentUser,
-    isAuthenticated ? undefined : "skip",
-  )
-
-  if (
-    post === undefined ||
-    postAuthor === undefined ||
-    currentUser === undefined
-  )
+export const PostLayout = ({ currentUser, post }) => {
+  if (post === undefined || currentUser === undefined)
     return (
       <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
         <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
@@ -45,7 +24,7 @@ export const PostLayout = () => {
       </main>
     )
 
-  if (post === null || postAuthor === null) notFound()
+  if (!post) notFound()
 
   return (
     <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
