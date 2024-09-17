@@ -1,3 +1,5 @@
+"use client"
+
 import { PostCard } from "@/components/shared/post-card"
 import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
@@ -7,10 +9,10 @@ export const UserPosts = ({
   username,
   currentUser,
 }: {
-  username: string
+  username: string | undefined
   currentUser: Doc<"users">
 }) => {
-  const userPosts = useQuery(api.posts.getUserPosts, { username })
+  const userPosts = useQuery(api.posts.getUserPosts, { username: username! })
 
   return (
     <>

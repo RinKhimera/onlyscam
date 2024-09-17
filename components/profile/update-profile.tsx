@@ -1,3 +1,5 @@
+"use client"
+
 import { UpdateImages } from "@/components/profile/update-images"
 import { ImageUploadInfo } from "@/components/shared/image-upload-info"
 import { Button } from "@/components/ui/button"

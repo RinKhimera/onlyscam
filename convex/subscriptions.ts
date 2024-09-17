@@ -1,34 +1,16 @@
+"use server"
+
 import { ConvexError, v } from "convex/values"
 import { addDays, isAfter } from "date-fns"
 import { mutation, query } from "./_generated/server"
 
 export const getFollowSubscription = query({
-  args: { creatorUsername: v.string() },
+  args: { creatorId: v.id("users"), subscriberId: v.id("users") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity()
-    // if (!identity) throw new ConvexError("Not authenticated")
-    if (!identity) return ""
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier),
-      )
-      .unique()
-
-    if (!user) throw new ConvexError("User not found")
-
-    const creator = await ctx.db
-      .query("users")
-      .withIndex("by_username", (q) => q.eq("username", args.creatorUsername))
-      .unique()
-
-    if (!creator) throw new ConvexError("Creator not found")
-
     const subscription = await ctx.db
       .query("subscriptions")
       .withIndex("by_creator_subscriber", (q) =>
-        q.eq("creator", creator._id).eq("subscriber", user._id),
+        q.eq("creator", args.creatorId).eq("subscriber", args.subscriberId),
       )
       .filter((q) => q.eq(q.field("serviceType"), "follow"))
       .unique()

@@ -1,30 +1,43 @@
-"use client"
-
+import { getAuthToken } from "@/app/auth"
 import { PostLayout } from "@/components/post/post-layout"
 import { LeftSidebar } from "@/components/shared/left-sidebar"
 import { SubscriptionSidebar } from "@/components/shared/subscription-sidebar"
+import { SuggestionSidebar } from "@/components/shared/suggestion-sidebar"
 import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
-import { useConvexAuth, useQuery } from "convex/react"
-import { Loader } from "lucide-react"
-import { notFound } from "next/navigation"
+import { fetchQuery } from "convex/nextjs"
+import { notFound, redirect } from "next/navigation"
 
-const PostDetailsPage = ({
+const PostDetailsPage = async ({
   params,
 }: {
   params: { username: string; postId: Id<"posts"> }
 }) => {
-  const { isAuthenticated } = useConvexAuth()
+  const token = await getAuthToken()
+  const currentUser = await fetchQuery(api.users.getCurrentUser, undefined, {
+    token,
+  })
 
-  const currentUser = useQuery(
-    api.users.getCurrentUser,
-    isAuthenticated ? undefined : "skip",
-  )
+  if (!currentUser?.username) redirect("/onboarding")
 
-  const post = useQuery(api.posts.getPost, {
+  const userProfile = await fetchQuery(api.users.getUserProfile, {
+    username: params.username,
+  })
+
+  if (userProfile === null) notFound()
+
+  const post = await fetchQuery(api.posts.getPost, {
     postId: params.postId,
     username: params.username,
   })
+
+  const subscriptionStatus = await fetchQuery(
+    api.subscriptions.getFollowSubscription,
+    {
+      creatorId: userProfile._id,
+      subscriberId: currentUser._id,
+    },
+  )
 
   // const postAuthor = useQuery(api.users.getUserProfile, {
   //   username: params.username,
@@ -33,17 +46,23 @@ const PostDetailsPage = ({
   return (
     <div className="relative flex h-full w-full items-center justify-center">
       <div className="relative flex h-full w-full max-w-screen-xl">
-        <LeftSidebar />
+        <LeftSidebar currentUser={currentUser} />
         <PostLayout
           currentUser={currentUser}
           post={post}
           // postAuthor={postAuthor}
         />
-        <SubscriptionSidebar
-          params={params}
-          currentUser={currentUser}
-          userProfile={post?.author}
-        />
+
+        <>
+          {currentUser.username !== userProfile.username ? (
+            <SubscriptionSidebar
+              userProfile={userProfile}
+              subStatus={subscriptionStatus}
+            />
+          ) : (
+            <SuggestionSidebar authToken={token} />
+          )}
+        </>
       </div>
     </div>
   )

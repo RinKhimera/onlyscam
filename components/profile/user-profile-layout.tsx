@@ -7,40 +7,23 @@ import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
-import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
-import { useQuery } from "convex/react"
 import { isPast } from "date-fns"
 import { Link as LucideLink, MapPin } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { notFound } from "next/navigation"
 
 type UserProfileLayoutProps = {
-  params: { username: string }
-  currentUser: Doc<"users"> | undefined
-  userProfile: Doc<"users"> | undefined | null
+  currentUser: Doc<"users">
+  userProfile: Doc<"users">
+  subStatus: Doc<"subscriptions"> | null
 }
 
 export const UserProfileLayout = ({
-  params,
   currentUser,
   userProfile,
+  subStatus,
 }: UserProfileLayoutProps) => {
-  const subscriptionStatus = useQuery(api.subscriptions.getFollowSubscription, {
-    creatorUsername: params.username,
-  })
-
-  if (
-    userProfile === undefined ||
-    currentUser === undefined ||
-    subscriptionStatus === undefined
-  ) {
-    return <ProfileLayoutSkeleton />
-  }
-
-  if (userProfile === null) notFound()
-
   return (
     <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
       <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
@@ -89,7 +72,7 @@ export const UserProfileLayout = ({
       </div>
 
       <>
-        {currentUser?.username === params.username ? (
+        {currentUser?.username === userProfile.username ? (
           <div className="mr-5 mt-4 flex justify-end">
             <UpdateProfileDialog currentUser={currentUser} />
           </div>
@@ -130,14 +113,14 @@ export const UserProfileLayout = ({
       </div>
 
       <>
-        {currentUser?.username !== params.username && (
+        {currentUser?.username !== userProfile.username && (
           <div className="border-b border-muted px-4 py-4">
             <div className="text-2xl font-semibold leading-none tracking-tight">
               Abonnement
             </div>
             <div className="mb-1">
-              {subscriptionStatus ? (
-                isPast(new Date(subscriptionStatus.endDate)) ? (
+              {subStatus ? (
+                isPast(new Date(subStatus.endDate)) ? (
                   <RenewDialog userProfile={userProfile} />
                 ) : (
                   <UnsubscribeDialog userProfile={userProfile} />
@@ -150,44 +133,44 @@ export const UserProfileLayout = ({
         )}
       </>
 
-      <UserPosts username={params.username} currentUser={currentUser} />
+      <UserPosts username={userProfile.username} currentUser={currentUser} />
     </main>
   )
 }
 
-const ProfileLayoutSkeleton = () => {
-  return (
-    <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
-      <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
-        <Skeleton className="h-8 w-[300px]" />
-      </h1>
+// const ProfileLayoutSkeleton = () => {
+//   return (
+//     <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
+//       <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
+//         <Skeleton className="h-8 w-[300px]" />
+//       </h1>
 
-      <div className="relative">
-        <div>
-          <AspectRatio ratio={3 / 1}>
-            <Skeleton className="size-full rounded-none" />
-          </AspectRatio>
-        </div>
-        <div className="absolute -bottom-[65px] left-5">
-          <Skeleton className="size-36 rounded-full" />
-        </div>
-      </div>
+//       <div className="relative">
+//         <div>
+//           <AspectRatio ratio={3 / 1}>
+//             <Skeleton className="size-full rounded-none" />
+//           </AspectRatio>
+//         </div>
+//         <div className="absolute -bottom-[65px] left-5">
+//           <Skeleton className="size-36 rounded-full" />
+//         </div>
+//       </div>
 
-      <div className="mr-5 mt-5 flex justify-end">
-        <Skeleton className="h-8 w-[180px]" />
-      </div>
+//       <div className="mr-5 mt-5 flex justify-end">
+//         <Skeleton className="h-8 w-[180px]" />
+//       </div>
 
-      <div className="mt-6 space-y-6 px-4">
-        <div className="space-y-2">
-          <Skeleton className="h-6 w-[280px]" />
-          <Skeleton className="h-4 w-[150px]" />
-        </div>
+//       <div className="mt-6 space-y-6 px-4">
+//         <div className="space-y-2">
+//           <Skeleton className="h-6 w-[280px]" />
+//           <Skeleton className="h-4 w-[150px]" />
+//         </div>
 
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[300px]" />
-          <Skeleton className="h-4 w-[200px]" />
-        </div>
-      </div>
-    </main>
-  )
-}
+//         <div className="space-y-2">
+//           <Skeleton className="h-4 w-[300px]" />
+//           <Skeleton className="h-4 w-[200px]" />
+//         </div>
+//       </div>
+//     </main>
+//   )
+// }
