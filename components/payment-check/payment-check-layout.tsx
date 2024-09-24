@@ -1,3 +1,5 @@
+"use client"
+
 import { buttonVariants } from "@/components/ui/button"
 import { api } from "@/convex/_generated/api"
 import { useQuery } from "@tanstack/react-query"

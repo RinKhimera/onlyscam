@@ -2,17 +2,17 @@
 
 import { PostCard } from "@/components/shared/post-card"
 import { api } from "@/convex/_generated/api"
-import { Doc } from "@/convex/_generated/dataModel"
+import { Doc, Id } from "@/convex/_generated/dataModel"
 import { useQuery } from "convex/react"
 
 export const UserPosts = ({
-  username,
+  authorId,
   currentUser,
 }: {
-  username: string | undefined
+  authorId: Id<"users">
   currentUser: Doc<"users">
 }) => {
-  const userPosts = useQuery(api.posts.getUserPosts, { username: username! })
+  const userPosts = useQuery(api.posts.getUserPosts, { authorId })
 
   return (
     <>

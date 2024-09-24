@@ -2,7 +2,7 @@
 
 import { PostCard } from "@/components/shared/post-card"
 import { api } from "@/convex/_generated/api"
-import { Id } from "@/convex/_generated/dataModel"
+import { Doc, Id } from "@/convex/_generated/dataModel"
 import { useConvexAuth, useQuery } from "convex/react"
 import { Loader } from "lucide-react"
 import { notFound, useParams } from "next/navigation"
@@ -10,7 +10,17 @@ import React from "react"
 import { CommentFeed } from "./comment-feed"
 import { CreateComment } from "./create-comment"
 
-export const PostLayout = ({ currentUser, post }) => {
+export const PostLayout = ({
+  currentUser,
+  postId,
+}: {
+  currentUser: Doc<"users">
+  postId: Id<"posts">
+}) => {
+  const post = useQuery(api.posts.getPost, {
+    postId,
+  })
+
   if (post === undefined || currentUser === undefined)
     return (
       <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">

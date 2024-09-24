@@ -26,11 +26,6 @@ const PostDetailsPage = async ({
 
   if (userProfile === null) notFound()
 
-  const post = await fetchQuery(api.posts.getPost, {
-    postId: params.postId,
-    username: params.username,
-  })
-
   const subscriptionStatus = await fetchQuery(
     api.subscriptions.getFollowSubscription,
     {
@@ -39,19 +34,11 @@ const PostDetailsPage = async ({
     },
   )
 
-  // const postAuthor = useQuery(api.users.getUserProfile, {
-  //   username: params.username,
-  // })
-
   return (
     <div className="relative flex h-full w-full items-center justify-center">
       <div className="relative flex h-full w-full max-w-screen-xl">
         <LeftSidebar currentUser={currentUser} />
-        <PostLayout
-          currentUser={currentUser}
-          post={post}
-          // postAuthor={postAuthor}
-        />
+        <PostLayout currentUser={currentUser} postId={params.postId} />
 
         <>
           {currentUser.username !== userProfile.username ? (

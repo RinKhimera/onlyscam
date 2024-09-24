@@ -1,7 +1,9 @@
 import NotificationEllipsis from "@/components/notifications/notification-ellipsis"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
 import { cn } from "@/lib/utils"
+import { useMutation } from "convex/react"
 import {
   differenceInDays,
   differenceInHours,
@@ -11,6 +13,9 @@ import {
 } from "date-fns"
 import { Heart, MessageSquareText, UserRoundPlus } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useTransition } from "react"
+import { toast } from "sonner"
 
 // Define a type `ExtendedNotificationProps` that extends the `Doc<"notifications">` type
 // But omits the "sender", "post", and "comment" properties. These properties are then redefined with new types.
@@ -29,6 +34,12 @@ export const NotificationItem = ({
 }: {
   notification: ExtendedNotificationProps
 }) => {
+  const router = useRouter()
+
+  const [isPending, startTransition] = useTransition()
+
+  const markAsRead = useMutation(api.notifications.markNotificationAsRead)
+
   const formatCustomTimeAgo = (timestamp: number): string => {
     const now = new Date()
     const date = new Date(timestamp)
@@ -82,17 +93,40 @@ export const NotificationItem = ({
 
   const message = getMessage()
 
-  return (
-    <div className="relative">
-      <Link
-        key={notification._id}
-        href={
-          notification.post
-            ? `/${notification.recipientId?.username}/post/${notification.post._id}`
-            : `/${notification.sender?.username}`
+  const handleRoute = () => {
+    startTransition(async () => {
+      try {
+        await markAsRead({ notificationId: notification._id })
+
+        if (notification.post) {
+          router.push(
+            `/${notification.recipientId?.username}/post/${notification.post._id}`,
+          )
+        } else {
+          router.push(`/${notification.sender?.username}`)
         }
+      } catch (error) {
+        console.error(error)
+        toast.error("Une erreur s'est produite !", {
+          description:
+            "Veuillez vérifier votre connexion internet et réessayer",
+        })
+      }
+    })
+  }
+
+  return (
+    <div className="relative transition hover:bg-muted/60">
+      <button
+        // href={
+        //   notification.post
+        //     ? `/${notification.recipientId?.username}/post/${notification.post._id}`
+        //     : `/${notification.sender?.username}`
+        // }
         className={cn("absolute inset-0")}
-      ></Link>
+        onClick={handleRoute}
+        disabled={isPending}
+      ></button>
 
       <div
         className={cn("flex flex-col gap-1 border-b px-3 py-2.5", {

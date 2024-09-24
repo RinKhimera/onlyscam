@@ -133,7 +133,7 @@ export const UserProfileLayout = ({
         )}
       </>
 
-      <UserPosts username={userProfile.username} currentUser={currentUser} />
+      <UserPosts authorId={userProfile._id} currentUser={currentUser} />
     </main>
   )
 }

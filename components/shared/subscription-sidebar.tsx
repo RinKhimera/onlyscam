@@ -16,7 +16,7 @@ type SubscriptionSidebarProps = {
   subStatus: Doc<"subscriptions"> | null
 }
 
-export const SubscriptionSidebar = async ({
+export const SubscriptionSidebar = ({
   userProfile,
   subStatus,
 }: SubscriptionSidebarProps) => {

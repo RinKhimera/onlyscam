@@ -6,7 +6,7 @@ import { Id } from "@/convex/_generated/dataModel"
 import { cn } from "@/lib/utils"
 import { useMutation } from "convex/react"
 import { Bookmark } from "lucide-react"
-import { useTransition } from "react"
+import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
 type BookmarkButtonProps = {
@@ -18,6 +18,9 @@ export const BookmarkButton = ({
   postId,
   currentUserBookmark,
 }: BookmarkButtonProps) => {
+  const initialBookmarked = currentUserBookmark.includes(postId)
+
+  const [isBookmarked, setIsBookmarked] = useState<Boolean>(initialBookmarked)
   const [isPending, startTransition] = useTransition()
 
   const addBookmark = useMutation(api.posts.addBookmark)
@@ -27,6 +30,7 @@ export const BookmarkButton = ({
     startTransition(async () => {
       try {
         await addBookmark({ postId })
+        setIsBookmarked(true)
         toast.success("La publication a été ajoutée à vos collections")
       } catch (error) {
         console.error(error)
@@ -42,6 +46,7 @@ export const BookmarkButton = ({
     startTransition(async () => {
       try {
         await removeBookmark({ postId })
+        setIsBookmarked(false)
         toast.success("La publication a été retirée de vos collections")
       } catch (error) {
         console.error(error)
@@ -59,7 +64,7 @@ export const BookmarkButton = ({
       size={"icon"}
       disabled={isPending}
       onClick={() => {
-        if (currentUserBookmark.includes(postId)) {
+        if (isBookmarked) {
           handleRemoveBookmark()
         } else {
           handleAddBookmark()
@@ -67,13 +72,10 @@ export const BookmarkButton = ({
       }}
       className={cn(
         "size-8 rounded-full hover:bg-blue-600/15 hover:text-blue-500",
-        { "text-blue-500": currentUserBookmark.includes(postId) },
+        { "text-blue-500": isBookmarked },
       )}
     >
-      <Bookmark
-        size={20}
-        fill={currentUserBookmark.includes(postId) ? "blue" : undefined}
-      />
+      <Bookmark size={20} fill={isBookmarked ? "blue" : undefined} />
     </Button>
   )
 }
