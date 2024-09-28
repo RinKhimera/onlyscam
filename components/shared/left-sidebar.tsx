@@ -52,6 +52,7 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
 
   return (
     <>
+      {/* Desktop navigation */}
       <section className="sticky top-0 flex h-screen w-[20%] flex-col items-stretch px-3 max-lg:w-[15%] max-lg:items-end max-[500px]:hidden">
         <div className="mt-4 flex h-full flex-col space-y-5 font-semibold max-lg:items-center">
           {/* <Link href={"/"} className="px-4 py-2 text-xl">
@@ -68,9 +69,6 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
                 { "text-muted-foreground": pathname !== link.href },
               )}
             >
-              {/* <Button variant={"ghost"} size={"icon"}>
-              {link.icon}
-            </Button> */}
               <div>{link.icon}</div>
               <div className="max-lg:hidden">{link.title}</div>
             </Link>
@@ -88,6 +86,7 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
         <UserInfoPopover currentUser={currentUser} />
       </section>
 
+      {/* Mobile navigation */}
       <section className="fixed bottom-0 z-30 h-14 w-full border-t min-[500px]:hidden">
         <div className="flex h-full justify-between bg-black px-3 font-semibold max-lg:items-center">
           {navigationLinks.map((link) => (
