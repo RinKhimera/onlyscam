@@ -1,3 +1,5 @@
+"use server"
+
 import { ConvexError, v } from "convex/values"
 import { internalMutation, mutation, query } from "./_generated/server"
 
@@ -233,75 +235,5 @@ export const getAvailableUsername = query({
       .unique()
 
     return !existingUsername
-  },
-})
-
-export const followUser = mutation({
-  args: { creatorId: v.id("users") },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) throw new ConvexError("Not authenticated")
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier),
-      )
-      .unique()
-
-    if (!user) throw new ConvexError("User not found")
-
-    const userToFollow = await ctx.db
-      .query("users")
-      .withIndex("by_id", (q) => q.eq("_id", args.creatorId))
-      .unique()
-
-    if (!userToFollow) throw new ConvexError("User to follow not found")
-
-    if (!user.following?.includes(userToFollow._id)) {
-      await ctx.db.patch(user._id, {
-        following: [...(user.following || []), userToFollow._id],
-      })
-    }
-
-    if (!userToFollow.followers?.includes(user._id)) {
-      await ctx.db.patch(userToFollow._id, {
-        followers: [...(userToFollow.followers || []), user._id],
-      })
-    }
-  },
-})
-
-export const unfollowUser = mutation({
-  args: { creatorId: v.id("users") },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) throw new ConvexError("Not authenticated")
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier),
-      )
-      .unique()
-
-    if (!user) throw new ConvexError("User not found")
-
-    const userToUnfollow = await ctx.db
-      .query("users")
-      .withIndex("by_id", (q) => q.eq("_id", args.creatorId))
-      .unique()
-
-    if (!userToUnfollow) throw new ConvexError("User to unfollow not found")
-
-    await ctx.db.patch(user._id, {
-      following:
-        user.following?.filter((id) => id !== userToUnfollow._id) || [],
-    })
-
-    await ctx.db.patch(userToUnfollow._id, {
-      followers:
-        userToUnfollow.followers?.filter((id) => id !== user._id) || [],
-    })
   },
 })

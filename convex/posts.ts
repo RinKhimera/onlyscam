@@ -1,3 +1,5 @@
+"use server"
+
 import { ConvexError, v } from "convex/values"
 import { mutation, query } from "./_generated/server"
 
@@ -35,11 +37,15 @@ export const createPost = mutation({
     })
 
     // Envoyer une notification à tous les followers
-    const userFollowers = user.followers || []
-    for (const followerId of userFollowers) {
+    const userFollowers = await ctx.db
+      .query("follows")
+      .withIndex("by_following", (q) => q.eq("followingId", user._id))
+      .collect()
+
+    for (const follower of userFollowers) {
       await ctx.db.insert("notifications", {
         type: "newPost",
-        recipientId: followerId,
+        recipientId: follower.followerId,
         sender: user._id,
         post: postId,
         read: false,
@@ -93,22 +99,26 @@ export const deletePost = mutation({
 
 export const getPost = query({
   args: {
+    // username: v.string(),
     postId: v.id("posts"),
   },
   handler: async (ctx, args) => {
     const post = await ctx.db
       .query("posts")
-      .filter((q) => q.eq(q.field("_id"), args.postId))
+      .withIndex("by_id", (q) => q.eq("_id", args.postId))
       .unique()
 
     if (!post) throw new ConvexError("Post not found")
 
     const author = await ctx.db
       .query("users")
-      .filter((q) => q.eq(q.field("_id"), post.author))
+      .withIndex("by_id", (q) => q.eq("_id", post.author))
       .unique()
 
     if (!author) throw new ConvexError("Author not found")
+
+    // if (author.username !== args.username)
+    //   throw new ConvexError("Author does not match username")
 
     const postWithAuthor = {
       ...post,
@@ -120,11 +130,11 @@ export const getPost = query({
 })
 
 export const getUserPosts = query({
-  args: { username: v.string() },
+  args: { authorId: v.id("users") },
   handler: async (ctx, args) => {
     const author = await ctx.db
       .query("users")
-      .withIndex("by_username", (q) => q.eq("username", args.username))
+      .withIndex("by_id", (q) => q.eq("_id", args.authorId))
       .unique()
 
     if (!author) throw new ConvexError("User not found")

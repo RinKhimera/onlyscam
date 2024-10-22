@@ -1,5 +1,9 @@
+import NotificationEllipsis from "@/components/notifications/notification-ellipsis"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { api } from "@/convex/_generated/api"
+import { Doc } from "@/convex/_generated/dataModel"
 import { cn } from "@/lib/utils"
+import { useMutation } from "convex/react"
 import {
   differenceInDays,
   differenceInHours,
@@ -9,8 +13,33 @@ import {
 } from "date-fns"
 import { Heart, MessageSquareText, UserRoundPlus } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useTransition } from "react"
+import { toast } from "sonner"
 
-export const NotificationItem = ({ notification }: any) => {
+// Define a type `ExtendedNotificationProps` that extends the `Doc<"notifications">` type
+// But omits the "sender", "post", and "comment" properties. These properties are then redefined with new types.
+type ExtendedNotificationProps = Omit<
+  Doc<"notifications">,
+  "sender" | "recipientId" | "post" | "comment"
+> & {
+  sender: Doc<"users"> | null
+  recipientId: Doc<"users"> | null
+  post: Doc<"posts"> | null | undefined
+  comment: Doc<"comments"> | null | undefined
+}
+
+export const NotificationItem = ({
+  notification,
+}: {
+  notification: ExtendedNotificationProps
+}) => {
+  const router = useRouter()
+
+  const [isPending, startTransition] = useTransition()
+
+  const markAsRead = useMutation(api.notifications.markNotificationAsRead)
+
   const formatCustomTimeAgo = (timestamp: number): string => {
     const now = new Date()
     const date = new Date(timestamp)
@@ -45,63 +74,108 @@ export const NotificationItem = ({ notification }: any) => {
     }
   }
 
+  const icon = getIcon()
+
   const getMessage = () => {
     switch (notification.type) {
       case "like":
-        return "a aimé votre post."
+        return "a aimé votre post"
       case "comment":
-        return "a commenté votre post."
+        return "a commenté votre post"
       case "newSubscription":
-        return "s'est abonné à vous."
+        return "s'est abonné à vous"
       case "renewSubscription":
-        return "a renouvelé son abonnement."
+        return "a renouvelé son abonnement"
       default:
         return ""
     }
   }
 
+  const message = getMessage()
+
+  const handleRoute = () => {
+    startTransition(async () => {
+      try {
+        await markAsRead({ notificationId: notification._id })
+
+        if (notification.post) {
+          router.push(
+            `/${notification.recipientId?.username}/post/${notification.post._id}`,
+          )
+        } else {
+          router.push(`/${notification.sender?.username}`)
+        }
+      } catch (error) {
+        console.error(error)
+        toast.error("Une erreur s'est produite !", {
+          description:
+            "Veuillez vérifier votre connexion internet et réessayer",
+        })
+      }
+    })
+  }
+
   return (
-    <Link
-      key={notification._id}
-      href={`/${notification.sender?.username}/post/${notification.post?._id}`}
-      className={cn("flex flex-col gap-1 border-b px-4 py-2.5", {
-        "text-muted-foreground": notification.read,
-      })}
-    >
-      <div className="flex justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <>{getIcon()}</>
-          <Link href={`/${notification.sender?.username}`}>
-            <Avatar className="size-9">
-              <AvatarImage
-                src={notification.sender?.image}
-                alt={notification.sender?.name}
+    <div className="relative transition hover:bg-muted/60">
+      <button
+        // href={
+        //   notification.post
+        //     ? `/${notification.recipientId?.username}/post/${notification.post._id}`
+        //     : `/${notification.sender?.username}`
+        // }
+        className={cn("absolute inset-0")}
+        onClick={handleRoute}
+        disabled={isPending}
+      ></button>
+
+      <div
+        className={cn("flex flex-col gap-1 border-b px-3 py-2.5", {
+          "text-muted-foreground": notification.read,
+        })}
+      >
+        <div className="flex justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <>{icon}</>
+            <Link href={`/${notification.sender?.username}`}>
+              <Avatar className="size-9">
+                <AvatarImage
+                  src={notification.sender?.image}
+                  alt={notification.sender?.name}
+                />
+                <AvatarFallback className="size-11">
+                  <div className="animate-pulse rounded-full bg-gray-500"></div>
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="text-sm">{timeAgo}</div>
+            <div className="relative z-10">
+              <NotificationEllipsis
+                notificationId={notification._id}
+                notificationRead={notification.read}
               />
-              <AvatarFallback className="size-11">
-                <div className="animate-pulse rounded-full bg-gray-500"></div>
-              </AvatarFallback>
-            </Avatar>
-          </Link>
+            </div>
+          </div>
         </div>
 
-        <div className="text-sm">{timeAgo}</div>
-      </div>
+        <div>
+          <Link
+            href={`/${notification.sender?.username}`}
+            className="relative z-10 font-semibold hover:underline"
+          >
+            {notification.sender?.name}
+          </Link>{" "}
+          <>{message}</>
+        </div>
 
-      <div>
-        <Link
-          href={`/${notification.sender?.username}`}
-          className="font-semibold hover:underline"
-        >
-          {notification.sender?.name}
-        </Link>{" "}
-        {getMessage()}
+        <div className="text-sm">
+          {notification.type === "comment"
+            ? notification.comment?.content
+            : notification.post?.content}
+        </div>
       </div>
-
-      <div className="text-sm">
-        {notification.type === "comment"
-          ? notification.comment?.content
-          : notification.post?.content}
-      </div>
-    </Link>
+    </div>
   )
 }

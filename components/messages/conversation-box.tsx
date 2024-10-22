@@ -26,7 +26,7 @@ export const ConversationBox = ({
     <>
       <div
         onClick={() => router.push(`/messages/${conversation?._id}`)}
-        className={`flex cursor-pointer items-center gap-2 p-3 transition hover:bg-muted/60 ${conversation?._id === params.id ? "bg-muted" : ""}`}
+        className={`flex cursor-pointer items-center gap-2 border-b p-3 transition hover:bg-muted/60 ${conversation?._id === params.id ? "bg-muted" : ""}`}
       >
         <Avatar className="relative overflow-visible border border-gray-900">
           {conversation?.isOnline && (
@@ -70,8 +70,6 @@ export const ConversationBox = ({
           </p>
         </div>
       </div>
-
-      <hr className="bg-gray-primary mx-10 h-[1px]" />
     </>
   )
 }

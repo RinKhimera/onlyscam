@@ -8,37 +8,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
-import { useQuery } from "convex/react"
 import { isPast } from "date-fns"
-import { notFound } from "next/navigation"
 
 type SubscriptionSidebarProps = {
-  params: { username: string }
-  currentUser: Doc<"users"> | undefined
-  userProfile: Doc<"users"> | undefined | null
+  userProfile: Doc<"users">
+  subStatus: Doc<"subscriptions"> | null
 }
 
 export const SubscriptionSidebar = ({
-  params,
-  currentUser,
   userProfile,
+  subStatus,
 }: SubscriptionSidebarProps) => {
-  const subscriptionStatus = useQuery(api.subscriptions.getFollowSubscription, {
-    creatorUsername: params.username,
-  })
-
-  if (
-    userProfile === undefined ||
-    currentUser === undefined ||
-    subscriptionStatus === undefined
-  ) {
-    return null
-  }
-
-  if (userProfile === null) notFound()
-
   return (
     <section className="sticky top-0 h-screen w-[30%] items-stretch overflow-auto pl-6 pr-2 max-lg:hidden">
       <Card className="mt-4 w-[350px] bg-transparent">
@@ -49,8 +30,8 @@ export const SubscriptionSidebar = ({
           </CardDescription>
         </CardHeader>
         <CardContent className="-mt-6">
-          {subscriptionStatus ? (
-            isPast(new Date(subscriptionStatus.endDate)) ? (
+          {subStatus ? (
+            isPast(new Date(subStatus.endDate)) ? (
               <RenewDialog userProfile={userProfile} />
             ) : (
               <UnsubscribeDialog userProfile={userProfile} />

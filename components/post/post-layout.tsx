@@ -2,39 +2,28 @@
 
 import { PostCard } from "@/components/shared/post-card"
 import { api } from "@/convex/_generated/api"
-import { Id } from "@/convex/_generated/dataModel"
-import { useConvexAuth, useQuery } from "convex/react"
+import { Doc, Id } from "@/convex/_generated/dataModel"
+import { useQuery } from "convex/react"
 import { Loader } from "lucide-react"
-import { notFound, useParams } from "next/navigation"
+import { notFound } from "next/navigation"
 import React from "react"
 import { CommentFeed } from "./comment-feed"
 import { CreateComment } from "./create-comment"
 
-export const PostLayout = () => {
-  const params = useParams<{ username: string; postId: Id<"posts"> }>()
-
-  const { isAuthenticated } = useConvexAuth()
-
+export const PostLayout = ({
+  currentUser,
+  postId,
+}: {
+  currentUser: Doc<"users">
+  postId: Id<"posts">
+}) => {
   const post = useQuery(api.posts.getPost, {
-    postId: params.postId,
+    postId,
   })
 
-  const postAuthor = useQuery(api.users.getUserProfile, {
-    username: params.username,
-  })
-
-  const currentUser = useQuery(
-    api.users.getCurrentUser,
-    isAuthenticated ? undefined : "skip",
-  )
-
-  if (
-    post === undefined ||
-    postAuthor === undefined ||
-    currentUser === undefined
-  )
+  if (post === undefined || currentUser === undefined)
     return (
-      <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
+      <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full">
         <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
           Publication
         </h1>
@@ -45,10 +34,10 @@ export const PostLayout = () => {
       </main>
     )
 
-  if (post === null || postAuthor === null) notFound()
+  if (!post) notFound()
 
   return (
-    <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
+    <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full">
       <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
         Publication
       </h1>

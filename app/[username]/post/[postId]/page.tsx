@@ -1,33 +1,55 @@
-"use client"
-
+import { getAuthToken } from "@/app/auth"
 import { PostLayout } from "@/components/post/post-layout"
 import { LeftSidebar } from "@/components/shared/left-sidebar"
 import { SubscriptionSidebar } from "@/components/shared/subscription-sidebar"
+import { SuggestionSidebar } from "@/components/shared/suggestion-sidebar"
 import { api } from "@/convex/_generated/api"
-import { useConvexAuth, useQuery } from "convex/react"
+import { Id } from "@/convex/_generated/dataModel"
+import { fetchQuery } from "convex/nextjs"
+import { notFound, redirect } from "next/navigation"
 
-const PostDetailsPage = ({ params }: { params: { username: string } }) => {
-  const { isAuthenticated } = useConvexAuth()
+const PostDetailsPage = async ({
+  params,
+}: {
+  params: { username: string; postId: Id<"posts"> }
+}) => {
+  const token = await getAuthToken()
+  const currentUser = await fetchQuery(api.users.getCurrentUser, undefined, {
+    token,
+  })
 
-  const currentUser = useQuery(
-    api.users.getCurrentUser,
-    isAuthenticated ? undefined : "skip",
-  )
+  if (!currentUser?.username) redirect("/onboarding")
 
-  const userProfile = useQuery(api.users.getUserProfile, {
+  const userProfile = await fetchQuery(api.users.getUserProfile, {
     username: params.username,
   })
+
+  if (userProfile === null) notFound()
+
+  const subscriptionStatus = await fetchQuery(
+    api.subscriptions.getFollowSubscription,
+    {
+      creatorId: userProfile._id,
+      subscriberId: currentUser._id,
+    },
+  )
 
   return (
     <div className="relative flex h-full w-full items-center justify-center">
       <div className="relative flex h-full w-full max-w-screen-xl">
-        <LeftSidebar />
-        <PostLayout />
-        <SubscriptionSidebar
-          params={params}
-          currentUser={currentUser}
-          userProfile={userProfile}
-        />
+        <LeftSidebar currentUser={currentUser} />
+        <PostLayout currentUser={currentUser} postId={params.postId} />
+
+        <>
+          {currentUser.username !== userProfile.username ? (
+            <SubscriptionSidebar
+              userProfile={userProfile}
+              subStatus={subscriptionStatus}
+            />
+          ) : (
+            <SuggestionSidebar authToken={token} />
+          )}
+        </>
       </div>
     </div>
   )
