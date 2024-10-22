@@ -2,6 +2,7 @@
 
 import { buttonVariants } from "@/components/ui/button"
 import { api } from "@/convex/_generated/api"
+import { PaymentStatus } from "@/types"
 import { useQuery } from "@tanstack/react-query"
 import { useMutation } from "convex/react"
 import Link from "next/link"
@@ -33,7 +34,7 @@ export const PaymentCheckLayout = () => {
     return data.data[0]
   }
 
-  const { data, isPending, error } = useQuery({
+  const { data, isPending, error } = useQuery<PaymentStatus>({
     queryKey: ["paymentStatus", depositId],
     queryFn: fetchPaymentStatus,
     // refetchInterval: 1000,
@@ -66,6 +67,7 @@ export const PaymentCheckLayout = () => {
   if (data.status === "COMPLETED") {
     followUser({
       creatorId: data.metadata.creatorId,
+      startDate: data.created,
     })
   }
 

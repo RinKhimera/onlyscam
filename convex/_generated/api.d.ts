@@ -17,6 +17,7 @@ import type {
 import type * as clerk from "../clerk.js";
 import type * as comments from "../comments.js";
 import type * as conversations from "../conversations.js";
+import type * as follows from "../follows.js";
 import type * as http from "../http.js";
 import type * as messages from "../messages.js";
 import type * as notifications from "../notifications.js";
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   clerk: typeof clerk;
   comments: typeof comments;
   conversations: typeof conversations;
+  follows: typeof follows;
   http: typeof http;
   messages: typeof messages;
   notifications: typeof notifications;

@@ -58,3 +58,31 @@ export type MessageProps = {
     isOnline: boolean
   }
 }
+
+export type PaymentStatus = {
+  depositId: string
+  status: string
+  requestedAmount: string
+  depositedAmount: string
+  currency: string
+  country: string
+  payer: {
+    type: string
+    address: {
+      value: string
+    }
+  }
+  correspondent: string
+  statementDescription: string
+  customerTimestamp: string
+  created: string
+  respondedByPayer: string
+  correspondentIds: {
+    [key: string]: string
+  }
+  metadata: {
+    // [key: string]: string
+    creatorId: Id<"users">
+    creatorUsername: string
+  }
+}

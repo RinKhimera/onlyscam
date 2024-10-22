@@ -37,11 +37,15 @@ export const createPost = mutation({
     })
 
     // Envoyer une notification à tous les followers
-    const userFollowers = user.followers || []
-    for (const followerId of userFollowers) {
+    const userFollowers = await ctx.db
+      .query("follows")
+      .withIndex("by_following", (q) => q.eq("followingId", user._id))
+      .collect()
+
+    for (const follower of userFollowers) {
       await ctx.db.insert("notifications", {
         type: "newPost",
-        recipientId: followerId,
+        recipientId: follower.followerId,
         sender: user._id,
         post: postId,
         read: false,

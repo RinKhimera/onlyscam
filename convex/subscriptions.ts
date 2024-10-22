@@ -1,7 +1,7 @@
 "use server"
 
 import { ConvexError, v } from "convex/values"
-import { addDays, isAfter } from "date-fns"
+import { addDays, isAfter, parseISO } from "date-fns"
 import { mutation, query } from "./_generated/server"
 
 export const getFollowSubscription = query({
@@ -20,10 +20,13 @@ export const getFollowSubscription = query({
 })
 
 export const followUser = mutation({
-  args: { creatorId: v.id("users") },
+  args: {
+    creatorId: v.id("users"),
+    startDate: v.string(),
+  },
   handler: async (ctx, args) => {
-    const startDate = new Date().getTime()
-    const endDate = addDays(startDate, 30).getTime()
+    const startDate = parseISO(args.startDate).getTime()
+    const endDate = addDays(args.startDate, 30).getTime()
 
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) throw new ConvexError("Not authenticated")
@@ -52,6 +55,8 @@ export const followUser = mutation({
         endDate: endDate,
       })
 
+      // TODO : Fix l'empêchement de la notif en cas de trigger outdaté
+
       // Crée une notification pour le renouvellement de l'abonnement
       await ctx.db.insert("notifications", {
         type: "renewSubscription",
@@ -64,13 +69,20 @@ export const followUser = mutation({
 
     // Si l'abonnement n'existe pas, le crée
     if (!existingSubscription) {
-      await ctx.db.insert("subscriptions", {
+      const newSubscription = await ctx.db.insert("subscriptions", {
         startDate: startDate,
         endDate: endDate,
         serviceType: "follow",
         amountPaid: 500,
         subscriber: user._id,
         creator: args.creatorId,
+      })
+
+      // Crée un suivi pour le nouvel abonnement
+      await ctx.db.insert("follows", {
+        followerId: user._id,
+        followingId: args.creatorId,
+        subscriptionId: newSubscription,
       })
 
       // Crée une notification pour le nouvel abonnement
@@ -119,5 +131,17 @@ export const unfollowUser = mutation({
 
     // Termine l'abonnement immédiatement en le supprimant
     await ctx.db.delete(subscription._id)
+
+    // Supprime le suivi associé à l'abonnement
+    const follow = await ctx.db
+      .query("follows")
+      .withIndex("by_subscriptionId", (q) =>
+        q.eq("subscriptionId", subscription._id),
+      )
+      .unique()
+
+    if (follow) {
+      await ctx.db.delete(follow._id)
+    }
   },
 })

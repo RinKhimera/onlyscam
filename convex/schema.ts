@@ -15,8 +15,8 @@ export default defineSchema({
     accountType: v.string(),
     isOnline: v.boolean(),
     tokenIdentifier: v.string(),
-    following: v.optional(v.array(v.id("users"))),
-    followers: v.optional(v.array(v.id("users"))),
+    // following: v.optional(v.array(v.id("users"))),
+    // followers: v.optional(v.array(v.id("users"))),
   })
     .index("by_tokenIdentifier", ["tokenIdentifier"])
     .index("by_username", ["username"]),
@@ -55,6 +55,15 @@ export default defineSchema({
       v.literal("video"),
     ),
   }).index("by_conversation", ["conversation"]),
+
+  follows: defineTable({
+    followerId: v.id("users"), // L'utilisateur qui suit
+    followingId: v.id("users"), // L'utilisateur qui est suivi
+    subscriptionId: v.id("subscriptions"), // Id de l'abonnement valide
+  })
+    .index("by_follower", ["followerId"])
+    .index("by_following", ["followingId"])
+    .index("by_subscriptionId", ["subscriptionId"]),
 
   subscriptions: defineTable({
     startDate: v.number(),

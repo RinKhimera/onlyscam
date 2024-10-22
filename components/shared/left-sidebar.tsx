@@ -18,13 +18,15 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
+  const pathname = usePathname()
+
   const navigationLinks = [
     { title: "Accueil", href: "/", icon: <Home /> },
-    {
-      title: "Explorer",
-      href: "/explore",
-      icon: <Hash />,
-    },
+    // {
+    //   title: "Explorer",
+    //   href: "/explore",
+    //   icon: <Hash />,
+    // },
     {
       title: "Notifications",
       href: "/notifications",
@@ -46,9 +48,6 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
       icon: <UserRound />,
     },
   ]
-
-  const pathname = usePathname()
-  console.log(pathname)
 
   return (
     <>

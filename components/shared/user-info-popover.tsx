@@ -23,8 +23,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
+import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
 import { SignOutButton, SignedIn, UserButton } from "@clerk/nextjs"
+import { useQuery } from "convex/react"
 import {
   BookmarkPlus,
   EllipsisVertical,
@@ -37,8 +39,16 @@ import Link from "next/link"
 export const UserInfoPopover = ({
   currentUser,
 }: {
-  currentUser: Doc<"users"> | undefined
+  currentUser: Doc<"users">
 }) => {
+  const getFollowers = useQuery(api.follows.getFollowers, {
+    userId: currentUser._id,
+  })
+
+  const getFollowings = useQuery(api.follows.getFollowings, {
+    userId: currentUser._id,
+  })
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -88,14 +98,13 @@ export const UserInfoPopover = ({
             </Link>
 
             <div>
-              {currentUser?.following?.length} abonnements |{" "}
-              {currentUser?.followers?.length} fans
+              {getFollowers?.length} fans | {getFollowings?.length} abonnements
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <Link
-              href={"/"}
+              href={`/${currentUser?.username}`}
               className="flex w-full items-center space-x-2 rounded-3xl"
             >
               <div>
@@ -120,7 +129,7 @@ export const UserInfoPopover = ({
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <Link
-              href={"/collections"}
+              href={"/settings"}
               className="flex w-full items-center space-x-2 rounded-3xl"
             >
               <div>
