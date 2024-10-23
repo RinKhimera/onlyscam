@@ -1,4 +1,4 @@
-<h1 align="center">onlyscam</h1>
+<h1 align="center">FanTribe</h1>
 
 <div align="center">
 The name says everything.. 
@@ -19,8 +19,8 @@ Make sure you have the following installed on your machine:
 Open your terminal or command prompt, clone the repository, and navigate to the directory:
 
 ```bash
-git clone https://github.com/RinKhimera/onlyscam.git
-cd onlyscam
+git clone https://github.com/RinKhimera/fantribe.git
+cd fantribe
 ```
 
 **Install the dependencies**

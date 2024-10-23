@@ -15,7 +15,7 @@ export const PaymentCheckLayout = () => {
   const depositId = searchParams.get("depositId")
   const apiURL =
     process.env.NODE_ENV === "production"
-      ? "https://onlyscam.vercel.app/api/status"
+      ? "https://fantribe.io/api/status"
       : "http://localhost:3000/api/status"
 
   const fetchPaymentStatus = async () => {

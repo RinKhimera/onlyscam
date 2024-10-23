@@ -47,7 +47,7 @@ export const SuggestionSidebar = async ({
           <input
             id="searchBox"
             type="text"
-            placeholder="Rechercher sur OnlyScam"
+            placeholder="Rechercher sur FanTribe"
             className="h-full w-full rounded-xl border-none bg-muted py-4 pl-14 pr-4 outline-none"
           />
         </div>

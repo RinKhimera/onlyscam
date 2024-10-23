@@ -12,7 +12,7 @@ export const ExploreLayout = () => {
 
   const apiURL =
     process.env.NODE_ENV === "production"
-      ? "https://onlyscam.vercel.app/api/deposits"
+      ? "https://fantribe.io/api/deposits"
       : "http://localhost:3000/api/deposits"
 
   const handleClick = async () => {
@@ -26,7 +26,7 @@ export const ExploreLayout = () => {
         },
         body: JSON.stringify({
           depositId: depositId,
-          returnUrl: "https://onlyscam.vercel.app/notifications",
+          returnUrl: "https://fantribe.io/notifications",
           statementDescription: "Note of 4 to 22 chars",
           amount: "500",
           // msisdn: "233593456789",

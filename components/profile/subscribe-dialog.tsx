@@ -29,7 +29,7 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
 
   const apiURL =
     process.env.NODE_ENV === "production"
-      ? "https://onlyscam.vercel.app/api/deposits"
+      ? "https://fantribe.io/api/deposits"
       : "http://localhost:3000/api/deposits"
 
   const [isPending, startTransition] = useTransition()
@@ -46,7 +46,7 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
           },
           body: JSON.stringify({
             depositId: depositId,
-            returnUrl: "https://onlyscam.vercel.app/payment-check",
+            returnUrl: "https://fantribe.io/payment-check",
             statementDescription: "Abonnement mensuel",
             amount: "500",
             // msisdn: "233593456789",

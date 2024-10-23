@@ -46,7 +46,7 @@ export const RenewDialog = ({ userProfile }: RenewDialogProps) => {
           },
           body: JSON.stringify({
             depositId: depositId,
-            returnUrl: "https://onlyscam.vercel.app/payment-check",
+            returnUrl: "https://fantribe.io/payment-check",
             statementDescription: "Abonnement mensuel",
             amount: "500",
             // msisdn: "233593456789",

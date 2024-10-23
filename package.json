@@ -1,5 +1,5 @@
 {
-  "name": "onlyscam",
+  "name": "fantribe",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,8 +11,9 @@
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.0.2",
+    "@clerk/elements": "^0.16.2",
     "@clerk/localizations": "^2.3.0",
-    "@clerk/nextjs": "^5.0.3",
+    "@clerk/nextjs": "^5.7.5",
     "@clerk/themes": "^2.1.2",
     "@edgestore/react": "^0.1.6",
     "@edgestore/server": "^0.1.6",
@@ -69,5 +70,8 @@
     "prettier-plugin-tailwindcss": "^0.5.14",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
-  }
+  },
+  "trustedDependencies": [
+    "@clerk/shared"
+  ]
 }
