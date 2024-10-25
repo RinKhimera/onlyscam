@@ -2,7 +2,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import backgroundSignup from "@/public/images/background-signup.jpg"
 import { SignUp } from "@clerk/nextjs"
-import { Loader, LoaderCircle } from "lucide-react"
+import { Loader } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -15,9 +15,10 @@ const SignUpPage = () => {
           {/* <div className="absolute inset-0 bg-zinc-900" /> */}
           <Image
             src={backgroundSignup}
-            alt="Description of the image"
+            alt="backgroundSignup image"
             placeholder="blur"
             style={{ objectFit: "cover" }}
+            quality={100}
             className="absolute inset-0 rounded-xl bg-zinc-900"
             priority
             fill
