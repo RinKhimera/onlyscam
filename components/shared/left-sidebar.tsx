@@ -101,6 +101,7 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
               <div>{link.icon}</div>
             </Link>
           ))}
+          <UserInfoPopover currentUser={currentUser} />
         </div>
       </section>
     </>

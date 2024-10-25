@@ -43,26 +43,26 @@ export const ConversationBox = ({
 
         <div className="w-full">
           <div className="flex items-center">
-            <h3 className="text-xs font-medium lg:text-sm">
+            <h3 className="text-sm font-medium lg:text-sm">
               {conversationName}
             </h3>
-            <span className="ml-auto text-[10px] text-muted-foreground lg:text-xs">
+            <span className="ml-auto text-xs text-muted-foreground lg:text-sm">
               {formatDate(
                 lastMessage?._creationTime || conversation?._creationTime!,
               )}
             </span>
           </div>
-          <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
+          <p className="mt-0.5 flex items-center gap-1 text-sm text-muted-foreground">
             {lastMessage?.sender === currentUser?._id ? <MessageSeenSvg /> : ""}
             {conversation?.isGroup && <Users size={16} />}
             {!lastMessage && "Démarrer une conversation"}
             {lastMessageType === "text" ? (
               (lastMessage?.content as string)?.length > 30 ? (
-                <span className="text-xs">
+                <span className="text-sm">
                   {(lastMessage?.content as string)?.slice(0, 30)}...
                 </span>
               ) : (
-                <span className="text-xs">{lastMessage?.content}</span>
+                <span className="text-sm">{lastMessage?.content}</span>
               )
             ) : null}
             {lastMessageType === "image" && <ImageIcon size={16} />}

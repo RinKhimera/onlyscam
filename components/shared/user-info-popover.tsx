@@ -1,18 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-// import {
-//   Popover,
-//   PopoverContent,
-//   PopoverTrigger,
-// } from "@/components/ui/popover"
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogDescription,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogTrigger,
-// } from "@/components/ui/dialog"
-import { buttonVariants } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,10 +8,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Skeleton } from "@/components/ui/skeleton"
 import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
-import { SignOutButton, SignedIn, UserButton } from "@clerk/nextjs"
+import { SignOutButton, UserButton } from "@clerk/nextjs"
 import { useQuery } from "convex/react"
 import {
   BookmarkPlus,
@@ -52,9 +37,9 @@ export const UserInfoPopover = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="mb-4 flex w-full items-center justify-between rounded-full p-2 transition duration-200 hover:bg-foreground/10 max-lg:w-fit max-lg:justify-center">
+        <button className="flex w-full items-center justify-between rounded-full transition duration-200 hover:bg-foreground/10 max-lg:w-fit max-lg:justify-center min-[500px]:mb-4 min-[500px]:p-2">
           <div className="flex items-center space-x-2">
-            <Avatar>
+            <Avatar className="max-[500px]:size-8">
               <AvatarImage
                 src={currentUser?.image}
                 alt={currentUser?.username}
@@ -81,7 +66,16 @@ export const UserInfoPopover = ({
         <DropdownMenuGroup className="font-semibold text-white">
           <DropdownMenuLabel className="flex flex-col gap-1">
             {/* Mount the UserButton component */}
-            <UserButton />
+            {/* <UserButton /> */}
+            <Avatar className="max-[500px]:size-8">
+              <AvatarImage
+                src={currentUser?.image}
+                alt={currentUser?.username}
+              />
+              <AvatarFallback className="size-9">
+                <div className="animate-pulse rounded-full bg-gray-500"></div>
+              </AvatarFallback>
+            </Avatar>
 
             <Link
               href={currentUser ? `/${currentUser.username}` : ""}
@@ -110,7 +104,7 @@ export const UserInfoPopover = ({
               <div>
                 <Home size={20} />
               </div>
-              <div className="max-lg:hidden">Mon Profil</div>
+              <div>Mon Profil</div>
             </Link>
           </DropdownMenuItem>
 
@@ -122,7 +116,7 @@ export const UserInfoPopover = ({
               <div>
                 <BookmarkPlus size={20} />
               </div>
-              <div className="max-lg:hidden">Collections</div>
+              <div>Collections</div>
             </Link>
           </DropdownMenuItem>
 
@@ -135,7 +129,7 @@ export const UserInfoPopover = ({
               <div>
                 <Settings size={20} />
               </div>
-              <div className="max-lg:hidden">Paramètres</div>
+              <div>Paramètres</div>
             </Link>
           </DropdownMenuItem>
 
@@ -149,28 +143,22 @@ export const UserInfoPopover = ({
               </div>
             </SignOutButton>
           </DropdownMenuItem>
-
-          {/* <DropdownMenuItem>{currentUser?.name}</DropdownMenuItem>
-
-          <SignedIn>
-            <SignOutButton>Se déconnecter</SignOutButton>
-          </SignedIn> */}
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   )
 }
 
-const UserInfoSkeleton = () => {
-  return (
-    <button className="mb-4 flex w-full items-center justify-between rounded-full p-2 transition duration-200 hover:bg-foreground/10 max-lg:w-fit max-lg:justify-center">
-      <div className="flex items-center space-x-2">
-        <Skeleton className="size-11 rounded-full" />
-        <div className="space-y-2 max-lg:hidden">
-          <Skeleton className="h-4 w-[120px]" />
-          <Skeleton className="h-4 w-[120px]" />
-        </div>
-      </div>
-    </button>
-  )
-}
+// const UserInfoSkeleton = () => {
+//   return (
+//     <button className="mb-4 flex w-full items-center justify-between rounded-full p-2 transition duration-200 hover:bg-foreground/10 max-lg:w-fit max-lg:justify-center">
+//       <div className="flex items-center space-x-2">
+//         <Skeleton className="size-11 rounded-full" />
+//         <div className="space-y-2 max-lg:hidden">
+//           <Skeleton className="h-4 w-[120px]" />
+//           <Skeleton className="h-4 w-[120px]" />
+//         </div>
+//       </div>
+//     </button>
+//   )
+// }

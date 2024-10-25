@@ -53,7 +53,7 @@ export const MessageForm = ({
   }
 
   return (
-    <div className="sticky bottom-0 z-10 w-full">
+    <div className="sticky z-10 w-full max-[500px]:bottom-[60px]">
       <div className="flex items-center gap-4 bg-muted/60 p-2">
         <div className="relative ml-2 flex gap-2">
           {/* Emoji Picker */}
