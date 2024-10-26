@@ -1,6 +1,6 @@
 import "@/app/globals.css"
 import { Toaster } from "@/components/ui/sonner"
-import { EdgeStoreProvider } from "@/lib/edgestore"
+// import { EdgeStoreProvider } from "@/lib/edgestore"
 import { cn } from "@/lib/utils"
 import ConvexClientProvider from "@/providers/convex-client-provider"
 import TanstackClientProvider from "@/providers/tanstack-provider"
@@ -38,9 +38,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ConvexClientProvider>
-            <EdgeStoreProvider>
-              <TanstackClientProvider>{children}</TanstackClientProvider>
-            </EdgeStoreProvider>
+            {/* <EdgeStoreProvider> */}
+            <TanstackClientProvider>{children}</TanstackClientProvider>
+            {/* </EdgeStoreProvider> */}
           </ConvexClientProvider>
         </ThemeProvider>
         <Toaster richColors />
