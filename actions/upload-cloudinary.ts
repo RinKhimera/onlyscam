@@ -30,7 +30,7 @@ export const uploadImage = async (imagePath: string | File | ArrayBuffer) => {
 
 export const deleteAsset = async (publicId: string) => {
   try {
-    // Upload the image
+    // Delete the image
     const result = await cloudinary.uploader.destroy(publicId, {
       invalidate: true,
     })

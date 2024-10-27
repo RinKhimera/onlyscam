@@ -26,6 +26,7 @@ import Textarea from "react-expanding-textarea"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
+import { AspectRatio } from "../ui/aspect-ratio"
 
 export const CreatePost = ({ currentUser }: { currentUser: Doc<"users"> }) => {
   const [medias, setMedias] = useState<string>("")
@@ -115,15 +116,27 @@ export const CreatePost = ({ currentUser }: { currentUser: Doc<"users"> }) => {
                           alt={""}
                           width={500}
                           height={500}
+                          // gravity="custom"
+                          // crop={"crop"}
+                          // crop={{
+                          //   type: "crop",
+                          //   // width: 400,
+                          //   // height: 400,
+                          //   // x: 80,
+                          //   // y: 350,
+                          //   gravity: "custom",
+                          //   source: true,
+                          // }}
                           // fill
-                          // crop={"thumb"}
                           // gravity="center"
-                          sizes="(max-width: 768px) 100vw,
-                          (max-width: 1200px) 50vw,
-                          33vw"
-                          placeholder="data:image/gif;base64,R0lGODlhAwAEAPAAAAAAAAAAACH5BAEAAAAALAAAAAADAAQAAAIDhI9WADs="
+                          // sizes="(max-width: 768px) 100vw,
+                          // (max-width: 1200px) 50vw,
+                          // 33vw"
+                          // placeholder="data:image/gif;base64,R0lGODlhAwAEAPAAAAAAAAAAACH5BAEAAAAALAAAAAADAAQAAAIDhI9WADs="
                           // blurDataURL={base64}
-                          className="mt-2 max-h-[550px] rounded-md object-cover"
+                          // objectFit="cover"
+                          // style={{ objectFit: "cover" }}
+                          className="mt-2 max-h-[525px] rounded-md object-cover"
                         />
                       </div>
                     )}
@@ -133,7 +146,7 @@ export const CreatePost = ({ currentUser }: { currentUser: Doc<"users"> }) => {
                         <div className="-ml-2 text-blue-500">
                           <CldUploadWidget
                             uploadPreset="post-assets"
-                            signatureEndpoint="/api/sign-cloudinary-params"
+                            // signatureEndpoint="/api/sign-cloudinary-params"
                             options={{
                               sources: [
                                 "local",
@@ -142,12 +155,15 @@ export const CreatePost = ({ currentUser }: { currentUser: Doc<"users"> }) => {
                                 "url",
                               ],
                               multiple: false,
+                              cropping: true,
+                              croppingCoordinatesMode: "custom",
+                              // croppingAspectRatio: 1,
                               // publicId: `post-${currentUser?.username}`,
                             }}
                             onSuccess={(result, { widget }) => {
                               const data =
                                 result.info as CloudinaryUploadWidgetInfo
-
+                              console.log(data)
                               // setMedias((prevMedias) => {
                               //   if (!prevMedias.includes(data.secure_url)) {
                               //     return [...prevMedias, data.secure_url]

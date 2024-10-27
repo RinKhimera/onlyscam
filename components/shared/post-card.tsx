@@ -103,15 +103,24 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
                     width={500}
                     height={500}
                     // fill
-                    // crop={"thumb"}
-                    // gravity="center"
-                    sizes="(max-width: 768px) 100vw,
-                 (max-width: 1200px) 50vw,
-                 33vw"
-                    loading="lazy"
-                    placeholder="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                    // crop={"auto"}
+                    // gravity="custom"
+                    // crop={{
+                    //   type: "crop",
+                    //   // width: 400,
+                    //   // height: 400,
+                    //   // x: 80,
+                    //   // y: 350,
+                    //   gravity: "custom",
+                    //   source: true,
+                    // }}
+                    //     sizes="(max-width: 768px) 100vw,
+                    //  (max-width: 1200px) 50vw,
+                    //  33vw"
+                    // loading="lazy"
+                    // placeholder="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
                     // blurDataURL={base64}
-                    className="mt-2 max-h-[550px] rounded-md object-cover"
+                    className="mt-2 max-h-[525px] rounded-md object-cover"
                   />
                 )
               }
