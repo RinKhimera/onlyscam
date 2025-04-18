@@ -1,81 +1,66 @@
 import { httpRouter } from "convex/server"
-import { internal } from "./_generated/api"
 import { httpAction } from "./_generated/server"
+import { internal } from "./_generated/api"
+import type { WebhookEvent } from "@clerk/backend"
+import { Webhook } from "svix"
 
 const http = httpRouter()
 
 http.route({
   path: "/clerk",
   method: "POST",
-  handler: httpAction(async (ctx, req) => {
-    const payloadString = await req.text()
-    const headerPayload = req.headers
-
-    try {
-      const result = await ctx.runAction(internal.clerk.fulfill, {
-        payload: payloadString,
-        headers: {
-          "svix-id": headerPayload.get("svix-id")!,
-          "svix-signature": headerPayload.get("svix-signature")!,
-          "svix-timestamp": headerPayload.get("svix-timestamp")!,
-        },
-      })
-
-      switch (result.type) {
-        case "user.created":
-          await ctx.runMutation(internal.users.createUser, {
-            tokenIdentifier: `${process.env.CLERK_APP_DOMAIN}|${result.data.id}`,
-            email: result.data.email_addresses[0]?.email_address,
-            name: `${result.data.first_name ?? "Guest"} ${result.data.last_name ?? ""}`,
-            image: result.data.image_url,
-          })
-          break
-
-        case "user.updated":
-          await ctx.runMutation(internal.users.updateUser, {
-            tokenIdentifier: `${process.env.CLERK_APP_DOMAIN}|${result.data.id}`,
-            image: result.data.image_url,
-          })
-          break
-
-        case "session.created":
-          await ctx.runMutation(internal.users.setUserOnline, {
-            tokenIdentifier: `${process.env.CLERK_APP_DOMAIN}|${result.data.user_id}`,
-          })
-          break
-
-        case "session.ended":
-          await ctx.runMutation(internal.users.setUserOffline, {
-            tokenIdentifier: `${process.env.CLERK_APP_DOMAIN}|${result.data.user_id}`,
-          })
-          break
-
-        case "session.removed":
-          await ctx.runMutation(internal.users.setUserOffline, {
-            tokenIdentifier: `${process.env.CLERK_APP_DOMAIN}|${result.data.user_id}`,
-          })
-          break
-
-        case "session.revoked":
-          await ctx.runMutation(internal.users.setUserOffline, {
-            tokenIdentifier: `${process.env.CLERK_APP_DOMAIN}|${result.data.user_id}`,
-          })
-          break
-      }
-
-      return new Response(null, {
-        status: 200,
-      })
-    } catch (error) {
-      console.log("Webhook Error🔥🔥", error)
-      return new Response("Webhook Error", {
+  handler: httpAction(async (ctx, request) => {
+    const event = await validateRequest(request)
+    if (!event) {
+      return new Response("Error occured while calling webhook", {
         status: 400,
       })
     }
+    switch (event.type) {
+      case "user.created":
+        await ctx.runMutation(internal.users.createUser, {
+          externalId: event.data.id,
+          tokenIdentifier: `${process.env.CLERK_APP_DOMAIN}|${event.data.id}`,
+          name: `${event.data.first_name ?? "Guest"} ${event.data.last_name ?? ""}`,
+          email: event.data.email_addresses[0]?.email_address,
+          image: event.data.image_url,
+        })
+        break
+
+      case "user.updated":
+        await ctx.runMutation(internal.users.upsertFromClerk, {
+          data: event.data,
+        })
+        break
+
+      case "user.deleted": {
+        const clerkUserId = event.data.id!
+        await ctx.runMutation(internal.users.deleteFromClerk, { clerkUserId })
+        break
+      }
+
+      default:
+        console.log("Ignored Clerk webhook event", event.type)
+    }
+
+    return new Response(null, { status: 200 })
   }),
 })
 
-export default http
+async function validateRequest(req: Request): Promise<WebhookEvent | null> {
+  const payloadString = await req.text()
+  const svixHeaders = {
+    "svix-id": req.headers.get("svix-id")!,
+    "svix-timestamp": req.headers.get("svix-timestamp")!,
+    "svix-signature": req.headers.get("svix-signature")!,
+  }
+  const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET!)
+  try {
+    return wh.verify(payloadString, svixHeaders) as unknown as WebhookEvent
+  } catch (error) {
+    console.error("Error verifying webhook event", error)
+    return null
+  }
+}
 
-// https://docs.convex.dev/functions/http-actions
-// Internal functions can only be called by server functions and cannot be called directly from a Convex client.
+export default http

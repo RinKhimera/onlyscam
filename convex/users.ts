@@ -1,46 +1,98 @@
 "use server"
 
-import { ConvexError, v } from "convex/values"
-import { internalMutation, mutation, query } from "./_generated/server"
+import { ConvexError, v, Validator } from "convex/values"
+import {
+  internalMutation,
+  mutation,
+  query,
+  QueryCtx,
+} from "./_generated/server"
+import { UserJSON } from "@clerk/backend"
+
+async function userByExternalId(ctx: QueryCtx, externalId: string) {
+  return await ctx.db
+    .query("users")
+    .withIndex("byExternalId", (q) => q.eq("externalId", externalId))
+    .unique()
+}
+
+export const upsertFromClerk = internalMutation({
+  args: { data: v.any() as Validator<UserJSON> }, // Coming from Clerk
+  async handler(ctx, { data }) {
+    const userAttributes = {
+      externalId: data.id,
+      tokenIdentifier: `${process.env.CLERK_APP_DOMAIN}|${data.id}`,
+      name: `${data.first_name} ${data.last_name}`,
+      email: data.email_addresses[0]?.email_address,
+      image: data.image_url,
+      accountType: "USER",
+      isOnline: true,
+    }
+
+    const user = await userByExternalId(ctx, data.id)
+    if (user === null) {
+      await ctx.db.insert("users", userAttributes)
+    } else {
+      await ctx.db.patch(user._id, userAttributes)
+    }
+  },
+})
+
+export const deleteFromClerk = internalMutation({
+  args: { clerkUserId: v.string() },
+  async handler(ctx, { clerkUserId }) {
+    const user = await userByExternalId(ctx, clerkUserId)
+
+    if (user !== null) {
+      await ctx.db.delete(user._id)
+    } else {
+      console.warn(
+        `Can't delete user, there is none for Clerk user ID: ${clerkUserId}`,
+      )
+    }
+  },
+})
 
 export const createUser = internalMutation({
   args: {
     name: v.string(),
     email: v.string(),
     image: v.string(),
+    externalId: v.string(),
     tokenIdentifier: v.string(),
   },
   handler: async (ctx, args) => {
     await ctx.db.insert("users", {
+      externalId: args.externalId,
+      tokenIdentifier: args.tokenIdentifier,
       name: args.name,
       email: args.email,
       image: args.image,
       accountType: "USER",
-      tokenIdentifier: args.tokenIdentifier,
       isOnline: true,
     })
   },
 })
 
-export const updateUser = internalMutation({
-  args: { tokenIdentifier: v.string(), image: v.string() },
-  async handler(ctx, args) {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", args.tokenIdentifier),
-      )
-      .unique()
+// export const updateUser = internalMutation({
+//   args: { tokenIdentifier: v.string(), image: v.string() },
+//   async handler(ctx, args) {
+//     const user = await ctx.db
+//       .query("users")
+//       .withIndex("by_tokenIdentifier", (q) =>
+//         q.eq("tokenIdentifier", args.tokenIdentifier),
+//       )
+//       .unique()
 
-    if (!user) {
-      throw new ConvexError("User not found")
-    }
+//     if (!user) {
+//       throw new ConvexError("User not found")
+//     }
 
-    await ctx.db.patch(user._id, {
-      image: args.image,
-    })
-  },
-})
+//     await ctx.db.patch(user._id, {
+//       image: args.image,
+//     })
+//   },
+// })
 
 export const getCurrentUser = query({
   args: {},

@@ -14,12 +14,14 @@ export default defineSchema({
     bookmarks: v.optional(v.array(v.id("posts"))),
     accountType: v.string(),
     isOnline: v.boolean(),
-    tokenIdentifier: v.string(),
+    tokenIdentifier: v.optional(v.string()),
+    externalId: v.optional(v.string()),
     // following: v.optional(v.array(v.id("users"))),
     // followers: v.optional(v.array(v.id("users"))),
   })
     .index("by_tokenIdentifier", ["tokenIdentifier"])
-    .index("by_username", ["username"]),
+    .index("by_username", ["username"])
+    .index("byExternalId", ["externalId"]),
 
   posts: defineTable({
     author: v.id("users"),
