@@ -8,11 +8,12 @@ import { Id } from "@/convex/_generated/dataModel"
 import { fetchQuery } from "convex/nextjs"
 import { notFound, redirect } from "next/navigation"
 
-const PostDetailsPage = async ({
-  params,
-}: {
-  params: { username: string; postId: Id<"posts"> }
-}) => {
+const PostDetailsPage = async (
+  props: {
+    params: Promise<{ username: string; postId: Id<"posts"> }>
+  }
+) => {
+  const params = await props.params;
   const token = await getAuthToken()
   const currentUser = await fetchQuery(api.users.getCurrentUser, undefined, {
     token,

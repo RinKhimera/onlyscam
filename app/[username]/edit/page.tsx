@@ -7,7 +7,8 @@ import { api } from "@/convex/_generated/api"
 import { fetchQuery } from "convex/nextjs"
 import { notFound, redirect } from "next/navigation"
 
-const EditProfile = async ({ params }: { params: { username: string } }) => {
+const EditProfile = async (props: { params: Promise<{ username: string }> }) => {
+  const params = await props.params;
   const token = await getAuthToken()
   const currentUser = await fetchQuery(api.users.getCurrentUser, undefined, {
     token,

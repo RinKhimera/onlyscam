@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "type-check": "tsc",
-    "dev": "next dev --turbo",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -37,12 +37,12 @@
     "embla-carousel-react": "^8.1.5",
     "emoji-picker-react": "^4.9.2",
     "lucide-react": "^0.376.0",
-    "next": "^14.2.4",
+    "next": "15.3.1",
     "next-cloudinary": "^6.16.0",
     "next-themes": "^0.3.0",
     "plaiceholder": "^3.0.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "react-expanding-textarea": "^2.3.6",
     "react-hook-form": "^7.51.4",
     "react-player": "^2.16.0",
@@ -58,11 +58,11 @@
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^5.35.6",
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "19.1.2",
+    "@types/react-dom": "19.1.2",
     "@types/uuid": "^9.0.8",
     "eslint": "^8",
-    "eslint-config-next": "^14.2.4",
+    "eslint-config-next": "15.3.1",
     "postcss": "^8",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.14",
@@ -71,5 +71,9 @@
   },
   "trustedDependencies": [
     "@clerk/shared"
-  ]
+  ],
+  "overrides": {
+    "@types/react": "19.1.2",
+    "@types/react-dom": "19.1.2"
+  }
 }
