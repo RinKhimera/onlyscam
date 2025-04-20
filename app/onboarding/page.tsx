@@ -1,6 +1,6 @@
 import { getAuthToken } from "@/app/auth"
-import { OnboardingForm } from "@/components/onboarding/onboarding-form"
 import { UpdateImages } from "@/components/profile/update-images"
+import { EditProfileForm } from "@/components/shared/edit-profile-form"
 import { ImageUploadInfo } from "@/components/shared/image-upload-info"
 import { Label } from "@/components/ui/label"
 import { api } from "@/convex/_generated/api"
@@ -34,7 +34,7 @@ const OnboardingPage = async () => {
 
       <UpdateImages currentUser={currentUser} />
 
-      <OnboardingForm currentUser={currentUser} />
+      <EditProfileForm currentUser={currentUser} />
     </div>
   )
 }

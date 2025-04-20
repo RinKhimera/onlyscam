@@ -68,6 +68,8 @@ export const createUser = internalMutation({
       name: args.name,
       email: args.email,
       image: args.image,
+      imageBanner:
+        "https://res.cloudinary.com/onlyscam/image/upload/v1745084406/banner-profile/placeholder.jpg",
       accountType: "USER",
       isOnline: true,
     })

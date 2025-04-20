@@ -3,49 +3,39 @@
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { api } from "@/convex/_generated/api"
-import { useEdgeStore } from "@/lib/edgestore"
 import { cn } from "@/lib/utils"
 import { UserProps } from "@/types"
+import {
+  CloudinaryUploadWidget,
+  CloudinaryUploadWidgetResults,
+} from "@cloudinary-util/types"
 import { useMutation } from "convex/react"
-import { Loader, SwitchCamera, X } from "lucide-react"
-import Image from "next/image"
-import { useRef, useState, useTransition } from "react"
+import { SwitchCamera, X } from "lucide-react"
+import {
+  CldImage,
+  CldUploadWidget,
+  CloudinaryUploadWidgetInfo,
+} from "next-cloudinary"
+import { useTransition } from "react"
 import { toast } from "sonner"
 
 export const UpdateImages = ({ currentUser }: { currentUser: UserProps }) => {
-  const imgProfileRef = useRef<HTMLInputElement>(null)
-  const imgBannerRef = useRef<HTMLInputElement>(null)
   const [isPending, startTransition] = useTransition()
-  const [loadingStatus, setloadingStatus] = useState<number>(0)
-
   const updateProfileImage = useMutation(api.users.updateProfileImage)
   const updateBannerImage = useMutation(api.users.updateBannerImage)
 
-  const { edgestore } = useEdgeStore()
-
-  const handleUploadProfile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUploadProfile = (
+    result: CloudinaryUploadWidgetResults,
+    widget: CloudinaryUploadWidget,
+  ) => {
     startTransition(async () => {
       try {
-        const file = e.target.files?.[0]
-
-        if (file) {
-          const res = await edgestore.profileImages.upload({
-            file,
-            onProgressChange: (progress: number) => {
-              setloadingStatus(progress)
-              console.log(progress)
-            },
-          })
-
-          if (res) {
-            await updateProfileImage({
-              imgUrl: res.url,
-              tokenIdentifier: currentUser?.tokenIdentifier!,
-            })
-
-            toast.success("Votre photo de profil a été mise à jour")
-          }
-        }
+        const data = result.info as CloudinaryUploadWidgetInfo
+        await updateProfileImage({
+          imgUrl: data.secure_url,
+          tokenIdentifier: currentUser?.tokenIdentifier!,
+        })
+        widget.close()
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {
@@ -54,31 +44,20 @@ export const UpdateImages = ({ currentUser }: { currentUser: UserProps }) => {
         })
       }
     })
-    setloadingStatus(0)
   }
 
-  const handleUploadBanner = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUploadBanner = (
+    result: CloudinaryUploadWidgetResults,
+    widget: CloudinaryUploadWidget,
+  ) => {
     startTransition(async () => {
       try {
-        const file = e.target.files?.[0]
-
-        if (file) {
-          const res = await edgestore.bannerImages.upload({
-            file,
-            onProgressChange: (progress: number) => {
-              setloadingStatus(progress)
-              console.log(progress)
-            },
-          })
-
-          if (res) {
-            await updateBannerImage({
-              bannerUrl: res.url,
-              tokenIdentifier: currentUser?.tokenIdentifier!,
-            })
-            toast.success("Votre photo de bannière a été mise à jour")
-          }
-        }
+        const data = result.info as CloudinaryUploadWidgetInfo
+        await updateBannerImage({
+          bannerUrl: data.secure_url,
+          tokenIdentifier: currentUser?.tokenIdentifier!,
+        })
+        widget.close()
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {
@@ -87,14 +66,13 @@ export const UpdateImages = ({ currentUser }: { currentUser: UserProps }) => {
         })
       }
     })
-    setloadingStatus(0)
   }
 
   const handleDeleteBanner = () => {
     startTransition(async () => {
       try {
         await updateBannerImage({
-          bannerUrl: "",
+          bannerUrl: "banner-profile/placeholder",
           tokenIdentifier: currentUser?.tokenIdentifier!,
         })
 
@@ -113,35 +91,45 @@ export const UpdateImages = ({ currentUser }: { currentUser: UserProps }) => {
     <div className="relative">
       <div>
         <AspectRatio ratio={3 / 1} className="relative bg-muted">
-          <Image
-            className="object-cover"
+          <CldImage
             src={
               (currentUser?.imageBanner as string) ||
               "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
             }
             alt={currentUser?.name as string}
+            className="object-cover"
             fill
           />
 
           <div className="absolute inset-0 flex items-center justify-center gap-6 bg-black/60 transition duration-300 hover:opacity-100 md:opacity-0">
-            <div
-              className={cn(
-                "flex size-11 cursor-pointer items-center justify-center rounded-full bg-accent text-white transition hover:bg-accent/60",
-                { "cursor-not-allowed": isPending },
-              )}
-              onClick={() => imgBannerRef.current?.click()}
+            <CldUploadWidget
+              uploadPreset="banner-profile"
+              signatureEndpoint="/api/sign-cloudinary-params"
+              options={{
+                sources: ["local", "camera", "google_drive", "url"],
+                publicId: `ban-${currentUser?.externalId}`,
+                multiple: false,
+                maxFileSize: 6 * 1024 * 1024,
+                clientAllowedFormats: ["image"],
+              }}
+              onSuccess={(result, { widget }) => {
+                handleUploadBanner(result, widget)
+              }}
             >
-              <input
-                type="file"
-                accept="image/*"
-                ref={imgBannerRef}
-                onChange={handleUploadBanner}
-                disabled={isPending}
-                hidden
-              />
-
-              <SwitchCamera />
-            </div>
+              {({ open }) => {
+                return (
+                  <div
+                    className={cn(
+                      "flex size-11 cursor-pointer items-center justify-center rounded-full bg-accent text-white transition hover:bg-accent/60",
+                      { "cursor-not-allowed": isPending },
+                    )}
+                    onClick={() => open()}
+                  >
+                    <SwitchCamera />
+                  </div>
+                )
+              }}
+            </CldUploadWidget>
 
             <div
               className={cn(
@@ -157,38 +145,45 @@ export const UpdateImages = ({ currentUser }: { currentUser: UserProps }) => {
       </div>
 
       <div className="absolute -bottom-[48px] left-5 max-sm:-bottom-[38px]">
-        <input
-          type="file"
-          accept="image/*"
-          ref={imgProfileRef}
-          onChange={handleUploadProfile}
-          disabled={isPending}
-          hidden
-        />
-
-        <Avatar
-          className={cn(
-            "relative size-28 cursor-pointer border-4 border-accent object-none object-center max-sm:size-20",
-            { "cursor-not-allowed": isPending },
-          )}
-          onClick={() => imgProfileRef.current?.click()}
+        <CldUploadWidget
+          uploadPreset="image-profile"
+          signatureEndpoint="/api/sign-cloudinary-params"
+          options={{
+            sources: ["local", "camera", "google_drive", "url"],
+            publicId: `img-${currentUser?.externalId}`,
+            multiple: false,
+            maxFileSize: 6 * 1024 * 1024,
+            clientAllowedFormats: ["image"],
+          }}
+          onSuccess={(result, { widget }) =>
+            handleUploadProfile(result, widget)
+          }
         >
-          <AvatarImage src={currentUser?.image} className="object-cover" />
-          <AvatarFallback>XO</AvatarFallback>
+          {({ open }) => {
+            return (
+              <Avatar
+                className={cn(
+                  "relative size-28 cursor-pointer border-4 border-accent object-none object-center max-sm:size-20",
+                  { "cursor-not-allowed": isPending },
+                )}
+                onClick={() => open()}
+              >
+                <AvatarImage
+                  src={currentUser?.image}
+                  className="object-cover"
+                />
+                <AvatarFallback>XO</AvatarFallback>
 
-          <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity duration-300 hover:opacity-100">
-            <div className="flex size-11 items-center justify-center rounded-full bg-accent text-white">
-              <SwitchCamera />
-            </div>
-          </div>
-        </Avatar>
+                <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity duration-300 hover:opacity-100">
+                  <div className="flex size-11 items-center justify-center rounded-full bg-accent text-white">
+                    <SwitchCamera />
+                  </div>
+                </div>
+              </Avatar>
+            )
+          }}
+        </CldUploadWidget>
       </div>
-
-      {isPending && (
-        <div className="absolute -bottom-[40px] right-0 flex items-center gap-1 text-lg font-medium text-muted-foreground">
-          <Loader className="animate-spin text-primary" /> {loadingStatus}%
-        </div>
-      )}
     </div>
   )
 }

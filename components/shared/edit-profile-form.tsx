@@ -19,18 +19,19 @@ import { profileFormSchema } from "@/schemas/profile"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQuery } from "convex/react"
 import { CircleX, LoaderCircle } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useTransition } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 
-export const OnboardingForm = ({
+export const EditProfileForm = ({
   currentUser,
 }: {
   currentUser: Doc<"users">
 }) => {
   const router = useRouter()
+  const pathname = usePathname()
 
   const [isPending, startTransition] = useTransition()
 
@@ -39,11 +40,11 @@ export const OnboardingForm = ({
   const form = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      username: "",
-      displayName: "",
-      bio: "",
-      location: "",
-      urls: [].map((url) => ({ value: url })),
+      username: currentUser?.username,
+      displayName: currentUser?.name,
+      bio: currentUser?.bio,
+      location: currentUser?.location,
+      urls: (currentUser?.socials || []).map((url) => ({ value: url })),
     },
   })
 
@@ -73,8 +74,11 @@ export const OnboardingForm = ({
             tokenIdentifier: currentUser?.tokenIdentifier!,
           })
 
-          router.push("/")
-          // toast.success("Vos modifications ont été enregistré")
+          if (pathname === "/onboarding") {
+            router.push("/")
+          } else {
+            router.push(`/${data.username}`)
+          }
         } else if (checkUsername === false) {
           toast.error("Cet identifiant est déjà pris !", {
             description: "Veuillez en choisir un autre",
@@ -92,7 +96,10 @@ export const OnboardingForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-16 space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mb-4 mt-16 space-y-6 px-2"
+      >
         <FormField
           control={form.control}
           name="displayName"
@@ -233,8 +240,10 @@ export const OnboardingForm = ({
           <Button type="submit" disabled={isPending}>
             {isPending ? (
               <LoaderCircle className="animate-spin" />
-            ) : (
+            ) : pathname === "/onboarding" ? (
               "Compléter l'inscription"
+            ) : (
+              "Enregistrer"
             )}
           </Button>
         </div>

@@ -1,3 +1,5 @@
+"use client"
+
 import { RenewDialog } from "@/components/profile/renew-dialog"
 import { SubscribeDialog } from "@/components/profile/subscribe-dialog"
 import { UnsubscribeDialog } from "@/components/profile/unsubscribe-dialog"
@@ -10,8 +12,10 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Doc } from "@/convex/_generated/dataModel"
 import { isPast } from "date-fns"
 import { Link as LucideLink, MapPin } from "lucide-react"
+import { CldImage } from "next-cloudinary"
 import Image from "next/image"
 import Link from "next/link"
+import { Button } from "../ui/button"
 
 type UserProfileLayoutProps = {
   currentUser: Doc<"users">
@@ -33,13 +37,13 @@ export const UserProfileLayout = ({
       <div className="relative">
         <div>
           <AspectRatio ratio={3 / 1} className="bg-muted">
-            <Image
-              className="object-cover"
+            <CldImage
               src={
                 (userProfile?.imageBanner as string) ||
                 "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
               }
               alt={userProfile?.name as string}
+              className="object-cover"
               fill
             />
           </AspectRatio>
@@ -74,7 +78,15 @@ export const UserProfileLayout = ({
       <>
         {currentUser?.username === userProfile.username ? (
           <div className="mr-5 mt-4 flex justify-end">
-            <UpdateProfileDialog currentUser={currentUser} />
+            <Button
+              asChild
+              variant={"outline"}
+              className="rounded-3xl border-2"
+            >
+              <Link href={`/${currentUser.username}/edit`}>
+                Modifier le profil
+              </Link>
+            </Button>
           </div>
         ) : (
           <div className="mt-[68px]"></div>

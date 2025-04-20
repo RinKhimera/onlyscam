@@ -17,7 +17,7 @@ export const ImageUploadInfo = () => {
       <PopoverContent className="space-y-4 text-sm">
         <p className="text-sm">
           Les images de profil et de bannière sont limitées à 5 Mo. Les formats
-          d&apos;image pris en charge sont JPG, PNG et GIF.
+          d&apos;image pris en charge sont JPG, JPEG, PNG et WEBP.
         </p>
 
         <p>

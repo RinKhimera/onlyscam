@@ -14,7 +14,7 @@ export default defineSchema({
     bookmarks: v.optional(v.array(v.id("posts"))),
     accountType: v.string(),
     isOnline: v.boolean(),
-    tokenIdentifier: v.optional(v.string()),
+    tokenIdentifier: v.string(),
     externalId: v.optional(v.string()),
     // following: v.optional(v.array(v.id("users"))),
     // followers: v.optional(v.array(v.id("users"))),

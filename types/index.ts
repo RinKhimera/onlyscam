@@ -40,6 +40,7 @@ export type UserProps =
       accountType: string
       isOnline: boolean
       tokenIdentifier: string
+      externalId?: string
     }
   | undefined
 

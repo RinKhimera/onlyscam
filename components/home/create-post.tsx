@@ -142,7 +142,7 @@ export const CreatePost = ({ currentUser }: { currentUser: Doc<"users"> }) => {
                                 "url",
                               ],
                               multiple: false,
-                              // publicId: `post-${currentUser?.username}`,
+                              publicId: `post-${currentUser?.username}`,
                             }}
                             onSuccess={(result, { widget }) => {
                               const data =
