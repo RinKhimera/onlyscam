@@ -13,7 +13,7 @@
     "@clerk/clerk-sdk-node": "^5.0.2",
     "@clerk/elements": "^0.16.2",
     "@clerk/localizations": "^2.3.0",
-    "@clerk/nextjs": "^5.7.5",
+    "@clerk/nextjs": "^6.16.0",
     "@clerk/themes": "^2.1.2",
     "@hookform/resolvers": "^3.3.4",
     "@plaiceholder/next": "^3.0.0",
