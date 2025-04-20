@@ -1,7 +1,7 @@
 "use client"
 
-import { ClerkProvider, useAuth } from "@clerk/clerk-react"
 import { frFR } from "@clerk/localizations"
+import { ClerkProvider, useAuth } from "@clerk/nextjs"
 import { dark } from "@clerk/themes"
 import { ConvexReactClient } from "convex/react"
 import { ConvexProviderWithClerk } from "convex/react-clerk"
