@@ -37,39 +37,78 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
   const handleFollow = () => {
     startTransition(async () => {
       try {
-        const depositId = uuidv4()
+        const transactionId = uuidv4()
 
-        const resp = await fetch(apiURL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+        // const resp = await fetch(apiURL, {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({
+        //     depositId: depositId,
+        //     returnUrl: "https://fantribe.io/payment-check",
+        //     statementDescription: "Abonnement mensuel",
+        //     amount: "500",
+        //     // msisdn: "233593456789",
+        //     country: "CMR",
+        //     reason: `Abonnement mensuel Fantribe - ${userProfile?.username}`,
+        //     metadata: [
+        //       {
+        //         fieldName: "creatorUsername",
+        //         fieldValue: userProfile?.username,
+        //       },
+        //       {
+        //         fieldName: "creatorId",
+        //         fieldValue: userProfile?._id,
+        //         isPII: true,
+        //       },
+        //     ],
+        //   }),
+        // })
+
+        const resp = await fetch(
+          "https://api-checkout.cinetpay.com/v2/payment",
+          {
+            method: "post",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              apikey: process.env.NEXT_PUBLIC_CINETPAY_API_KEY,
+              site_id: process.env.NEXT_PUBLIC_CINETPAY_SITE_ID,
+              transaction_id: transactionId,
+              amount: 1000,
+              currency: "XAF",
+              // alternative_currency: "",
+              description: "Abonnement mensuel",
+              // customer_id: "172",
+              // customer_name: "KOUADIO",
+              // customer_surname: "Francisse",
+              // customer_email: "harrissylver@gmail.com",
+              // customer_phone_number: "+225004315545",
+              // customer_address: "Antananarivo",
+              // customer_city: "Antananarivo",
+              // customer_country: "CM",
+              // customer_state: "CM",
+              // customer_zip_code: "065100",
+              notify_url: "http://localhost:3000/api/status",
+              return_url: "https://fantribe.io/payment-check",
+              channels: "ALL",
+              metadata: "user1",
+              lang: "FR",
+              invoice_data: {
+                Donnee1: "",
+                Donnee2: "",
+                Donnee3: "",
+              },
+            }),
           },
-          body: JSON.stringify({
-            depositId: depositId,
-            returnUrl: "https://fantribe.io/payment-check",
-            statementDescription: "Abonnement mensuel",
-            amount: "500",
-            // msisdn: "233593456789",
-            country: "CMR",
-            reason: `Abonnement mensuel Fantribe - ${userProfile?.username}`,
-            metadata: [
-              {
-                fieldName: "creatorUsername",
-                fieldValue: userProfile?.username,
-              },
-              {
-                fieldName: "creatorId",
-                fieldValue: userProfile?._id,
-                isPII: true,
-              },
-            ],
-          }),
-        })
+        )
 
         const data = await resp.json()
-        console.log(data, depositId)
+        console.log(data, transactionId)
 
-        router.push(data.data.redirectUrl)
+        router.push(data.data.payment_url)
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {

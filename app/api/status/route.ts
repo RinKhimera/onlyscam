@@ -1,18 +1,24 @@
-export async function POST(req: Request) {
-  const body = await req.json()
-  const resp = await fetch(
-    `https://api.sandbox.pawapay.cloud/deposits/${body.depositId}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_PAWAPAY_SANDBOX_API_TOKEN}`,
-      },
+export async function POST(request: Request) {
+  try {
+    const response = await request.text()
+    // Process the webhook payload
+    console.log("Webhook received:", response)
+  } catch (error: any) {
+    return new Response(`Webhook error POST: ${error.message}`, {
+      status: 400,
+    })
+  }
+
+  return new Response("Success!", {
+    status: 200,
+  })
+}
+
+export async function GET() {
+  return new Response("API is healthy and running", {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
     },
-  )
-
-  const data = await resp.json()
-
-  // console.log(data, body)
-
-  return Response.json({ data })
+  })
 }
