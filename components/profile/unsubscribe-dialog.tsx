@@ -55,7 +55,7 @@ export const UnsubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
         >
           <>
             <div>ABONNÉ</div>
-            <div className="font-bold">500 XAF</div>
+            <div className="font-bold">1000 XAF</div>
           </>
         </Button>
       </DialogTrigger>

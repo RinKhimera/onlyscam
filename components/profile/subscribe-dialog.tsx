@@ -91,7 +91,7 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
               // customer_country: "CM",
               // customer_state: "CM",
               // customer_zip_code: "065100",
-              notify_url: "http://localhost:3000/api/status",
+              notify_url: "https://fantribe.io/api/status",
               return_url: "https://fantribe.io/payment-check",
               channels: "ALL",
               metadata: "user1",
@@ -125,7 +125,7 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
         <Button className="mt-3 w-full justify-between rounded-3xl border-2 border-primary text-lg">
           <>
             <div>S&apos;ABONNER</div>
-            <div className="font-bold">500 XAF</div>
+            <div className="font-bold">1000 XAF</div>
           </>
         </Button>
       </DialogTrigger>
@@ -189,7 +189,7 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
               ) : (
                 <>
                   <div>S&apos;ABONNER</div>
-                  <div className="font-bold">500 XAF</div>
+                  <div className="font-bold">1000 XAF</div>
                 </>
               )}
             </Button>

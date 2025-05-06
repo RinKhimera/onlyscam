@@ -86,7 +86,7 @@ export const RenewDialog = ({ userProfile }: RenewDialogProps) => {
         <Button className="mt-3 w-full justify-between rounded-3xl border-2 border-primary text-lg">
           <>
             <div>EXPIRÉ</div>
-            <div className="font-bold">500 XAF</div>
+            <div className="font-bold">1000 XAF</div>
           </>
         </Button>
       </DialogTrigger>
@@ -150,7 +150,7 @@ export const RenewDialog = ({ userProfile }: RenewDialogProps) => {
               ) : (
                 <>
                   <div>S&apos;ABONNER</div>
-                  <div className="font-bold">500 XAF</div>
+                  <div className="font-bold">1000 XAF</div>
                 </>
               )}
             </Button>

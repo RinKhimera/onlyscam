@@ -64,9 +64,12 @@ export const ConversationContent = () => {
           </div>
 
           <div className="mr-5 flex items-center gap-7">
-            <Link href="/video-call" target="_blank">
+            {/* <Link href="/video-call" target="_blank">
               <Video size={23} />
-            </Link>
+            </Link> */}
+            <div>
+              <Video size={23} />
+            </div>
 
             <button onClick={() => router.push("/messages")}>
               <X size={16} className="cursor-pointer" />
