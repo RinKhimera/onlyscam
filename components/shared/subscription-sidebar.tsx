@@ -1,3 +1,5 @@
+"use client"
+
 import { RenewDialog } from "@/components/profile/renew-dialog"
 import { SubscribeDialog } from "@/components/profile/subscribe-dialog"
 import { UnsubscribeDialog } from "@/components/profile/unsubscribe-dialog"
@@ -8,18 +10,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Doc } from "@/convex/_generated/dataModel"
-import { isPast } from "date-fns"
+import { api } from "@/convex/_generated/api"
+import { Doc, Id } from "@/convex/_generated/dataModel"
+import { useQuery } from "convex/react"
 
 type SubscriptionSidebarProps = {
+  currentUserId: Id<"users">
   userProfile: Doc<"users">
-  subStatus: Doc<"subscriptions"> | null
 }
 
 export const SubscriptionSidebar = ({
   userProfile,
-  subStatus,
+  currentUserId,
 }: SubscriptionSidebarProps) => {
+  const subscriptionStatus = useQuery(api.subscriptions.getFollowSubscription, {
+    creatorId: userProfile._id,
+    subscriberId: currentUserId,
+  })
   return (
     <section className="sticky top-0 h-screen w-[30%] items-stretch overflow-auto pl-6 pr-2 max-lg:hidden">
       <Card className="mt-4 w-[350px] bg-transparent">
@@ -30,12 +37,19 @@ export const SubscriptionSidebar = ({
           </CardDescription>
         </CardHeader>
         <CardContent className="-mt-6">
-          {subStatus ? (
-            isPast(new Date(subStatus.endDate)) ? (
-              <RenewDialog userProfile={userProfile} />
-            ) : (
-              <UnsubscribeDialog userProfile={userProfile} />
-            )
+          {subscriptionStatus ? (
+            (() => {
+              switch (subscriptionStatus.status) {
+                case "expired":
+                  return <RenewDialog userProfile={userProfile} />
+                case "cancelled":
+                  return <SubscribeDialog userProfile={userProfile} />
+                case "active":
+                  return <UnsubscribeDialog userProfile={userProfile} />
+                default:
+                  return <SubscribeDialog userProfile={userProfile} />
+              }
+            })()
           ) : (
             <SubscribeDialog userProfile={userProfile} />
           )}

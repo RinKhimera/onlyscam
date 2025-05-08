@@ -1,6 +1,5 @@
 import { getAuthToken } from "@/app/auth"
 import { UserProfileLayout } from "@/components/profile/user-profile-layout"
-import { LeftSidebar } from "@/components/shared/left-sidebar"
 import { SubscriptionSidebar } from "@/components/shared/subscription-sidebar"
 import { SuggestionSidebar } from "@/components/shared/suggestion-sidebar"
 import { api } from "@/convex/_generated/api"
@@ -34,17 +33,13 @@ const UserProfilePage = async (props: {
 
   return (
     <>
-      <UserProfileLayout
-        currentUser={currentUser}
-        userProfile={userProfile}
-        subStatus={subscriptionStatus}
-      />
+      <UserProfileLayout currentUser={currentUser} userProfile={userProfile} />
 
       <>
         {currentUser.username !== userProfile.username ? (
           <SubscriptionSidebar
             userProfile={userProfile}
-            subStatus={subscriptionStatus}
+            currentUserId={currentUser._id}
           />
         ) : (
           <SuggestionSidebar authToken={token} />

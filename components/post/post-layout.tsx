@@ -34,7 +34,7 @@ export const PostLayout = ({
       </main>
     )
 
-  if (!post) notFound()
+  if (post === null) notFound()
 
   return (
     <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full">

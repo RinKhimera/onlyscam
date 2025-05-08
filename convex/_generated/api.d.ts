@@ -15,8 +15,10 @@ import type {
 } from "convex/server";
 import type * as comments from "../comments.js";
 import type * as conversations from "../conversations.js";
+import type * as crons from "../crons.js";
 import type * as follows from "../follows.js";
 import type * as http from "../http.js";
+import type * as internalActions from "../internalActions.js";
 import type * as messages from "../messages.js";
 import type * as notifications from "../notifications.js";
 import type * as posts from "../posts.js";
@@ -34,8 +36,10 @@ import type * as users from "../users.js";
 declare const fullApi: ApiFromModules<{
   comments: typeof comments;
   conversations: typeof conversations;
+  crons: typeof crons;
   follows: typeof follows;
   http: typeof http;
+  internalActions: typeof internalActions;
   messages: typeof messages;
   notifications: typeof notifications;
   posts: typeof posts;

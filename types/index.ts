@@ -87,3 +87,20 @@ export type PaymentStatus = {
     creatorUsername: string
   }
 }
+
+export type CinetPayResponse = {
+  code: string
+  message: string
+  data: {
+    amount: string
+    currency: string
+    status: string
+    payment_method: string
+    description: string
+    metadata: any | null
+    operator_id: string | null
+    payment_date: string
+    fund_availability_date: string
+  }
+  api_response_id: string
+}

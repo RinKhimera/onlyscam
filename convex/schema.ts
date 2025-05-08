@@ -74,10 +74,16 @@ export default defineSchema({
     amountPaid: v.number(),
     subscriber: v.id("users"),
     creator: v.id("users"),
+    status: v.string(), // "active", "expired", "cancelled"
+    transactionId: v.optional(v.string()),
+    renewalCount: v.number(),
+    lastUpdateTime: v.number(), // Ajout: timestamp de la dernière mise à jour
   })
     .index("by_subscriber", ["subscriber"])
     .index("by_creator", ["creator"])
-    .index("by_creator_subscriber", ["creator", "subscriber"]),
+    .index("by_creator_subscriber", ["creator", "subscriber"])
+    .index("by_status", ["status"])
+    .index("by_endDate", ["endDate"]),
 
   notifications: defineTable({
     type: v.string(), // "like", "comment", "newSubscription", "renewSubscription", "newPost from followings"

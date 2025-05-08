@@ -11,8 +11,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { api } from "@/convex/_generated/api"
 import { cn } from "@/lib/utils"
 import { UserProps } from "@/types"
+import { useConvexAuth, useQuery } from "convex/react"
 import { Check, LoaderCircle } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -25,51 +27,70 @@ type RenewDialogProps = {
 }
 
 export const RenewDialog = ({ userProfile }: RenewDialogProps) => {
-  const router = useRouter()
+  const { isAuthenticated } = useConvexAuth()
+  const currentUser = useQuery(
+    api.users.getCurrentUser,
+    isAuthenticated ? undefined : "skip",
+  )
 
-  const apiURL =
-    process.env.NODE_ENV === "production"
-      ? "https://onlyscam.vercel.app/api/deposits"
-      : "http://localhost:3000/api/deposits"
+  const router = useRouter()
 
   const [isPending, startTransition] = useTransition()
 
   const handleFollow = () => {
     startTransition(async () => {
       try {
-        const depositId = uuidv4()
+        const transactionId = uuidv4()
 
-        const resp = await fetch(apiURL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+        const metadataObj = {
+          creatorId: userProfile?._id,
+          subscriberId: currentUser?._id,
+        }
+        const metadataString = JSON.stringify(metadataObj)
+
+        const resp = await fetch(
+          "https://api-checkout.cinetpay.com/v2/payment",
+          {
+            method: "post",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              apikey: process.env.NEXT_PUBLIC_CINETPAY_API_KEY,
+              site_id: process.env.NEXT_PUBLIC_CINETPAY_SITE_ID,
+              transaction_id: transactionId,
+              amount: 100,
+              currency: "XAF",
+              // alternative_currency: "",
+              description: "Abonnement mensuel",
+              // customer_id: "172",
+              // customer_name: "KOUADIO",
+              // customer_surname: "Francisse",
+              // customer_email: "harrissylver@gmail.com",
+              // customer_phone_number: "+225004315545",
+              // customer_address: "Antananarivo",
+              // customer_city: "Antananarivo",
+              // customer_country: "CM",
+              // customer_state: "CM",
+              // customer_zip_code: "065100",
+              notify_url: "https://fantribe.io/api/notification",
+              return_url: "https://fantribe.io/api/return",
+              channels: "ALL",
+              metadata: metadataString,
+              lang: "FR",
+              invoice_data: {
+                Donnee1: "",
+                Donnee2: "",
+                Donnee3: "",
+              },
+            }),
           },
-          body: JSON.stringify({
-            depositId: depositId,
-            returnUrl: "https://fantribe.io/payment-check",
-            statementDescription: "Abonnement mensuel",
-            amount: "500",
-            // msisdn: "233593456789",
-            country: "CMR",
-            reason: `Abonnement mensuel Fantribe - ${userProfile?.username}`,
-            metadata: [
-              {
-                fieldName: "creatorUsername",
-                fieldValue: userProfile?.username,
-              },
-              {
-                fieldName: "creatorId",
-                fieldValue: userProfile?._id,
-                isPII: true,
-              },
-            ],
-          }),
-        })
+        )
 
         const data = await resp.json()
-        console.log(data, depositId)
+        console.log(data)
 
-        router.push(data.data.redirectUrl)
+        router.push(data.data.payment_url)
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {

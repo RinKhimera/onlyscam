@@ -8,12 +8,10 @@ import { Id } from "@/convex/_generated/dataModel"
 import { fetchQuery } from "convex/nextjs"
 import { notFound, redirect } from "next/navigation"
 
-const PostDetailsPage = async (
-  props: {
-    params: Promise<{ username: string; postId: Id<"posts"> }>
-  }
-) => {
-  const params = await props.params;
+const PostDetailsPage = async (props: {
+  params: Promise<{ username: string; postId: Id<"posts"> }>
+}) => {
+  const params = await props.params
   const token = await getAuthToken()
   const currentUser = await fetchQuery(api.users.getCurrentUser, undefined, {
     token,
@@ -27,6 +25,11 @@ const PostDetailsPage = async (
 
   if (userProfile === null) notFound()
 
+  const post = await fetchQuery(api.posts.getPost, {
+    postId: params.postId,
+  })
+  if (post === null) notFound()
+
   const subscriptionStatus = await fetchQuery(
     api.subscriptions.getFollowSubscription,
     {
@@ -36,23 +39,20 @@ const PostDetailsPage = async (
   )
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center">
-      <div className="relative flex h-full w-full max-w-screen-xl">
-        <LeftSidebar currentUser={currentUser} />
-        <PostLayout currentUser={currentUser} postId={params.postId} />
+    <>
+      <PostLayout currentUser={currentUser} postId={params.postId} />
 
-        <>
-          {currentUser.username !== userProfile.username ? (
-            <SubscriptionSidebar
-              userProfile={userProfile}
-              subStatus={subscriptionStatus}
-            />
-          ) : (
-            <SuggestionSidebar authToken={token} />
-          )}
-        </>
-      </div>
-    </div>
+      <>
+        {currentUser.username !== userProfile.username ? (
+          <SubscriptionSidebar
+            userProfile={userProfile}
+            currentUserId={currentUser._id}
+          />
+        ) : (
+          <SuggestionSidebar authToken={token} />
+        )}
+      </>
+    </>
   )
 }
 

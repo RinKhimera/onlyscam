@@ -11,8 +11,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { api } from "@/convex/_generated/api"
 import { cn } from "@/lib/utils"
 import { UserProps } from "@/types"
+import { useConvexAuth, useQuery } from "convex/react"
 import { Check, LoaderCircle } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -25,12 +27,13 @@ type SubscribeDialogProps = {
 }
 
 export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
-  const router = useRouter()
+  const { isAuthenticated } = useConvexAuth()
+  const currentUser = useQuery(
+    api.users.getCurrentUser,
+    isAuthenticated ? undefined : "skip",
+  )
 
-  const apiURL =
-    process.env.NODE_ENV === "production"
-      ? "https://fantribe.io/api/deposits"
-      : "http://localhost:3000/api/deposits"
+  const router = useRouter()
 
   const [isPending, startTransition] = useTransition()
 
@@ -38,6 +41,12 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
     startTransition(async () => {
       try {
         const transactionId = uuidv4()
+
+        const metadataObj = {
+          creatorId: userProfile?._id,
+          subscriberId: currentUser?._id,
+        }
+        const metadataString = JSON.stringify(metadataObj)
 
         // const resp = await fetch(apiURL, {
         //   method: "POST",
@@ -77,7 +86,7 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
               apikey: process.env.NEXT_PUBLIC_CINETPAY_API_KEY,
               site_id: process.env.NEXT_PUBLIC_CINETPAY_SITE_ID,
               transaction_id: transactionId,
-              amount: 1000,
+              amount: 100,
               currency: "XAF",
               // alternative_currency: "",
               description: "Abonnement mensuel",
@@ -91,10 +100,10 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
               // customer_country: "CM",
               // customer_state: "CM",
               // customer_zip_code: "065100",
-              notify_url: "https://fantribe.io/api/status",
-              return_url: "https://fantribe.io/payment-check",
+              notify_url: "https://fantribe.io/api/notification",
+              return_url: "https://fantribe.io/api/return",
               channels: "ALL",
-              metadata: "user1",
+              metadata: metadataString,
               lang: "FR",
               invoice_data: {
                 Donnee1: "",
@@ -106,7 +115,7 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
         )
 
         const data = await resp.json()
-        console.log(data, transactionId)
+        console.log(data)
 
         router.push(data.data.payment_url)
       } catch (error) {

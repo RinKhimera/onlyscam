@@ -3,31 +3,34 @@
 import { RenewDialog } from "@/components/profile/renew-dialog"
 import { SubscribeDialog } from "@/components/profile/subscribe-dialog"
 import { UnsubscribeDialog } from "@/components/profile/unsubscribe-dialog"
-import { UpdateProfileDialog } from "@/components/profile/update-profile"
 import { UserPosts } from "@/components/profile/user-posts"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Doc } from "@/convex/_generated/dataModel"
-import { isPast } from "date-fns"
 import { Link as LucideLink, MapPin } from "lucide-react"
 import { CldImage } from "next-cloudinary"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "../ui/button"
+import { api } from "@/convex/_generated/api"
+import { useQuery } from "convex/react"
 
 type UserProfileLayoutProps = {
   currentUser: Doc<"users">
   userProfile: Doc<"users">
-  subStatus: Doc<"subscriptions"> | null
 }
 
 export const UserProfileLayout = ({
   currentUser,
   userProfile,
-  subStatus,
 }: UserProfileLayoutProps) => {
+  const subscriptionStatus = useQuery(api.subscriptions.getFollowSubscription, {
+    creatorId: userProfile._id,
+    subscriberId: currentUser._id,
+  })
+
   return (
     <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full">
       <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
@@ -131,12 +134,19 @@ export const UserProfileLayout = ({
               Abonnement
             </div>
             <div className="mb-1">
-              {subStatus ? (
-                isPast(new Date(subStatus.endDate)) ? (
-                  <RenewDialog userProfile={userProfile} />
-                ) : (
-                  <UnsubscribeDialog userProfile={userProfile} />
-                )
+              {subscriptionStatus ? (
+                (() => {
+                  switch (subscriptionStatus.status) {
+                    case "expired":
+                      return <RenewDialog userProfile={userProfile} />
+                    case "cancelled":
+                      return <SubscribeDialog userProfile={userProfile} />
+                    case "active":
+                      return <UnsubscribeDialog userProfile={userProfile} />
+                    default:
+                      return <SubscribeDialog userProfile={userProfile} />
+                  }
+                })()
               ) : (
                 <SubscribeDialog userProfile={userProfile} />
               )}

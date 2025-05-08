@@ -108,7 +108,7 @@ export const getPost = query({
       .withIndex("by_id", (q) => q.eq("_id", args.postId))
       .unique()
 
-    if (!post) throw new ConvexError("Post not found")
+    if (!post) return
 
     const author = await ctx.db
       .query("users")

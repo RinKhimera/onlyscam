@@ -9,7 +9,7 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 
 export const PaymentCheckLayout = () => {
-  const followUser = useMutation(api.subscriptions.followUser)
+  // const followUser = useMutation(api.subscriptions.followUser)
 
   const searchParams = useSearchParams()
   const depositId = searchParams.get("depositId")
@@ -64,12 +64,12 @@ export const PaymentCheckLayout = () => {
       </main>
     )
 
-  if (data.status === "COMPLETED") {
-    followUser({
-      creatorId: data.metadata.creatorId,
-      startDate: data.created,
-    })
-  }
+  // if (data.status === "COMPLETED") {
+  //   followUser({
+  //     creatorId: data.metadata.creatorId,
+  //     startDate: data.created,
+  //   })
+  // }
 
   return (
     <main className="flex h-full min-h-screen w-[50%] flex-col items-center justify-center border-l border-r border-muted max-lg:w-[80%]">
