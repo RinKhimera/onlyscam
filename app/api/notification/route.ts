@@ -68,7 +68,7 @@ export async function POST(request: Request) {
     const checkData: CinetPayResponse = await checkRes.json()
 
     // Vérification que le paiement est réussi et qu'on a au moins le creatorId
-    if (checkData.code === "662" && creatorId && subscriberId) {
+    if (checkData.code === "00" || checkData.code === "662") {
       // Extraire le montant du paiement et autres données utiles
       const amountPaid = checkData.data.amount
         ? Number(checkData.data.amount)
@@ -77,8 +77,8 @@ export async function POST(request: Request) {
       // Utilise l'action pour traiter le paiement
       const result = await fetchAction(api.internalActions.processPayment, {
         transactionId,
-        creatorId,
-        subscriberId,
+        creatorId: creatorId!,
+        subscriberId: subscriberId!,
         startDate: new Date().toISOString(),
         amountPaid,
       })
