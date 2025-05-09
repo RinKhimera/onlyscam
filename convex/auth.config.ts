@@ -1,7 +1,7 @@
 const authConfig = {
   providers: [
     {
-      domain: "https://national-bluejay-86.clerk.accounts.dev",
+      domain: process.env.NEXT_PUBLIC_CLERK_FRONTEND_API_URL,
       applicationID: "convex",
     },
   ],
