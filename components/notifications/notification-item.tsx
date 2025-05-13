@@ -3,15 +3,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
 import { cn } from "@/lib/utils"
+import { formatCustomTimeAgo } from "@/utils/formatCustomTimeAgo"
 import { useMutation } from "convex/react"
 import {
-  differenceInDays,
-  differenceInHours,
-  differenceInMinutes,
-  differenceInMonths,
-  differenceInWeeks,
-} from "date-fns"
-import { Heart, MessageSquareText, UserRoundPlus } from "lucide-react"
+  Heart,
+  ImagePlus,
+  MessageSquareText,
+  UserRoundPlus,
+} from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useTransition } from "react"
@@ -40,24 +39,6 @@ export const NotificationItem = ({
 
   const markAsRead = useMutation(api.notifications.markNotificationAsRead)
 
-  const formatCustomTimeAgo = (timestamp: number): string => {
-    const now = new Date()
-    const date = new Date(timestamp)
-
-    const minutes = differenceInMinutes(now, date)
-    const hours = differenceInHours(now, date)
-    const days = differenceInDays(now, date)
-    const weeks = differenceInWeeks(now, date)
-    const months = differenceInMonths(now, date)
-
-    if (months > 1) return `+${months} mois`
-    if (weeks >= 1) return `${weeks} sem.`
-    if (days >= 1) return `${days} j`
-    if (hours >= 1) return `${hours} h`
-    if (minutes >= 1) return `${minutes} m`
-    return "mnt."
-  }
-
   const timeAgo = formatCustomTimeAgo(notification._creationTime)
 
   const getIcon = () => {
@@ -67,8 +48,11 @@ export const NotificationItem = ({
       case "comment":
         return <MessageSquareText className="text-blue-500" size={32} />
       case "newSubscription":
+        return <UserRoundPlus className="text-blue-500" size={32} />
       case "renewSubscription":
         return <UserRoundPlus className="text-blue-500" size={32} />
+      case "newPost":
+        return <ImagePlus className="text-blue-500" size={32} />
       default:
         return null
     }
@@ -86,6 +70,8 @@ export const NotificationItem = ({
         return "s'est abonné à vous"
       case "renewSubscription":
         return "a renouvelé son abonnement"
+      case "newPost":
+        return "a partagé une nouvelle publication"
       default:
         return ""
     }
