@@ -10,4 +10,11 @@ crons.daily(
   internal.subscriptions.checkAndUpdateExpiredSubscriptions,
 )
 
+// Exécution tous les jours à 03:00 UTC (pour ne pas interférer avec d'autres opérations)
+crons.daily(
+  "clean-draft-assets",
+  { hourUTC: 3, minuteUTC: 0 },
+  internal.assetsDraft.cleanUpDraftAssets,
+)
+
 export default crons

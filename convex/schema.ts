@@ -31,6 +31,14 @@ export default defineSchema({
     comments: v.array(v.id("comments")),
   }).index("by_author", ["author"]),
 
+  assetsDraft: defineTable({
+    author: v.id("users"),
+    publicId: v.string(),
+    assetType: v.string(),
+  })
+    .index("by_author", ["author"])
+    .index("by_publicId", ["publicId"]),
+
   comments: defineTable({
     author: v.id("users"),
     post: v.id("posts"),

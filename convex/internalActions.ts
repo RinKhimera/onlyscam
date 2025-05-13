@@ -1,3 +1,5 @@
+"use node"
+
 import { action } from "./_generated/server"
 import { v } from "convex/values"
 import { internal } from "./_generated/api"
@@ -110,6 +112,31 @@ export const checkTransaction = action({
         endDate: subscription.endDate,
         amountPaid: subscription.amountPaid,
       },
+    }
+  },
+})
+
+export const deleteCloudinaryAsset = action({
+  args: {
+    publicId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const cloudinary = require("cloudinary").v2
+    cloudinary.config({
+      cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+      secure: true,
+    })
+
+    try {
+      const result = await cloudinary.uploader.destroy(args.publicId, {
+        invalidate: true,
+      })
+      return { success: true, result }
+    } catch (error) {
+      console.error(`Error deleting asset ${args.publicId}:`, error)
+      return { success: false, error: String(error) }
     }
   },
 })

@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as assetsDraft from "../assetsDraft.js";
 import type * as comments from "../comments.js";
 import type * as conversations from "../conversations.js";
 import type * as crons from "../crons.js";
@@ -34,6 +35,7 @@ import type * as users from "../users.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  assetsDraft: typeof assetsDraft;
   comments: typeof comments;
   conversations: typeof conversations;
   crons: typeof crons;

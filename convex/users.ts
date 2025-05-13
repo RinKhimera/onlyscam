@@ -1,5 +1,3 @@
-"use server"
-
 import { ConvexError, v, Validator } from "convex/values"
 import {
   internalMutation,
