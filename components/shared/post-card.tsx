@@ -4,12 +4,14 @@ import { BookmarkButton } from "@/components/home/bookmark-button"
 import { CommentButton } from "@/components/home/comment-button"
 import { LikeButton } from "@/components/home/like-button"
 import { PostEllipsis } from "@/components/home/post-ellipsis"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { ProfileImage } from "@/components/shared/profile-image"
 import { Doc } from "@/convex/_generated/dataModel"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CldImage, CldVideoPlayer } from "next-cloudinary"
 import "next-cloudinary/dist/cld-video-player.css"
+import Image from "next/image"
 import Link from "next/link"
 import React from "react"
 
@@ -33,10 +35,18 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
           <Link href={`/${post.author?.username}`}>
             <div className="flex items-center gap-3">
               <Avatar>
-                <AvatarImage src={post.author?.image} alt={post.author?.name} />
-                <AvatarFallback className="size-11">
-                  <div className="animate-pulse rounded-full bg-gray-500"></div>
-                </AvatarFallback>
+                {post.author?.image ? (
+                  <ProfileImage
+                    src={post.author.image}
+                    width={100}
+                    height={100}
+                    alt={post.author.username || "Profile image"}
+                  />
+                ) : (
+                  <AvatarFallback className="size-11">
+                    <div className="animate-pulse rounded-full bg-gray-500"></div>
+                  </AvatarFallback>
+                )}
               </Avatar>
 
               <div className="text-left max-sm:text-sm">

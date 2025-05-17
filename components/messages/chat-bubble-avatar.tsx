@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { MessageProps } from "@/types"
+import { ProfileImage } from "../shared/profile-image"
 
 type ChatBubbleAvatarProps = {
   message: MessageProps
@@ -19,9 +20,12 @@ export const ChatBubbleAvatar = ({
       {message.sender.isOnline && isMember && (
         <div className="absolute right-0 top-0 h-2 w-2 rounded-full border-2 border-foreground bg-green-500" />
       )}
-      <AvatarImage
+      <ProfileImage
         src={message.sender?.image}
-        className="h-8 w-8 rounded-full object-cover"
+        width={100}
+        height={100}
+        alt={message.sender.name || "Profile image"}
+        className="size-8 rounded-full object-cover"
       />
       <AvatarFallback className="h-8 w-8 ">
         <div className="animate-pulse rounded-full bg-gray-500"></div>

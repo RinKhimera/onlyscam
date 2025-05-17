@@ -1,7 +1,7 @@
 "use client"
 
 import { deleteAsset } from "@/actions/upload-cloudinary"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -32,6 +32,8 @@ import { toast } from "sonner"
 import { z } from "zod"
 import { useRouter } from "next/navigation"
 import { generateRandomString } from "@/utils/generateRandomString"
+import Image from "next/image"
+import { ProfileImage } from "../shared/profile-image"
 
 export const NewPostLayout = () => {
   const { isAuthenticated } = useConvexAuth()
@@ -136,10 +138,18 @@ export const NewPostLayout = () => {
 
       <div className="relative flex items-stretch space-x-3 border-b border-muted px-4 py-5">
         <Avatar>
-          <AvatarImage src={currentUser?.image} alt={currentUser?.username} />
-          <AvatarFallback className="size-11">
-            <div className="animate-pulse rounded-full bg-gray-500"></div>
-          </AvatarFallback>
+          {currentUser?.image ? (
+            <ProfileImage
+              src={currentUser.image}
+              width={100}
+              height={100}
+              alt={currentUser?.username || "Profile image"}
+            />
+          ) : (
+            <AvatarFallback className="size-11">
+              <div className="animate-pulse rounded-full bg-gray-500"></div>
+            </AvatarFallback>
+          )}
         </Avatar>
 
         <Form {...form}>

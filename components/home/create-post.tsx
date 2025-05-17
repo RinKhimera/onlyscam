@@ -1,11 +1,13 @@
 "use client"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Doc } from "@/convex/_generated/dataModel"
 import { ImagePlus } from "lucide-react"
 import Textarea from "react-expanding-textarea"
 import { useRouter } from "next/navigation"
+import { CldImage } from "next-cloudinary"
+import { ProfileImage } from "../shared/profile-image"
 
 export const CreatePost = ({ currentUser }: { currentUser: Doc<"users"> }) => {
   const router = useRouter()
@@ -20,7 +22,12 @@ export const CreatePost = ({ currentUser }: { currentUser: Doc<"users"> }) => {
       onClick={handleCreatePostClick}
     >
       <Avatar>
-        <AvatarImage src={currentUser?.image} alt={currentUser?.username} />
+        <ProfileImage
+          src={currentUser?.image}
+          width={100}
+          height={100}
+          alt={currentUser?.username || "Profile image"}
+        />
         <AvatarFallback className="size-11">
           <div className="animate-pulse rounded-full bg-gray-500"></div>
         </AvatarFallback>

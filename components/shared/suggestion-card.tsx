@@ -1,6 +1,9 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+"use client"
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { ProfileImage } from "@/components/shared/profile-image"
 import { UserProps } from "@/types"
-import Image from "next/image"
+import { CldImage } from "next-cloudinary"
 import Link from "next/link"
 
 export const SuggestionCard = ({ user }: { user: UserProps }) => {
@@ -8,7 +11,7 @@ export const SuggestionCard = ({ user }: { user: UserProps }) => {
     <div className="relative mb-2.5 h-[140px] rounded-lg">
       <Link href={`/${user?.username}`} className="flex h-full flex-col">
         <div className="flex-1">
-          <Image
+          <CldImage
             className="rounded-lg object-cover"
             src={
               (user?.imageBanner as string) ||
@@ -24,14 +27,19 @@ export const SuggestionCard = ({ user }: { user: UserProps }) => {
             {user?.isOnline && (
               <div className="absolute right-1.5 top-0 size-4 rounded-full border-2 border-foreground bg-green-500" />
             )}
-            <AvatarImage
-              src={user?.image}
-              alt={user?.name}
-              className="rounded-full object-cover"
-            />
-            <AvatarFallback>
-              <div className="h-full w-full animate-pulse rounded-full"></div>
-            </AvatarFallback>
+            {user?.image ? (
+              <ProfileImage
+                src={user.image}
+                width={200}
+                height={200}
+                alt={user?.name || "Profile image"}
+                className="rounded-full object-cover"
+              />
+            ) : (
+              <AvatarFallback>
+                <div className="h-full w-full animate-pulse rounded-full"></div>
+              </AvatarFallback>
+            )}
           </Avatar>
         </div>
 

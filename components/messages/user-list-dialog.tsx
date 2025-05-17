@@ -1,6 +1,6 @@
 "use client"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -20,6 +20,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState, useTransition } from "react"
 import { toast } from "sonner"
+import { ProfileImage } from "../shared/profile-image"
 
 export const UserListDialog = () => {
   const { isAuthenticated } = useConvexAuth()
@@ -175,9 +176,11 @@ export const UserListDialog = () => {
                 {user.isOnline && (
                   <div className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full border-2 border-foreground bg-green-500" />
                 )}
-                <AvatarImage
-                  src={user.image || "https://github.com/shadcn.png"}
-                  alt={user.name}
+                <ProfileImage
+                  src={user.image}
+                  width={100}
+                  height={100}
+                  alt={user.username || "Profile image"}
                   className="rounded-full object-cover"
                 />
                 <AvatarFallback>

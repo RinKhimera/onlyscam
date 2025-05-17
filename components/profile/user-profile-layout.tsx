@@ -5,17 +5,16 @@ import { SubscribeDialog } from "@/components/profile/subscribe-dialog"
 import { UnsubscribeDialog } from "@/components/profile/unsubscribe-dialog"
 import { UserPosts } from "@/components/profile/user-posts"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Doc } from "@/convex/_generated/dataModel"
 import { Link as LucideLink, MapPin } from "lucide-react"
 import { CldImage } from "next-cloudinary"
-import Image from "next/image"
 import Link from "next/link"
 import { Button } from "../ui/button"
 import { api } from "@/convex/_generated/api"
 import { useQuery } from "convex/react"
+import { ProfileImage } from "../shared/profile-image"
 
 type UserProfileLayoutProps = {
   currentUser: Doc<"users">
@@ -55,24 +54,35 @@ export const UserProfileLayout = ({
           <Dialog>
             <DialogTrigger asChild>
               <Avatar className="size-36 cursor-pointer border-4 border-accent object-none object-center max-sm:size-24">
-                <AvatarImage
-                  src={userProfile?.image}
-                  className="object-cover"
-                />
-                <AvatarFallback className="size-11">
-                  <div className="animate-pulse rounded-full bg-gray-500"></div>
-                </AvatarFallback>
+                {userProfile?.image ? (
+                  <ProfileImage
+                    src={userProfile.image}
+                    width={600}
+                    height={600}
+                    className="aspect-square h-full w-full object-cover"
+                    alt={userProfile?.name || "Profile image"}
+                  />
+                ) : (
+                  <AvatarFallback className="size-11">
+                    <div className="animate-pulse rounded-full bg-gray-500"></div>
+                  </AvatarFallback>
+                )}
               </Avatar>
             </DialogTrigger>
-            <DialogContent className="h-full max-w-[1000px] overflow-auto border-none bg-transparent sm:rounded-none">
-              <Image
-                src={userProfile?.image}
-                alt={userProfile?.name}
-                fill
-                placeholder="blur"
-                blurDataURL={userProfile?.image}
-                className="mx-auto h-full w-auto object-contain"
-              />
+            <DialogContent className="flex h-screen max-w-none items-center justify-center border-none bg-black/80 p-0 sm:rounded-none">
+              <div className="relative max-h-[90vh] max-w-[90vw]">
+                {userProfile?.image ? (
+                  <ProfileImage
+                    src={userProfile.image}
+                    width={1200}
+                    height={1200}
+                    className="max-h-[90vh] max-w-[90vw] object-contain"
+                    alt={userProfile?.name || "Profile image"}
+                  />
+                ) : (
+                  <div className="h-[50vh] w-[50vh] animate-pulse rounded-full bg-gray-500"></div>
+                )}
+              </div>
             </DialogContent>
           </Dialog>
         </div>
@@ -159,40 +169,3 @@ export const UserProfileLayout = ({
     </main>
   )
 }
-
-// const ProfileLayoutSkeleton = () => {
-//   return (
-//     <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%]">
-//       <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
-//         <Skeleton className="h-8 w-[300px]" />
-//       </h1>
-
-//       <div className="relative">
-//         <div>
-//           <AspectRatio ratio={3 / 1}>
-//             <Skeleton className="size-full rounded-none" />
-//           </AspectRatio>
-//         </div>
-//         <div className="absolute -bottom-[65px] left-5">
-//           <Skeleton className="size-36 rounded-full" />
-//         </div>
-//       </div>
-
-//       <div className="mr-5 mt-5 flex justify-end">
-//         <Skeleton className="h-8 w-[180px]" />
-//       </div>
-
-//       <div className="mt-6 space-y-6 px-4">
-//         <div className="space-y-2">
-//           <Skeleton className="h-6 w-[280px]" />
-//           <Skeleton className="h-4 w-[150px]" />
-//         </div>
-
-//         <div className="space-y-2">
-//           <Skeleton className="h-4 w-[300px]" />
-//           <Skeleton className="h-4 w-[200px]" />
-//         </div>
-//       </div>
-//     </main>
-//   )
-// }

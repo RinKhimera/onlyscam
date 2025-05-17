@@ -1,9 +1,10 @@
 "use client"
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { api } from "@/convex/_generated/api"
 import { cn } from "@/lib/utils"
+import { ProfileImage } from "@/components/shared/profile-image"
 import { UserProps } from "@/types"
 import {
   CloudinaryUploadWidget,
@@ -154,6 +155,13 @@ export const UpdateImages = ({ currentUser }: { currentUser: UserProps }) => {
             multiple: false,
             maxFileSize: 6 * 1024 * 1024,
             clientAllowedFormats: ["image"],
+            cropping: true,
+            croppingAspectRatio: 1,
+            croppingDefaultSelectionRatio: 0.8,
+            croppingShowDimensions: true,
+            croppingCoordinatesMode: "custom",
+            showSkipCropButton: false,
+            croppingValidateDimensions: true,
           }}
           onSuccess={(result, { widget }) =>
             handleUploadProfile(result, widget)
@@ -163,16 +171,21 @@ export const UpdateImages = ({ currentUser }: { currentUser: UserProps }) => {
             return (
               <Avatar
                 className={cn(
-                  "relative size-28 cursor-pointer border-4 border-accent object-none object-center max-sm:size-20",
+                  "relative size-36 cursor-pointer border-4 border-accent object-none object-center max-sm:size-24",
                   { "cursor-not-allowed": isPending },
                 )}
                 onClick={() => open()}
               >
-                <AvatarImage
-                  src={currentUser?.image}
-                  className="object-cover"
-                />
-                <AvatarFallback>XO</AvatarFallback>
+                {currentUser?.image ? (
+                  <ProfileImage
+                    src={currentUser.image}
+                    width={600}
+                    height={600}
+                    alt={currentUser?.name || "Profile image"}
+                  />
+                ) : (
+                  <AvatarFallback>XO</AvatarFallback>
+                )}
 
                 <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity duration-300 hover:opacity-100">
                   <div className="flex size-11 items-center justify-center rounded-full bg-accent text-white">

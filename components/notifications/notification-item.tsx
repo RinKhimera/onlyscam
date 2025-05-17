@@ -1,5 +1,5 @@
 import NotificationEllipsis from "@/components/notifications/notification-ellipsis"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
 import { cn } from "@/lib/utils"
@@ -15,6 +15,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useTransition } from "react"
 import { toast } from "sonner"
+import { ProfileImage } from "../shared/profile-image"
 
 // Define a type `ExtendedNotificationProps` that extends the `Doc<"notifications">` type
 // But omits the "sender", "post", and "comment" properties. These properties are then redefined with new types.
@@ -102,13 +103,15 @@ export const NotificationItem = ({
   }
 
   return (
-    <div className="relative transition hover:bg-muted/60">
+    <div
+      className={cn(
+        "relative transition",
+        notification.read
+          ? "hover:bg-muted/60"
+          : "bg-muted/30 hover:bg-muted/60",
+      )}
+    >
       <button
-        // href={
-        //   notification.post
-        //     ? `/${notification.recipientId?.username}/post/${notification.post._id}`
-        //     : `/${notification.sender?.username}`
-        // }
         className={cn("absolute inset-0")}
         onClick={handleRoute}
         disabled={isPending}
@@ -124,9 +127,11 @@ export const NotificationItem = ({
             <>{icon}</>
             <Link href={`/${notification.sender?.username}`}>
               <Avatar className="size-9">
-                <AvatarImage
+                <ProfileImage
                   src={notification.sender?.image}
-                  alt={notification.sender?.name}
+                  width={100}
+                  height={100}
+                  alt={notification.sender?.name || "Profile image"}
                 />
                 <AvatarFallback className="size-11">
                   <div className="animate-pulse rounded-full bg-gray-500"></div>

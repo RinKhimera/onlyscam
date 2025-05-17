@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,17 +8,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { ProfileImage } from "@/components/shared/profile-image"
 import { Skeleton } from "@/components/ui/skeleton"
 import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
-import { SignOutButton, SignedIn, UserButton } from "@clerk/nextjs"
+import { SignOutButton } from "@clerk/nextjs"
 import { useQuery } from "convex/react"
 import {
   BookmarkPlus,
-  EllipsisVertical,
+  ChevronsUpDown,
   Home,
   LogOut,
   Settings,
+  Sparkles,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -38,110 +40,101 @@ export const UserInfoPopover = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="mb-4 flex w-full items-center justify-between rounded-full p-2 transition duration-200 hover:bg-foreground/10 max-lg:w-fit max-lg:justify-center">
-          <div className="flex items-center space-x-2">
-            <Avatar>
-              <AvatarImage
-                src={currentUser?.image}
-                alt={currentUser?.username}
-              />
-              <AvatarFallback className="size-11">
-                <div className="animate-pulse rounded-full bg-gray-500"></div>
-              </AvatarFallback>
+        <button className="mb-4 flex w-full items-center justify-between rounded-lg p-3 transition duration-200 hover:bg-foreground/10 data-[state=open]:bg-foreground/10 data-[state=open]:text-foreground">
+          <div className="flex items-center gap-2">
+            <Avatar className="size-8 rounded-lg">
+              {currentUser?.image ? (
+                <ProfileImage
+                  src={currentUser.image}
+                  width={100}
+                  height={100}
+                  alt={currentUser?.username || "Profile image"}
+                />
+              ) : (
+                <AvatarFallback className="rounded-lg">
+                  {currentUser?.username?.substring(0, 2).toUpperCase()}
+                </AvatarFallback>
+              )}
             </Avatar>
-
-            <div className="text-left text-sm max-lg:hidden">
-              <div className="truncate">{currentUser?.name}</div>
-              <div className="text-muted-foreground">
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">
+                {currentUser?.name}
+              </span>
+              <span className="truncate text-xs text-muted-foreground">
                 @{currentUser?.username}
-              </div>
+              </span>
             </div>
           </div>
-
-          <div className="max-lg:hidden">
-            <EllipsisVertical />
-          </div>
+          <ChevronsUpDown className="ml-auto size-4" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent side="top" className="w-60">
-        <DropdownMenuGroup className="font-semibold text-white">
-          <DropdownMenuLabel className="flex flex-col gap-1">
-            {/* Mount the UserButton component */}
-            <UserButton />
-
-            <Link
-              href={currentUser ? `/${currentUser.username}` : ""}
-              className="w-fit text-base hover:underline"
-            >
-              {currentUser?.name}
-            </Link>
-
-            <Link
-              href={currentUser ? `/${currentUser.username}` : ""}
-              className="w-fit font-normal text-muted-foreground hover:text-blue-500 hover:underline"
-            >
-              @{currentUser?.username}
-            </Link>
-
-            <div>
-              {getFollowers?.length} fans | {getFollowings?.length} abonnements
+      <DropdownMenuContent
+        className="min-w-[232px] rounded-lg"
+        align="end"
+        sideOffset={4}
+      >
+        <DropdownMenuLabel className="p-0 font-normal">
+          <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+            <Avatar className="size-8 rounded-lg">
+              {currentUser?.image ? (
+                <ProfileImage
+                  src={currentUser.image}
+                  width={100}
+                  height={100}
+                  alt={currentUser?.username || "Profile image"}
+                />
+              ) : (
+                <AvatarFallback className="rounded-lg">
+                  {currentUser?.username?.substring(0, 2).toUpperCase()}
+                </AvatarFallback>
+              )}
+            </Avatar>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">
+                {currentUser?.name}
+              </span>
+              <span className="truncate text-xs">@{currentUser?.username}</span>
             </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
+          </div>
+          <div className="mt-2 px-2 text-sm">
+            {getFollowers?.length} fans | {getFollowings?.length} abonnements
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
           <DropdownMenuItem>
-            <Link
-              href={`/${currentUser?.username}`}
-              className="flex w-full items-center space-x-2 rounded-3xl"
-            >
-              <div>
-                <Home size={20} />
-              </div>
-              <div className="max-lg:hidden">Mon Profil</div>
-            </Link>
+            <Sparkles className="mr-2 size-4" />
+            Passer à la version Pro
           </DropdownMenuItem>
-
-          <DropdownMenuItem>
-            <Link
-              href={"/collections"}
-              className="flex w-full items-center space-x-2 rounded-3xl"
-            >
-              <div>
-                <BookmarkPlus size={20} />
-              </div>
-              <div className="max-lg:hidden">Collections</div>
-            </Link>
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <Link
-              href={"/settings"}
-              className="flex w-full items-center space-x-2 rounded-3xl"
-            >
-              <div>
-                <Settings size={20} />
-              </div>
-              <div className="max-lg:hidden">Paramètres</div>
-            </Link>
-          </DropdownMenuItem>
-
-          <DropdownMenuItem>
-            <SignOutButton>
-              <div className="flex w-full cursor-pointer items-center space-x-2 rounded-3xl">
-                <div>
-                  <LogOut size={20} />
-                </div>
-                <div>Se déconnecter</div>
-              </div>
-            </SignOutButton>
-          </DropdownMenuItem>
-
-          {/* <DropdownMenuItem>{currentUser?.name}</DropdownMenuItem>
-
-          <SignedIn>
-            <SignOutButton>Se déconnecter</SignOutButton>
-          </SignedIn> */}
         </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <Link href={`/${currentUser?.username}`}>
+            <DropdownMenuItem className="cursor-pointer">
+              <Home className="mr-2 size-4" />
+              Mon Profil
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/collections">
+            <DropdownMenuItem className="cursor-pointer">
+              <BookmarkPlus className="mr-2 size-4" />
+              Collections
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/settings">
+            <DropdownMenuItem className="cursor-pointer">
+              <Settings className="mr-2 size-4" />
+              Paramètres
+            </DropdownMenuItem>
+          </Link>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <SignOutButton>
+          <DropdownMenuItem className="cursor-pointer">
+            <LogOut className="mr-2 size-4" />
+            Se déconnecter
+          </DropdownMenuItem>
+        </SignOutButton>
       </DropdownMenuContent>
     </DropdownMenu>
   )
@@ -149,14 +142,13 @@ export const UserInfoPopover = ({
 
 const UserInfoSkeleton = () => {
   return (
-    <button className="mb-4 flex w-full items-center justify-between rounded-full p-2 transition duration-200 hover:bg-foreground/10 max-lg:w-fit max-lg:justify-center">
-      <div className="flex items-center space-x-2">
-        <Skeleton className="size-11 rounded-full" />
-        <div className="space-y-2 max-lg:hidden">
-          <Skeleton className="h-4 w-[120px]" />
-          <Skeleton className="h-4 w-[120px]" />
-        </div>
+    <div className="mb-4 flex w-full items-center rounded-lg p-3">
+      <Skeleton className="size-8 rounded-lg bg-muted" />
+      <div className="ml-2 space-y-2">
+        <Skeleton className="h-3 w-[100px] bg-muted" />
+        <Skeleton className="h-3 w-[150px] bg-muted" />
       </div>
-    </button>
+      <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
+    </div>
   )
 }
