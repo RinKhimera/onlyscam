@@ -87,3 +87,62 @@ export const markNotificationAsUnread = mutation({
     await ctx.db.patch(notification._id, { read: false })
   },
 })
+
+export const getUnreadCounts = query({
+  args: {},
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new ConvexError("Not authenticated")
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_tokenIdentifier", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique()
+
+    if (!user) throw new ConvexError("User not found")
+
+    // Compter les notifications non lues
+    const unreadNotifications = await ctx.db
+      .query("notifications")
+      .withIndex("by_recipient", (q) => q.eq("recipientId", user._id))
+      .filter((q) => q.eq(q.field("read"), false))
+      .collect()
+
+    const unreadNotificationsCount = unreadNotifications.length
+
+    // Récupérer toutes les conversations de l'utilisateur
+    const conversations = await ctx.db.query("conversations").collect()
+
+    // Filtrer les conversations auxquelles l'utilisateur participe
+    const myConversations = conversations.filter((conversation) => {
+      return conversation.participants.includes(user._id)
+    })
+
+    // Compter tous les messages non lus dans toutes les conversations de l'utilisateur
+    let unreadMessagesCount = 0
+
+    for (const conversation of myConversations) {
+      const unreadMessages = await ctx.db
+        .query("messages")
+        .withIndex("by_conversation", (q) =>
+          q.eq("conversation", conversation._id),
+        )
+        .filter((q) =>
+          q.and(
+            q.eq(q.field("read"), false),
+            q.neq(q.field("sender"), user._id), // Ne pas compter nos propres messages
+          ),
+        )
+        .collect()
+
+      unreadMessagesCount += unreadMessages.length
+    }
+
+    return {
+      unreadNotificationsCount,
+      unreadMessagesCount,
+    }
+  },
+})

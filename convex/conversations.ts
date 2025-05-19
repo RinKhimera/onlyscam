@@ -88,16 +88,42 @@ export const getMyConversations = query({
           .order("desc")
           .take(1)
 
+        // Vérifier s'il y a des messages non lus pour l'utilisateur actuel
+        const unreadMessages = await ctx.db
+          .query("messages")
+          .withIndex("by_conversation", (q) =>
+            q.eq("conversation", conversation._id),
+          )
+          .filter((q) =>
+            q.and(
+              q.eq(q.field("read"), false),
+              q.neq(q.field("sender"), user._id), // Ne pas compter les messages envoyés par l'utilisateur
+            ),
+          )
+          .collect()
+
+        const hasUnreadMessages = unreadMessages.length > 0
+
         // return should be in this order, otherwise _id field will be overwritten
         return {
           ...userDetails,
           ...conversation,
           lastMessage: lastMessage[0] || null,
+          lastActivityTime: lastMessage[0]
+            ? lastMessage[0]._creationTime
+            : conversation._creationTime,
+          hasUnreadMessages,
+          unreadCount: unreadMessages.length,
         }
       }),
     )
 
-    return conversationsWithDetails
+    // Trier les conversations par date du dernier message (du plus récent au plus ancien)
+    const sortedConversations = conversationsWithDetails.sort(
+      (a, b) => b.lastActivityTime - a.lastActivityTime,
+    )
+
+    return sortedConversations
   },
 })
 

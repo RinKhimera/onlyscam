@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { api } from "@/convex/_generated/api"
 import { formatDate } from "@/lib/dates"
 import { MessageSeenSvg } from "@/lib/svgs"
@@ -19,6 +20,8 @@ export const ConversationBox = ({
   const conversationName = conversation?.groupName || conversation?.name
   const lastMessage = conversation?.lastMessage
   const lastMessageType = lastMessage?.messageType
+  const hasUnreadMessages = conversation?.hasUnreadMessages
+  const unreadCount = conversation?.unreadCount || 0
 
   const currentUser = useQuery(api.users.getCurrentUser)
 
@@ -26,7 +29,9 @@ export const ConversationBox = ({
     <>
       <div
         onClick={() => router.push(`/messages/${conversation?._id}`)}
-        className={`flex cursor-pointer items-center gap-2 border-b p-3 transition hover:bg-muted/60 ${conversation?._id === params.id ? "bg-muted" : ""}`}
+        className={`flex cursor-pointer items-center gap-2 border-b p-3 transition 
+          ${hasUnreadMessages ? "bg-blue-900/10 font-semibold" : "hover:bg-muted/60"}
+          ${conversation?._id === params.id ? "bg-muted" : ""}`}
       >
         <Avatar className="relative overflow-visible border border-gray-900">
           {conversation?.isOnline && (
@@ -43,26 +48,45 @@ export const ConversationBox = ({
 
         <div className="w-full">
           <div className="flex items-center">
-            <h3 className="text-xs font-medium lg:text-sm">
+            <h3
+              className={`text-xs lg:text-sm ${hasUnreadMessages ? "font-bold" : "font-medium"}`}
+            >
               {conversationName}
             </h3>
+
+            {/* Badge pour le nombre de messages non lus */}
+            {unreadCount > 0 && (
+              <Badge
+                variant="destructive"
+                className="ml-2 flex h-5 w-5 items-center justify-center rounded-full p-0"
+              >
+                {unreadCount}
+              </Badge>
+            )}
+
             <span className="ml-auto text-[10px] text-muted-foreground lg:text-xs">
-              {formatDate(
-                lastMessage?._creationTime || conversation?._creationTime!,
-              )}
+              {lastMessage?._creationTime || conversation?.lastActivityTime
+                ? formatDate(
+                    lastMessage?._creationTime ||
+                      conversation?.lastActivityTime ||
+                      0,
+                  )
+                : ""}
             </span>
           </div>
-          <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
+          <p
+            className={`mt-1 flex items-center gap-1 text-sm ${hasUnreadMessages ? "font-medium text-foreground" : "text-muted-foreground"}`}
+          >
             {lastMessage?.sender === currentUser?._id ? <MessageSeenSvg /> : ""}
             {conversation?.isGroup && <Users size={16} />}
             {!lastMessage && "Démarrer une conversation"}
             {lastMessageType === "text" ? (
               (lastMessage?.content as string)?.length > 30 ? (
-                <span className="text-xs">
+                <span className="text-sm">
                   {(lastMessage?.content as string)?.slice(0, 30)}...
                 </span>
               ) : (
-                <span className="text-xs">{lastMessage?.content}</span>
+                <span className="text-sm">{lastMessage?.content}</span>
               )
             ) : null}
             {lastMessageType === "image" && <ImageIcon size={16} />}

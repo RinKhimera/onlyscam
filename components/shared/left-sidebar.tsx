@@ -2,14 +2,29 @@
 
 import { UserInfoPopover } from "@/components/shared/user-info-popover"
 import { Button, buttonVariants } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Doc } from "@/convex/_generated/dataModel"
 import { cn } from "@/lib/utils"
 import { Bell, Bookmark, Home, Mail, PenLine, UserRound } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useConvexAuth, useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 
 export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
   const pathname = usePathname()
+  const { isAuthenticated } = useConvexAuth()
+
+  const unreadCounts = useQuery(
+    api.notifications.getUnreadCounts,
+    isAuthenticated ? undefined : "skip",
+  ) || {
+    unreadMessagesCount: 0,
+    unreadNotificationsCount: 0,
+  }
+
+  const unreadMessages = unreadCounts?.unreadMessagesCount || 0
+  const unreadNotifications = unreadCounts?.unreadNotificationsCount || 0
 
   const navigationLinks = [
     { title: "Accueil", href: "/", icon: <Home /> },
@@ -22,11 +37,13 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
       title: "Notifications",
       href: "/notifications",
       icon: <Bell />,
+      badge: unreadNotifications > 0 ? unreadNotifications : null,
     },
     {
       title: "Messages",
       href: "/messages",
       icon: <Mail />,
+      badge: unreadMessages > 0 ? unreadMessages : null,
     },
     {
       title: "Collections",
@@ -55,7 +72,17 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
                 { "text-muted-foreground": pathname !== link.href },
               )}
             >
-              <div>{link.icon}</div>
+              <div className="relative">
+                {link.icon}
+                {link.badge && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full p-0 text-xs"
+                  >
+                    {link.badge}
+                  </Badge>
+                )}
+              </div>
               <div className="max-lg:hidden">{link.title}</div>
             </Link>
           ))}
@@ -90,7 +117,17 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
                 { "text-primary": pathname === link.href },
               )}
             >
-              <div>{link.icon}</div>
+              <div className="relative">
+                {link.icon}
+                {link.badge && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full p-0 text-[10px]"
+                  >
+                    {link.badge}
+                  </Badge>
+                )}
+              </div>
             </Link>
           ))}
         </div>

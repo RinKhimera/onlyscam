@@ -5,9 +5,8 @@ import { MessageForm } from "@/components/messages/message-form"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { api } from "@/convex/_generated/api"
 import { ConversationProps } from "@/types"
-import { useConvexAuth, useQuery } from "convex/react"
+import { useConvexAuth, useMutation, useQuery } from "convex/react"
 import { Video, X } from "lucide-react"
-import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { MessagesList } from "./messages-list"
 import { useEffect } from "react"
@@ -18,6 +17,10 @@ export const ConversationContent = () => {
   const params = useParams()
   const router = useRouter()
 
+  // Ajouter la mutation pour marquer les messages comme lus
+  const markAsRead = useMutation(api.messages.markConversationAsRead)
+
+  // Utilisez "skip" pour éviter d'exécuter les requêtes si non authentifié
   const conversations = useQuery(
     api.conversations.getMyConversations,
     isAuthenticated ? undefined : "skip",
@@ -31,7 +34,14 @@ export const ConversationContent = () => {
   const currentConversation: ConversationProps | undefined =
     conversations?.find((conversation) => conversation._id === params.id)
 
-  // Utiliser useEffect pour la redirection au lieu de le faire pendant le rendu
+  // useEffect pour marquer les messages comme lus quand la conversation est ouverte
+  useEffect(() => {
+    if (isAuthenticated && currentConversation && params.id) {
+      markAsRead({ conversationId: params.id as any })
+    }
+  }, [isAuthenticated, currentConversation, params.id, markAsRead])
+
+  // useEffect pour la redirection
   useEffect(() => {
     if (conversations && !currentConversation) {
       router.push("/messages")

@@ -59,6 +59,7 @@ export default defineSchema({
     conversation: v.id("conversations"),
     sender: v.id("users"),
     content: v.string(),
+    read: v.optional(v.boolean()),
     messageType: v.union(
       v.literal("text"),
       v.literal("image"),

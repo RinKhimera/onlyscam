@@ -12,6 +12,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
 import ReactPlayer from "react-player"
+import { CheckCheck } from "lucide-react"
 
 type MessageBoxProps = {
   conversation: ConversationProps
@@ -82,7 +83,7 @@ export const MessageBox = ({
     <>
       <DateIndicator message={message} previousMessage={previousMessage} />
       <div className="ml-auto flex w-2/3 gap-1">
-        <div className="relative z-20 ml-auto flex max-w-fit flex-col rounded-3xl rounded-br-md bg-blue-700 px-4 py-1.5 shadow-md">
+        <div className="relative z-20 ml-auto flex max-w-fit flex-col rounded-3xl rounded-br-md bg-muted px-4 py-1.5 shadow-md">
           {renderMessageContent()}
           {open && (
             <ImageDialog
@@ -91,7 +92,11 @@ export const MessageBox = ({
               onClose={() => setOpen(false)}
             />
           )}
-          <MessageTime time={time} isFromCurrentUser={isFromCurrentUser} />
+          <MessageTime
+            time={time}
+            isFromCurrentUser={isFromCurrentUser}
+            isRead={message.read}
+          />
         </div>
       </div>
     </>
@@ -99,7 +104,7 @@ export const MessageBox = ({
 }
 
 const TextMessage = ({ message }: { message: MessageProps }) => {
-  const isLink = /^(ftp|http|https):\/\/[^ "]+$/.test(message.content) // Check if the content is a URL
+  const isLink = /^(ftp|http|https):\/\/[^ "]+$/.test(message.content)
 
   return (
     <div>
@@ -134,15 +139,7 @@ const ImageMessage = ({
         alt="image"
         width={500}
         height={500}
-        crop={{
-          width: 500,
-          height: 500,
-          type: "crop",
-          gravity: "face",
-          // source: true,
-          aspectRatio: "1:1",
-        }}
-        // placeholder="blur"
+        crop="auto"
         onClick={handleClick}
       />
     </div>
@@ -194,9 +191,22 @@ const ImageDialog = ({
 const MessageTime = ({
   time,
   isFromCurrentUser,
+  isRead = false,
 }: {
   time: string
   isFromCurrentUser: boolean
+  isRead?: boolean
 }) => {
-  return <p className="mt-1 flex items-center self-end text-[12px]">{time}</p>
+  return (
+    <div className="mt-1 flex items-center gap-1 self-end text-[12px]">
+      <span>{time}</span>
+      {isFromCurrentUser && (
+        <CheckCheck
+          size={14}
+          className={isRead ? "text-blue-500" : "text-gray-400"}
+          strokeWidth={2}
+        />
+      )}
+    </div>
+  )
 }

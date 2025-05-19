@@ -12,6 +12,9 @@ export type ConversationProps =
       admin?: Id<"users">
       isOnline?: boolean
       _creationTime: number
+      lastActivityTime: number
+      hasUnreadMessages: boolean
+      unreadCount: number
       lastMessage?: {
         _id: Id<"messages">
         conversation: Id<"conversations">
@@ -49,6 +52,7 @@ export type MessageProps = {
   content: string
   _creationTime: number
   messageType: "text" | "image" | "video"
+  read: boolean
   sender: {
     _id: Id<"users">
     image: string
