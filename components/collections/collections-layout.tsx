@@ -1,17 +1,11 @@
 "use client"
 
-import { UserCollections } from "@/components/collections/user-collections"
-import { api } from "@/convex/_generated/api"
-import { useConvexAuth, useQuery } from "convex/react"
 import { Loader } from "lucide-react"
+import { UserCollections } from "@/components/collections/user-collections"
+import { useCurrentUser } from "@/hooks/useCurrentUser"
 
 export const CollectionsLayout = () => {
-  const { isAuthenticated } = useConvexAuth()
-
-  const currentUser = useQuery(
-    api.users.getCurrentUser,
-    isAuthenticated ? undefined : "skip",
-  )
+  const currentUser = useCurrentUser()
 
   if (currentUser === undefined)
     return (

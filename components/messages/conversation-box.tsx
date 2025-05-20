@@ -1,12 +1,11 @@
+import { ImageIcon, Users, VideoIcon } from "lucide-react"
+import { useParams, useRouter } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { api } from "@/convex/_generated/api"
+import { useCurrentUser } from "@/hooks/useCurrentUser"
 import { formatDate } from "@/lib/dates"
 import { MessageSeenSvg } from "@/lib/svgs"
 import { ConversationProps } from "@/types"
-import { useQuery } from "convex/react"
-import { ImageIcon, Users, VideoIcon } from "lucide-react"
-import { useParams, useRouter } from "next/navigation"
 
 export const ConversationBox = ({
   conversation,
@@ -23,7 +22,7 @@ export const ConversationBox = ({
   const hasUnreadMessages = conversation?.hasUnreadMessages
   const unreadCount = conversation?.unreadCount || 0
 
-  const currentUser = useQuery(api.users.getCurrentUser)
+  const currentUser = useCurrentUser()
 
   return (
     <>

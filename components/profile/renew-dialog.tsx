@@ -1,5 +1,11 @@
 "use client"
 
+import { Check, LoaderCircle } from "lucide-react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useTransition } from "react"
+import { toast } from "sonner"
+import { v4 as uuidv4 } from "uuid"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -11,28 +17,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { api } from "@/convex/_generated/api"
+import { useCurrentUser } from "@/hooks/useCurrentUser"
 import { cn } from "@/lib/utils"
 import { UserProps } from "@/types"
-import { useConvexAuth, useQuery } from "convex/react"
-import { Check, LoaderCircle } from "lucide-react"
-import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { useTransition } from "react"
-import { toast } from "sonner"
-import { v4 as uuidv4 } from "uuid"
 
 type RenewDialogProps = {
   userProfile: UserProps
 }
 
 export const RenewDialog = ({ userProfile }: RenewDialogProps) => {
-  const { isAuthenticated } = useConvexAuth()
-  const currentUser = useQuery(
-    api.users.getCurrentUser,
-    isAuthenticated ? undefined : "skip",
-  )
-
+  const currentUser = useCurrentUser()
   const router = useRouter()
 
   const [isPending, startTransition] = useTransition()

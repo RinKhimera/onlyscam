@@ -1,17 +1,19 @@
 "use client"
 
+import { useConvexAuth, useMutation, useQuery } from "convex/react"
+import { Video, X } from "lucide-react"
+import { useParams, useRouter } from "next/navigation"
+import { useEffect } from "react"
 import { GroupMembersDialog } from "@/components/messages/group-members-dialog"
 import { MessageForm } from "@/components/messages/message-form"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { api } from "@/convex/_generated/api"
+import { useCurrentUser } from "@/hooks/useCurrentUser"
 import { ConversationProps } from "@/types"
-import { useConvexAuth, useMutation, useQuery } from "convex/react"
-import { Video, X } from "lucide-react"
-import { useParams, useRouter } from "next/navigation"
 import { MessagesList } from "./messages-list"
-import { useEffect } from "react"
 
 export const ConversationContent = () => {
+  const currentUser = useCurrentUser()
   const { isAuthenticated } = useConvexAuth()
 
   const params = useParams()
@@ -20,14 +22,8 @@ export const ConversationContent = () => {
   // Ajouter la mutation pour marquer les messages comme lus
   const markAsRead = useMutation(api.messages.markConversationAsRead)
 
-  // Utilisez "skip" pour éviter d'exécuter les requêtes si non authentifié
   const conversations = useQuery(
     api.conversations.getMyConversations,
-    isAuthenticated ? undefined : "skip",
-  )
-
-  const currentUser = useQuery(
-    api.users.getCurrentUser,
     isAuthenticated ? undefined : "skip",
   )
 

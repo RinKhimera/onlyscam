@@ -1,7 +1,7 @@
+import { useQuery } from "convex/react"
 import { PostCard } from "@/components/shared/post-card"
 import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
-import { useQuery } from "convex/react"
 
 export const UserCollections = ({
   currentUser,

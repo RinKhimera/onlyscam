@@ -1,5 +1,12 @@
 "use client"
 
+import { useConvexAuth, useMutation, useQuery } from "convex/react"
+import { ImageIcon, MailPlus } from "lucide-react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useEffect, useRef, useState, useTransition } from "react"
+import { toast } from "sonner"
+import { ProfileImage } from "@/components/shared/profile-image"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,27 +21,19 @@ import {
 import { Input } from "@/components/ui/input"
 import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
-import { useConvexAuth, useMutation, useQuery } from "convex/react"
-import { ImageIcon, MailPlus } from "lucide-react"
-import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { useEffect, useRef, useState, useTransition } from "react"
-import { toast } from "sonner"
-import { ProfileImage } from "../shared/profile-image"
+import { useCurrentUser } from "@/hooks/useCurrentUser"
 
 export const UserListDialog = () => {
   const { isAuthenticated } = useConvexAuth()
+  const currentUser = useCurrentUser()
 
-  const createConversation = useMutation(api.conversations.createConversation)
-  const generateUploadUrl = useMutation(api.conversations.generateUploadUrl)
-  const currentUser = useQuery(
-    api.users.getCurrentUser,
-    isAuthenticated ? undefined : "skip",
-  )
   const users = useQuery(
     api.users.getUsers,
     isAuthenticated ? undefined : "skip",
   )
+
+  const createConversation = useMutation(api.conversations.createConversation)
+  const generateUploadUrl = useMutation(api.conversations.generateUploadUrl)
 
   const [selectedUsers, setSelectedUsers] = useState<Id<"users">[]>([])
   const [selectedImage, setSelectedImage] = useState<File | null>(null)

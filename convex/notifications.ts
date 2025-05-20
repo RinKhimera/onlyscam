@@ -90,7 +90,7 @@ export const markNotificationAsUnread = mutation({
 
 export const getUnreadCounts = query({
   args: {},
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) throw new ConvexError("Not authenticated")
 

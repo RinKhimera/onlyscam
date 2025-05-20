@@ -1,4 +1,5 @@
 import { ConvexError, v } from "convex/values"
+
 import { mutation, query } from "./_generated/server"
 
 export const createConversation = mutation({
@@ -47,7 +48,7 @@ export const createConversation = mutation({
 
 export const getMyConversations = query({
   args: {},
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) throw new ConvexError("Unauthorized")
 

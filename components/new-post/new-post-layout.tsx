@@ -1,5 +1,24 @@
 "use client"
 
+import {
+  CloudinaryUploadWidget,
+  CloudinaryUploadWidgetResults,
+} from "@cloudinary-util/types"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "convex/react"
+import { CircleX, ImagePlus, LoaderCircle } from "lucide-react"
+import {
+  CldImage,
+  CldUploadWidget,
+  // eslint-disable-next-line import/named
+  CloudinaryUploadWidgetInfo,
+} from "next-cloudinary"
+import { useRouter } from "next/navigation"
+import { useEffect, useRef, useState, useTransition } from "react"
+import Textarea from "react-expanding-textarea"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { z } from "zod"
 import { deleteAsset } from "@/actions/upload-cloudinary"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -11,36 +30,15 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { api } from "@/convex/_generated/api"
+import { useCurrentUser } from "@/hooks/useCurrentUser"
 import { cn } from "@/lib/utils"
 import { postFormSchema } from "@/schemas/post"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useConvexAuth, useMutation, useQuery } from "convex/react"
-import { CircleX, ImagePlus, LoaderCircle } from "lucide-react"
-import {
-  CldImage,
-  CldUploadWidget,
-  CloudinaryUploadWidgetInfo,
-} from "next-cloudinary"
-import {
-  CloudinaryUploadWidget,
-  CloudinaryUploadWidgetResults,
-} from "@cloudinary-util/types"
-import { useEffect, useState, useTransition, useRef } from "react"
-import Textarea from "react-expanding-textarea"
-import { useForm } from "react-hook-form"
-import { toast } from "sonner"
-import { z } from "zod"
-import { useRouter } from "next/navigation"
 import { generateRandomString } from "@/utils/generateRandomString"
-import Image from "next/image"
 import { ProfileImage } from "../shared/profile-image"
 
 export const NewPostLayout = () => {
-  const { isAuthenticated } = useConvexAuth()
-  const currentUser = useQuery(
-    api.users.getCurrentUser,
-    isAuthenticated ? undefined : "skip",
-  )
+  const currentUser = useCurrentUser()
+
   const createDraftAsset = useMutation(api.assetsDraft.createDraftAsset)
   const deleteDraftAsset = useMutation(api.assetsDraft.deleteDraftAsset)
 

@@ -1,35 +1,26 @@
 "use client"
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { api } from "@/convex/_generated/api"
-import { ConversationProps } from "@/types"
-import { useMutation, useQuery } from "convex/react"
-import { ImageIcon, Plus, Video } from "lucide-react"
+import { useMutation } from "convex/react"
+import { ImageIcon } from "lucide-react"
 import { CldUploadWidget } from "next-cloudinary"
-import { useState, useTransition } from "react"
-import ReactPlayer from "react-player"
+import { useTransition } from "react"
 import { toast } from "sonner"
+import { api } from "@/convex/_generated/api"
+import { useCurrentUser } from "@/hooks/useCurrentUser"
+import { ConversationProps } from "@/types"
 
 export const MediaPopover = ({
   conversation,
 }: {
   conversation: ConversationProps
 }) => {
+  const currentUser = useCurrentUser()
+
   const [isPending, startTransition] = useTransition()
 
   // const generateUploadUrl = useMutation(api.conversations.generateUploadUrl)
   const sendImage = useMutation(api.messages.sendImage)
   const sendVideo = useMutation(api.messages.sendVideo)
-
-  const currentUser = useQuery(
-    api.users.getCurrentUser,
-    //  isAuthenticated ? undefined : "skip",
-  )
 
   const handleSendImage = async (result: any) => {
     startTransition(async () => {
