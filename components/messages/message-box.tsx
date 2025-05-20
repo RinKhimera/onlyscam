@@ -1,3 +1,9 @@
+import { CheckCheck } from "lucide-react"
+import { CldImage } from "next-cloudinary"
+import Image from "next/image"
+import Link from "next/link"
+import { useState } from "react"
+import ReactPlayer from "react-player"
 import { ChatBubbleAvatar } from "@/components/messages/chat-bubble-avatar"
 import { DateIndicator } from "@/components/messages/date-indicator"
 import {
@@ -5,14 +11,7 @@ import {
   DialogContent,
   DialogDescription,
 } from "@/components/ui/dialog"
-import { MessageSeenSvg } from "@/lib/svgs"
 import { ConversationProps, MessageProps, UserProps } from "@/types"
-import { CldImage } from "next-cloudinary"
-import Image from "next/image"
-import Link from "next/link"
-import { useState } from "react"
-import ReactPlayer from "react-player"
-import { CheckCheck } from "lucide-react"
 
 type MessageBoxProps = {
   conversation: ConversationProps

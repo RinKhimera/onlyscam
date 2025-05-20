@@ -1,11 +1,8 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { CldUploadWidget } from "next-cloudinary"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef } from "react"
-import Textarea from "react-expanding-textarea"
 import { v4 as uuidv4 } from "uuid"
+import { Button } from "@/components/ui/button"
 
 export const ExploreLayout = () => {
   const router = useRouter()

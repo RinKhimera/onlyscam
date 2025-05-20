@@ -286,3 +286,38 @@ export const checkAndUpdateExpiredSubscriptions = internalMutation({
     }
   },
 })
+
+export const getCurrentUserSubscriptions = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new ConvexError("Not authenticated")
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_tokenIdentifier", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique()
+
+    if (!user) throw new ConvexError("User not found")
+
+    // Récupérer toutes les souscriptions où l'utilisateur est l'abonné
+    const subscriptions = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_subscriber", (q) => q.eq("subscriber", user._id))
+      .collect()
+
+    // Enrichir les résultats avec les informations des créateurs
+    const subscriptionsWithCreators = await Promise.all(
+      subscriptions.map(async (subscription) => {
+        const creator = await ctx.db.get(subscription.creator)
+        return {
+          ...subscription,
+          creatorDetails: creator,
+        }
+      }),
+    )
+
+    return subscriptionsWithCreators
+  },
+})

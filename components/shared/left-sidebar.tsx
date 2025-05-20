@@ -1,15 +1,23 @@
 "use client"
 
-import { UserInfoPopover } from "@/components/shared/user-info-popover"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Doc } from "@/convex/_generated/dataModel"
-import { cn } from "@/lib/utils"
-import { Bell, Bookmark, Home, Mail, PenLine, UserRound } from "lucide-react"
+import { useConvexAuth, useQuery } from "convex/react"
+import {
+  Bell,
+  Bookmark,
+  CircleUserRound,
+  Home,
+  Mail,
+  PenLine,
+  Users,
+} from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useConvexAuth, useQuery } from "convex/react"
+import { UserInfoPopover } from "@/components/shared/user-info-popover"
+import { Badge } from "@/components/ui/badge"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { api } from "@/convex/_generated/api"
+import { Doc } from "@/convex/_generated/dataModel"
+import { cn } from "@/lib/utils"
 
 export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
   const pathname = usePathname()
@@ -28,11 +36,6 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
 
   const navigationLinks = [
     { title: "Accueil", href: "/", icon: <Home /> },
-    // {
-    //   title: "Explorer",
-    //   href: "/explore",
-    //   icon: <Hash />,
-    // },
     {
       title: "Notifications",
       href: "/notifications",
@@ -51,9 +54,14 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
       icon: <Bookmark />,
     },
     {
+      title: "Abonnements",
+      href: "/user-lists",
+      icon: <Users />,
+    },
+    {
       title: "Profile",
       href: currentUser ? `/${currentUser.username}` : "",
-      icon: <UserRound />,
+      icon: <CircleUserRound />,
     },
   ]
 

@@ -4,7 +4,8 @@
   "rules": {
     "no-unused-vars": "off",
     "unused-imports/no-unused-imports": "error",
-    "import/order": "off"
+    "import/order": "off",
+    "import/named": "off"
   },
   "settings": {
     "import/resolver": {

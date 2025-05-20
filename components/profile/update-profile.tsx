@@ -1,5 +1,12 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation, useQuery } from "convex/react"
+import { CircleX, LoaderCircle } from "lucide-react"
+import { useTransition } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { z } from "zod"
 import { UpdateImages } from "@/components/profile/update-images"
 import { ImageUploadInfo } from "@/components/shared/image-upload-info"
 import { Button } from "@/components/ui/button"
@@ -29,13 +36,6 @@ import { api } from "@/convex/_generated/api"
 import { cn } from "@/lib/utils"
 import { profileFormSchema } from "@/schemas/profile"
 import { UserProps } from "@/types"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation, useQuery } from "convex/react"
-import { CircleX, Info, LoaderCircle, SwitchCamera, X } from "lucide-react"
-import { useTransition } from "react"
-import { useFieldArray, useForm } from "react-hook-form"
-import { toast } from "sonner"
-import { z } from "zod"
 
 type UpdateProfileDialogProps = {
   currentUser: UserProps

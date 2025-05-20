@@ -1,11 +1,10 @@
+import { fetchQuery } from "convex/nextjs"
+import { notFound, redirect } from "next/navigation"
 import { getAuthToken } from "@/app/auth"
 import { EditProfileLayout } from "@/components/profile/edit-profile-layout"
-import { LeftSidebar } from "@/components/shared/left-sidebar"
 import { SubscriptionSidebar } from "@/components/shared/subscription-sidebar"
 import { SuggestionSidebar } from "@/components/shared/suggestion-sidebar"
 import { api } from "@/convex/_generated/api"
-import { fetchQuery } from "convex/nextjs"
-import { notFound, redirect } from "next/navigation"
 
 const EditProfile = async (props: {
   params: Promise<{ username: string }>

@@ -10,7 +10,6 @@ import { CircleX, ImagePlus, LoaderCircle } from "lucide-react"
 import {
   CldImage,
   CldUploadWidget,
-  // eslint-disable-next-line import/named
   CloudinaryUploadWidgetInfo,
 } from "next-cloudinary"
 import { useRouter } from "next/navigation"

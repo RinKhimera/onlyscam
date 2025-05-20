@@ -1,4 +1,4 @@
-import { format, isToday, isYesterday, formatDistanceToNow } from "date-fns"
+import { format, isToday, isYesterday } from "date-fns"
 import { fr } from "date-fns/locale"
 
 export const formatDate = (timestamp: number): string => {

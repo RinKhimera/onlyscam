@@ -1,12 +1,9 @@
 "use client"
 
-import * as Clerk from "@clerk/elements/common"
-// import * as SignIn from "@clerk/elements/sign-in"
-
-import { buttonVariants } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
 import { SignIn } from "@clerk/nextjs"
 import Link from "next/link"
+import { buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 const SignInPage = () => {
   return (

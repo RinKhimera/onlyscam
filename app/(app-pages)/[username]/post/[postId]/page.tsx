@@ -1,12 +1,11 @@
+import { fetchQuery } from "convex/nextjs"
+import { notFound, redirect } from "next/navigation"
 import { getAuthToken } from "@/app/auth"
 import { PostLayout } from "@/components/post/post-layout"
-import { LeftSidebar } from "@/components/shared/left-sidebar"
 import { SubscriptionSidebar } from "@/components/shared/subscription-sidebar"
 import { SuggestionSidebar } from "@/components/shared/suggestion-sidebar"
 import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
-import { fetchQuery } from "convex/nextjs"
-import { notFound, redirect } from "next/navigation"
 
 const PostDetailsPage = async (props: {
   params: Promise<{ username: string; postId: Id<"posts"> }>

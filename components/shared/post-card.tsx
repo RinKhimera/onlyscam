@@ -1,19 +1,18 @@
 "use client"
 
-import { BookmarkButton } from "@/components/home/bookmark-button"
-import { CommentButton } from "@/components/home/comment-button"
-import { LikeButton } from "@/components/home/like-button"
-import { PostEllipsis } from "@/components/home/post-ellipsis"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { ProfileImage } from "@/components/shared/profile-image"
-import { Doc } from "@/convex/_generated/dataModel"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CldImage, CldVideoPlayer } from "next-cloudinary"
 import "next-cloudinary/dist/cld-video-player.css"
-import Image from "next/image"
 import Link from "next/link"
 import React from "react"
+import { BookmarkButton } from "@/components/home/bookmark-button"
+import { CommentButton } from "@/components/home/comment-button"
+import { LikeButton } from "@/components/home/like-button"
+import { PostEllipsis } from "@/components/home/post-ellipsis"
+import { ProfileImage } from "@/components/shared/profile-image"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Doc } from "@/convex/_generated/dataModel"
 
 // ExtendedPost is a type that represents a post with an extended author field.
 // It's created by taking the original Doc<"posts"> type and omitting the 'author' field.

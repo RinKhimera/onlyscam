@@ -1,7 +1,6 @@
+import { fetchAction } from "convex/nextjs"
 import { api } from "@/convex/_generated/api"
 import { CinetPayResponse } from "@/types"
-import { fetchAction } from "convex/nextjs"
-import { redirect } from "next/navigation"
 
 export async function POST(request: Request) {
   try {

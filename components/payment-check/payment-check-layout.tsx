@@ -1,12 +1,10 @@
 "use client"
 
-import { buttonVariants } from "@/components/ui/button"
-import { api } from "@/convex/_generated/api"
-import { PaymentStatus } from "@/types"
 import { useQuery } from "@tanstack/react-query"
-import { useMutation } from "convex/react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
+import { buttonVariants } from "@/components/ui/button"
+import { PaymentStatus } from "@/types"
 
 export const PaymentCheckLayout = () => {
   // const followUser = useMutation(api.subscriptions.followUser)

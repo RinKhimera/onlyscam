@@ -24,6 +24,15 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/user-lists",
+        destination: "/user-lists/subscriptions",
+        permanent: true,
+      },
+    ]
+  },
 }
 
 export default nextConfig

@@ -1,13 +1,12 @@
 "use client"
 
+import { ImagePlus } from "lucide-react"
+import { useRouter } from "next/navigation"
+import Textarea from "react-expanding-textarea"
+import { ProfileImage } from "@/components/shared/profile-image"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Doc } from "@/convex/_generated/dataModel"
-import { ImagePlus } from "lucide-react"
-import Textarea from "react-expanding-textarea"
-import { useRouter } from "next/navigation"
-import { CldImage } from "next-cloudinary"
-import { ProfileImage } from "../shared/profile-image"
 
 export const CreatePost = ({ currentUser }: { currentUser: Doc<"users"> }) => {
   const router = useRouter()

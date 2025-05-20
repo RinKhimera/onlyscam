@@ -1,3 +1,9 @@
+import { useMutation } from "convex/react"
+import EmojiPicker, { Theme } from "emoji-picker-react"
+import { Mic, Send, Smile } from "lucide-react"
+import { useParams } from "next/navigation"
+import { useState } from "react"
+import { toast } from "sonner"
 import { MediaPopover } from "@/components/messages/media-popover"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,13 +15,6 @@ import {
 import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
 import { ConversationProps, UserProps } from "@/types"
-import { useMutation } from "convex/react"
-import EmojiPicker, { Theme } from "emoji-picker-react"
-import { Mic, Send, Smile } from "lucide-react"
-import { CldUploadButton, CldUploadWidget } from "next-cloudinary"
-import { useParams } from "next/navigation"
-import { useState } from "react"
-import { toast } from "sonner"
 
 type MessageFormProps = {
   conversation: ConversationProps

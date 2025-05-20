@@ -86,7 +86,7 @@ export default defineSchema({
     status: v.string(), // "active", "expired", "cancelled"
     transactionId: v.optional(v.string()),
     renewalCount: v.number(),
-    lastUpdateTime: v.number(), // Ajout: timestamp de la dernière mise à jour
+    lastUpdateTime: v.number(),
   })
     .index("by_subscriber", ["subscriber"])
     .index("by_creator", ["creator"])

@@ -1,6 +1,6 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { ProfileImage } from "@/components/shared/profile-image"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { MessageProps } from "@/types"
-import { ProfileImage } from "../shared/profile-image"
 
 type ChatBubbleAvatarProps = {
   message: MessageProps
