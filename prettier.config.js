@@ -1,7 +1,7 @@
 module.exports = {
   plugins: [
-    "prettier-plugin-tailwindcss",
     "@trivago/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss",
   ],
   semi: false,
   importOrder: ["^(node:(.*)$)|^([a-zA-Z0-9].*)$", "^@/(.*)$", "^[./]"],

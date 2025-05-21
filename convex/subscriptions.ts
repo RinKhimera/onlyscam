@@ -57,6 +57,7 @@ export const followUser = internalMutation({
         ? { transactionId: args.transactionId }
         : {}
 
+      // Mettre à jour l'abonnement existant
       await ctx.db.patch(existingSubscription._id, {
         startDate: currentTime,
         endDate: endDate,
@@ -67,24 +68,23 @@ export const followUser = internalMutation({
         amountPaid: amount,
       })
 
-      // Si l'abonnement était expiré ou annulé, on doit recréer la relation follows
-      if (needsReactivation) {
-        // Vérifier si la relation follow existe déjà
-        const existingFollow = await ctx.db
-          .query("follows")
-          .withIndex("by_subscriptionId", (q) =>
-            q.eq("subscriptionId", existingSubscription._id),
-          )
-          .unique()
+      // CORRECTION : Vérifier si la relation follow existe, indépendamment du statut d'abonnement
+      const existingFollow = await ctx.db
+        .query("follows")
+        .withIndex("by_follower_following", (q) =>
+          q
+            .eq("followerId", args.subscriberId)
+            .eq("followingId", args.creatorId),
+        )
+        .unique()
 
-        if (!existingFollow) {
-          // Recréer la relation follow
-          await ctx.db.insert("follows", {
-            followerId: args.subscriberId,
-            followingId: args.creatorId,
-            subscriptionId: existingSubscription._id,
-          })
-        }
+      // Si la relation n'existe pas, la créer (même pour un renouvellement)
+      if (!existingFollow) {
+        await ctx.db.insert("follows", {
+          followerId: args.subscriberId,
+          followingId: args.creatorId,
+          subscriptionId: existingSubscription._id,
+        })
       }
 
       // Créer une notification appropriée
@@ -94,6 +94,50 @@ export const followUser = internalMutation({
         sender: args.subscriberId,
         read: false,
       })
+
+      // Vérifier et supprimer tout blocage existant
+      const blockFromSubscriber = await ctx.db
+        .query("blocks")
+        .withIndex("by_blocker_blocked", (q) =>
+          q.eq("blockerId", args.subscriberId).eq("blockedId", args.creatorId),
+        )
+        .unique()
+
+      if (blockFromSubscriber) {
+        // L'abonné avait bloqué le créateur, supprimer ce blocage
+        await ctx.db.delete(blockFromSubscriber._id)
+
+        // Optionnel : Notifier l'abonné que le blocage a été levé
+        // await ctx.db.insert("notifications", {
+        //   type: "blockRemoved",
+        //   recipientId: args.subscriberId,
+        //   sender: args.creatorId,
+        //   read: false,
+        //   message: "Blocage automatiquement levé suite à votre abonnement",
+        // })
+      }
+
+      // Vérifier également si le créateur avait bloqué l'abonné
+      const blockFromCreator = await ctx.db
+        .query("blocks")
+        .withIndex("by_blocker_blocked", (q) =>
+          q.eq("blockerId", args.creatorId).eq("blockedId", args.subscriberId),
+        )
+        .unique()
+
+      if (blockFromCreator) {
+        // Le créateur avait bloqué l'abonné, supprimer ce blocage
+        await ctx.db.delete(blockFromCreator._id)
+
+        // Optionnel : Notifier le créateur que le blocage a été levé
+        // await ctx.db.insert("notifications", {
+        //   type: "blockRemoved",
+        //   recipientId: args.creatorId,
+        //   sender: args.subscriberId,
+        //   read: false,
+        //   message: "Blocage automatiquement levé suite à un nouvel abonnement",
+        // })
+      }
 
       return {
         subscriptionId: existingSubscription._id,
@@ -254,15 +298,18 @@ export const checkAndUpdateExpiredSubscriptions = internalMutation({
         lastUpdateTime: currentTime,
       })
 
-      // Supprimer les relations follows associées
-      const follow = await ctx.db
+      // CORRECTION : Utiliser withIndex avec by_follower_following au lieu de by_subscriptionId
+      const follows = await ctx.db
         .query("follows")
-        .withIndex("by_subscriptionId", (q) =>
-          q.eq("subscriptionId", subscription._id),
+        .withIndex("by_follower_following", (q) =>
+          q
+            .eq("followerId", subscription.subscriber)
+            .eq("followingId", subscription.creator),
         )
-        .unique()
+        .collect()
 
-      if (follow) {
+      // Supprimer toutes les relations de suivi trouvées
+      for (const follow of follows) {
         await ctx.db.delete(follow._id)
         updates.followsRemoved++
       }

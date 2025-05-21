@@ -74,7 +74,8 @@ export default defineSchema({
   })
     .index("by_follower", ["followerId"])
     .index("by_following", ["followingId"])
-    .index("by_subscriptionId", ["subscriptionId"]),
+    .index("by_subscriptionId", ["subscriptionId"])
+    .index("by_follower_following", ["followerId", "followingId"]),
 
   subscriptions: defineTable({
     startDate: v.number(),
@@ -105,4 +106,12 @@ export default defineSchema({
     .index("by_recipient", ["recipientId"])
     .index("by_type_post_sender", ["type", "post", "sender"])
     .index("by_type_comment_sender", ["type", "comment", "sender"]),
+
+  blocks: defineTable({
+    blockerId: v.id("users"),
+    blockedId: v.id("users"),
+  })
+    .index("by_blocker", ["blockerId"])
+    .index("by_blocked", ["blockedId"])
+    .index("by_blocker_blocked", ["blockerId", "blockedId"]),
 })

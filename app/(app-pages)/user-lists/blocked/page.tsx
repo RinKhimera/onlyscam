@@ -17,14 +17,14 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { api } from "@/convex/_generated/api"
 
-const SubscriptionsPage = () => {
+const BlockedPage = () => {
   const pathname = usePathname()
   const [filter, setFilter] = useState("all")
 
-  // Récupération des abonnements depuis Convex
+  // Récupération des utilisateurs bloqués depuis Convex
   const { isAuthenticated } = useConvexAuth()
-  const followings = useQuery(
-    api.follows.getCurrentUserFollowings,
+  const blockedUsers = useQuery(
+    api.follows.getCurrentUserBlockedUsers,
     isAuthenticated ? undefined : "skip",
   )
 
@@ -40,32 +40,36 @@ const SubscriptionsPage = () => {
 
   // Filtrer les utilisateurs selon le statut
   const getFilteredUsers = () => {
-    if (!followings) return []
+    if (!blockedUsers) return []
 
-    // Filtrer d'abord les abonnements qui ont les détails nécessaires
-    const validFollowings = followings.filter(
-      (following) => following.followingDetails && following.follow,
+    // Filtrer d'abord les utilisateurs bloqués qui ont les détails nécessaires
+    const validBlockedUsers = blockedUsers.filter(
+      (blockedUser) => blockedUser.blockedUserDetails && blockedUser.block,
     )
 
     switch (filter) {
       case "all":
-        return validFollowings
-      case "active":
-        return validFollowings.filter(
-          (following) => following.subscriptionDetails?.status === "active",
+        return validBlockedUsers
+      case "recent":
+        // Trie par date de blocage (du plus récent au plus ancien)
+        return [...validBlockedUsers].sort(
+          (a, b) =>
+            new Date(b.block._creationTime).getTime() -
+            new Date(a.block._creationTime).getTime(),
         )
-      case "expired":
-        return validFollowings.filter(
-          (following) => following.subscriptionDetails?.status === "expired",
+      case "alphabetical":
+        // Trie par ordre alphabétique du nom
+        return [...validBlockedUsers].sort((a, b) =>
+          a.blockedUserDetails!.name.localeCompare(b.blockedUserDetails!.name),
         )
       default:
-        return []
+        return validBlockedUsers
     }
   }
 
   const renderContent = () => {
     // Si les données sont en cours de chargement
-    if (followings === undefined) {
+    if (blockedUsers === undefined) {
       return (
         <div className="flex justify-center p-8">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -79,7 +83,7 @@ const SubscriptionsPage = () => {
       return (
         <div className="rounded-lg border border-muted p-4">
           <p className="text-center text-muted-foreground">
-            Aucun abonnement à afficher
+            Aucun utilisateur bloqué pour le moment
           </p>
         </div>
       )
@@ -88,13 +92,13 @@ const SubscriptionsPage = () => {
     return (
       <div className="@container">
         <div className="@lg:grid-cols-2 grid gap-3">
-          {filteredUsers.map((following) => {
-            // Le filtrage précédent garantit que followingDetails n'est pas null ici
-            const details = following.followingDetails!
+          {filteredUsers.map((blockedUser) => {
+            // Le filtrage précédent garantit que blockedUserDetails n'est pas null ici
+            const details = blockedUser.blockedUserDetails!
 
             return (
               <UserListsCard
-                key={following.follow._id}
+                key={blockedUser.block._id}
                 user={{
                   id: details._id,
                   name: details.name,
@@ -102,12 +106,11 @@ const SubscriptionsPage = () => {
                   avatarUrl: details.image,
                   bannerUrl: details.imageBanner || "",
                 }}
-                isSubscribed={
-                  following.subscriptionDetails?.status === "active"
-                }
-                onSubscribe={() =>
-                  console.log(`Toggle subscription for ${details.username}`)
-                }
+                isBlockedPage={true}
+                onSubscribe={() => {
+                  // Appeler la mutation de déblocage AVANT de la faire
+                  console.log(`Débloquer ${details.username}`)
+                }}
               />
             )
           })}
@@ -126,7 +129,7 @@ const SubscriptionsPage = () => {
                 key={tab.path}
                 value={tab.path}
                 asChild
-                className="flex-1 data-[state=active]:bg-primary/60 data-[state=active]:text-primary-foreground"
+                className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
                 <Link href={tab.path}>{tab.label}</Link>
               </TabsTrigger>
@@ -136,13 +139,13 @@ const SubscriptionsPage = () => {
 
         <Select defaultValue="all" onValueChange={handleFilterChange}>
           <SelectTrigger className="mb-4 w-full">
-            <SelectValue placeholder="Filtrer les abonnements" />
+            <SelectValue placeholder="Filtrer les utilisateurs bloqués" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectItem value="all">Tout</SelectItem>
-              <SelectItem value="active">Actifs</SelectItem>
-              <SelectItem value="expired">Expirés</SelectItem>
+              <SelectItem value="recent">Les plus récents</SelectItem>
+              <SelectItem value="alphabetical">Ordre alphabétique</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -153,4 +156,4 @@ const SubscriptionsPage = () => {
   )
 }
 
-export default SubscriptionsPage
+export default BlockedPage

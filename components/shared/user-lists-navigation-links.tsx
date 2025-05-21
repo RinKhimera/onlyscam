@@ -40,6 +40,11 @@ export const UserListsNavigationLinks = () => {
     posts: postsFromFollowers?.length || 0,
   }
 
+  const blockedStats = {
+    users: 0,
+    posts: 0,
+  }
+
   const navItems = [
     {
       href: "/user-lists/subscriptions",
@@ -51,6 +56,11 @@ export const UserListsNavigationLinks = () => {
       label: "Mes fans",
       stats: subscriberStats,
     },
+    {
+      href: "/user-lists/blocked",
+      label: "Bloqués",
+      stats: blockedStats,
+    },
   ]
 
   return (
@@ -61,7 +71,7 @@ export const UserListsNavigationLinks = () => {
           href={item.href}
           className={`h-16 p-2 transition-colors ${
             pathname === item.href
-              ? "bg-primary/20 border-l-4 border-primary text-foreground font-medium"
+              ? "border-l-4 border-primary bg-primary/20 font-medium text-foreground"
               : "hover:bg-muted"
           }`}
         >
@@ -74,7 +84,7 @@ export const UserListsNavigationLinks = () => {
                   : `${item.stats.users} utilisateur(s) • ${item.stats.posts} posts`}
               </span>
             </div>
-            <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
               <span className="text-xs">
                 {item.label === "Mes abonnements" ? "AB" : "FA"}
               </span>
