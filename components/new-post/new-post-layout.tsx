@@ -6,7 +6,7 @@ import {
 } from "@cloudinary-util/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "convex/react"
-import { CircleX, ImagePlus, LoaderCircle } from "lucide-react"
+import { CircleX, Globe, ImagePlus, LoaderCircle, Lock } from "lucide-react"
 import {
   CldImage,
   CldUploadWidget,
@@ -28,6 +28,12 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select"
 import { api } from "@/convex/_generated/api"
 import { useCurrentUser } from "@/hooks/useCurrentUser"
 import { cn } from "@/lib/utils"
@@ -47,6 +53,9 @@ export const NewPostLayout = () => {
   const [publicId, setPublicId] = useState<string>("")
   const [randomString] = useState(() => generateRandomString(6))
   const [isPending, startTransition] = useTransition()
+  const [visibility, setVisibility] = useState<"public" | "subscribers_only">(
+    "public",
+  )
 
   const isPostCreatedRef = useRef(false)
 
@@ -107,6 +116,7 @@ export const NewPostLayout = () => {
           medias: data.media,
           likes: [],
           comments: [],
+          visibility: visibility,
         })
 
         // Marquer le post comme créé en utilisant la référence
@@ -197,54 +207,106 @@ export const NewPostLayout = () => {
                         </div>
                       )}
 
-                      <div className="mt-8 flex w-full items-center justify-between">
-                        <div className="-ml-2 text-blue-500">
-                          <CldUploadWidget
-                            uploadPreset="post-assets"
-                            signatureEndpoint="/api/sign-cloudinary-params"
-                            options={{
-                              sources: [
-                                "local",
-                                "camera",
-                                "google_drive",
-                                "url",
-                              ],
-                              publicId: `${currentUser?._id}-${randomString}`,
-                              multiple: false,
-                              maxFileSize: 50 * 1024 * 1024,
-                              clientAllowedFormats: ["image", "video"],
-                            }}
-                            onSuccess={(result, { widget }) =>
-                              handleUploadSuccess(result, widget)
+                      <div className="mt-8 flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        {/* Actions de gauche (upload + visibilité) */}
+                        <div className="flex flex-wrap items-center gap-3">
+                          {/* Bouton upload */}
+                          <div className="text-blue-500">
+                            <CldUploadWidget
+                              uploadPreset="post-assets"
+                              signatureEndpoint="/api/sign-cloudinary-params"
+                              options={{
+                                sources: [
+                                  "local",
+                                  "camera",
+                                  "google_drive",
+                                  "url",
+                                ],
+                                publicId: `${currentUser?._id}-${randomString}`,
+                                multiple: false,
+                                maxFileSize: 50 * 1024 * 1024,
+                                clientAllowedFormats: ["image", "video"],
+                              }}
+                              onSuccess={(result, { widget }) =>
+                                handleUploadSuccess(result, widget)
+                              }
+                            >
+                              {({ open }) => {
+                                return (
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className={cn(
+                                      "flex items-center gap-2 rounded-full border-muted hover:bg-blue-600/15 hover:text-blue-500",
+                                      { "cursor-not-allowed": isPending },
+                                    )}
+                                    onClick={() => open()}
+                                    disabled={isPending}
+                                  >
+                                    <ImagePlus size={18} />
+                                    <span className="hidden sm:inline">
+                                      Média
+                                    </span>
+                                  </Button>
+                                )
+                              }}
+                            </CldUploadWidget>
+                          </div>
+
+                          {/* Sélecteur de visibilité */}
+                          <Select
+                            defaultValue="public"
+                            onValueChange={(value) =>
+                              setVisibility(
+                                value as "public" | "subscribers_only",
+                              )
                             }
                           >
-                            {({ open }) => {
-                              return (
-                                <button
-                                  type="button"
-                                  className={cn(
-                                    "rounded-full p-2 transition hover:bg-blue-600/15 hover:text-blue-500",
-                                    { "cursor-not-allowed": isPending },
-                                  )}
-                                  onClick={() => open()}
-                                >
-                                  <ImagePlus size={20} />
-                                </button>
-                              )
-                            }}
-                          </CldUploadWidget>
+                            <SelectTrigger className="h-9 w-auto rounded-full border-muted bg-transparent hover:bg-muted/30">
+                              {visibility === "public" ? (
+                                <div className="flex items-center gap-2">
+                                  <Globe size={18} className="text-green-500" />
+                                  <span className="hidden sm:inline">
+                                    Tout le monde
+                                  </span>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <Lock size={18} className="text-primary" />
+                                  <span className="hidden sm:inline">
+                                    Fans uniquement
+                                  </span>
+                                </div>
+                              )}
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="public">
+                                <div className="flex items-center gap-2">
+                                  <Globe size={16} className="text-green-500" />
+                                  <span>Tout le monde</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="subscribers_only">
+                                <div className="flex items-center gap-2">
+                                  <Lock size={16} className="text-primary" />
+                                  <span>Fans uniquement</span>
+                                </div>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
 
+                        {/* Bouton de publication */}
                         <Button
                           type="submit"
                           disabled={isPending}
-                          className="w-fit rounded-full bg-sky-500 px-4 py-2 font-bold hover:bg-sky-600"
+                          className="w-full rounded-full bg-sky-500 px-4 py-2 font-bold hover:bg-sky-600 sm:w-auto"
                         >
                           {isPending ? (
-                            <LoaderCircle className="animate-spin" />
-                          ) : (
-                            "Publier"
-                          )}
+                            <LoaderCircle className="mr-2 animate-spin" />
+                          ) : null}
+                          <span>Publier</span>
                         </Button>
                       </div>
                     </div>

@@ -1,14 +1,13 @@
 import { fetchQuery } from "convex/nextjs"
 import { notFound, redirect } from "next/navigation"
 import { getAuthToken } from "@/app/auth"
-import { PostLayout } from "@/components/post/post-layout"
+import { UserGalleryLayout } from "@/components/profile/user-gallery-layout"
 import { SubscriptionSidebar } from "@/components/shared/subscription-sidebar"
 import { SuggestionSidebar } from "@/components/shared/suggestion-sidebar"
 import { api } from "@/convex/_generated/api"
-import { Id } from "@/convex/_generated/dataModel"
 
-const PostDetailsPage = async (props: {
-  params: Promise<{ username: string; postId: Id<"posts"> }>
+const UserGalleryPage = async (props: {
+  params: Promise<{ username: string }>
 }) => {
   const params = await props.params
   const token = await getAuthToken()
@@ -24,14 +23,9 @@ const PostDetailsPage = async (props: {
 
   if (userProfile === null) notFound()
 
-  const post = await fetchQuery(api.posts.getPost, {
-    postId: params.postId,
-  })
-  if (post === null) notFound()
-
   return (
     <>
-      <PostLayout currentUser={currentUser} postId={params.postId} />
+      <UserGalleryLayout currentUser={currentUser} userProfile={userProfile} />
 
       <>
         {currentUser.username !== userProfile.username ? (
@@ -47,4 +41,4 @@ const PostDetailsPage = async (props: {
   )
 }
 
-export default PostDetailsPage
+export default UserGalleryPage

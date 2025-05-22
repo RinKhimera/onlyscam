@@ -8,26 +8,26 @@ import { usePathname } from "next/navigation"
 import { RenewDialog } from "@/components/profile/renew-dialog"
 import { SubscribeDialog } from "@/components/profile/subscribe-dialog"
 import { UnsubscribeDialog } from "@/components/profile/unsubscribe-dialog"
-import { UserPosts } from "@/components/profile/user-posts"
+import { UserGallery } from "@/components/profile/user-gallery"
+import { ProfileImage } from "@/components/shared/profile-image"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
 import { cn } from "@/lib/utils"
-import { ProfileImage } from "../shared/profile-image"
-import { Button } from "../ui/button"
 
-type UserProfileLayoutProps = {
+type UserGalleryLayoutProps = {
   currentUser: Doc<"users">
   userProfile: Doc<"users">
 }
 
-export const UserProfileLayout = ({
+export const UserGalleryLayout = ({
   currentUser,
   userProfile,
-}: UserProfileLayoutProps) => {
+}: UserGalleryLayoutProps) => {
   const subscriptionStatus = useQuery(api.subscriptions.getFollowSubscription, {
     creatorId: userProfile._id,
     subscriberId: currentUser._id,
@@ -208,7 +208,7 @@ export const UserProfileLayout = ({
       </div>
 
       {/* Contenu de la page (UserPosts) */}
-      <UserPosts authorId={userProfile._id} currentUser={currentUser} />
+      <UserGallery authorId={userProfile._id} currentUser={currentUser} />
     </main>
   )
 }

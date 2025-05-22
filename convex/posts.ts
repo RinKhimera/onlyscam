@@ -7,6 +7,7 @@ export const createPost = mutation({
     medias: v.array(v.string()),
     likes: v.array(v.id("users")),
     comments: v.array(v.id("comments")),
+    visibility: v.union(v.literal("public"), v.literal("subscribers_only")),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
@@ -32,6 +33,7 @@ export const createPost = mutation({
       medias: args.medias,
       likes: [],
       comments: [],
+      visibility: args.visibility,
     })
 
     // Envoyer une notification à tous les followers
@@ -158,6 +160,47 @@ export const getUserPosts = query({
     )
 
     return postsWithAuthor
+  },
+})
+
+export const getUserGallery = query({
+  args: { authorId: v.id("users") },
+  handler: async (ctx, args) => {
+    const author = await ctx.db
+      .query("users")
+      .withIndex("by_id", (q) => q.eq("_id", args.authorId))
+      .unique()
+
+    if (!author) throw new ConvexError("User not found")
+
+    const posts = await ctx.db
+      .query("posts")
+      .withIndex("by_author", (q) => q.eq("author", author._id))
+      .order("desc")
+      .collect()
+
+    // Filtrer les posts qui ont au moins un média
+    const postsWithMedia = posts.filter(
+      (post) => post.medias && post.medias.length > 0,
+    )
+
+    // Retourner uniquement les informations nécessaires
+    const galleryItems = postsWithMedia.map((post) => {
+      return {
+        _id: post._id,
+        author: {
+          _id: author._id,
+          name: author.name,
+          username: author.username,
+          image: author.image,
+        },
+        medias: post.medias,
+        creationTime: post._creationTime,
+        visibility: post.visibility || "public",
+      }
+    })
+
+    return galleryItems
   },
 })
 

@@ -1,10 +1,10 @@
+import { fetchQuery } from "convex/nextjs"
+import { notFound, redirect } from "next/navigation"
 import { getAuthToken } from "@/app/auth"
 import { UserProfileLayout } from "@/components/profile/user-profile-layout"
 import { SubscriptionSidebar } from "@/components/shared/subscription-sidebar"
 import { SuggestionSidebar } from "@/components/shared/suggestion-sidebar"
 import { api } from "@/convex/_generated/api"
-import { fetchQuery } from "convex/nextjs"
-import { notFound, redirect } from "next/navigation"
 
 const UserProfilePage = async (props: {
   params: Promise<{ username: string }>
@@ -22,14 +22,6 @@ const UserProfilePage = async (props: {
   })
 
   if (userProfile === null) notFound()
-
-  const subscriptionStatus = await fetchQuery(
-    api.subscriptions.getFollowSubscription,
-    {
-      creatorId: userProfile._id,
-      subscriberId: currentUser._id,
-    },
-  )
 
   return (
     <>

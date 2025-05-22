@@ -29,7 +29,12 @@ export default defineSchema({
     medias: v.array(v.string()),
     likes: v.array(v.id("users")),
     comments: v.array(v.id("comments")),
-  }).index("by_author", ["author"]),
+    visibility: v.optional(
+      v.union(v.literal("public"), v.literal("subscribers_only")),
+    ),
+  })
+    .index("by_author", ["author"])
+    .index("by_visibility", ["visibility"]),
 
   assetsDraft: defineTable({
     author: v.id("users"),

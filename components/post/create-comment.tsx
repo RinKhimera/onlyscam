@@ -1,4 +1,13 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "convex/react"
+import { LoaderCircle } from "lucide-react"
+import { useTransition } from "react"
+import Textarea from "react-expanding-textarea"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { z } from "zod"
+import { ProfileImage } from "@/components/shared/profile-image"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -10,14 +19,6 @@ import {
 import { api } from "@/convex/_generated/api"
 import { Doc, Id } from "@/convex/_generated/dataModel"
 import { commentFormSchema } from "@/schemas/comment"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "convex/react"
-import { LoaderCircle } from "lucide-react"
-import { useTransition } from "react"
-import Textarea from "react-expanding-textarea"
-import { useForm } from "react-hook-form"
-import { toast } from "sonner"
-import { z } from "zod"
 
 export const CreateComment = ({
   currentUser,
@@ -62,8 +63,13 @@ export const CreateComment = ({
 
   return (
     <div className="relative flex items-stretch space-x-3 border-b border-muted px-4 py-5 max-sm:hidden">
-      <Avatar>
-        <AvatarImage src={currentUser?.image} alt={currentUser?.username} />
+      <Avatar className="overflow-hidden">
+        <ProfileImage
+          src={currentUser?.image}
+          alt={currentUser?.username || "Avatar"}
+          width={44}
+          height={44}
+        />
         <AvatarFallback className="size-11">
           <div className="animate-pulse rounded-full bg-gray-500"></div>
         </AvatarFallback>
