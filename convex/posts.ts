@@ -267,6 +267,76 @@ export const getAllPosts = query({
   },
 })
 
+export const getHomePosts = query({
+  args: {
+    currentUserId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    // 1. Récupérer tous les utilisateurs que l'utilisateur courant suit avec une souscription active
+    const activeSubscriptions = await ctx.db
+      .query("follows")
+      .withIndex("by_follower", (q) => q.eq("followerId", args.currentUserId))
+      .collect()
+
+    // Créer un Set pour une recherche efficace
+    const followedCreatorsWithSubs = new Set()
+
+    // Vérifier quelles souscriptions sont actives
+    for (const follow of activeSubscriptions) {
+      const subscription = await ctx.db.get(follow.subscriptionId)
+      if (subscription && subscription.status === "active") {
+        followedCreatorsWithSubs.add(follow.followingId)
+      }
+    }
+
+    // 2. Récupérer tous les posts (limités à 100 pour des raisons de performance)
+    const posts = await ctx.db.query("posts").order("desc").take(100)
+
+    // 3. Filtrer les posts en fonction de la visibilité
+    const filteredPosts = posts.filter((post) => {
+      // Inclure tous les posts publics
+      if (!post.visibility || post.visibility === "public") {
+        return true
+      }
+
+      // Inclure les posts privés des créateurs que l'utilisateur suit avec un abonnement actif
+      if (
+        post.visibility === "subscribers_only" &&
+        followedCreatorsWithSubs.has(post.author)
+      ) {
+        return true
+      }
+
+      // Inclure les posts privés de l'utilisateur lui-même
+      if (
+        post.visibility === "subscribers_only" &&
+        post.author === args.currentUserId
+      ) {
+        return true
+      }
+
+      return false
+    })
+
+    // 4. Ajouter les informations d'auteur à chaque post
+    const postsWithAuthor = await Promise.all(
+      filteredPosts.map(async (post) => {
+        const author = await ctx.db
+          .query("users")
+          .filter((q) => q.eq(q.field("_id"), post.author))
+          .unique()
+
+        return {
+          ...post,
+          author,
+        }
+      }),
+    )
+
+    return postsWithAuthor
+  },
+})
+
 export const likePost = mutation({
   args: { postId: v.id("posts") },
   handler: async (ctx, args) => {
@@ -390,5 +460,39 @@ export const removeBookmark = mutation({
     await ctx.db.patch(user._id, {
       bookmarks: user.bookmarks?.filter((id) => id !== args.postId) || [],
     })
+  },
+})
+
+export const updatePostVisibility = mutation({
+  args: {
+    postId: v.id("posts"),
+    visibility: v.union(v.literal("public"), v.literal("subscribers_only")),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error("Unauthorized")
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_tokenIdentifier", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique()
+
+    if (!user) throw new Error("User not found")
+
+    // Récupérer le post
+    const post = await ctx.db.get(args.postId)
+    if (!post) throw new Error("Post not found")
+
+    // Vérifier que l'utilisateur est bien l'auteur
+    if (post.author !== user._id) throw new Error("Unauthorized")
+
+    // Mettre à jour la visibilité du post
+    await ctx.db.patch(args.postId, {
+      visibility: args.visibility,
+    })
+
+    return { success: true }
   },
 })

@@ -1,5 +1,18 @@
 "use client"
 
+import { useMutation } from "convex/react"
+import {
+  CheckCircle,
+  Ellipsis,
+  Globe,
+  LoaderCircle,
+  Lock,
+  Share2,
+  Trash2,
+} from "lucide-react"
+import { usePathname } from "next/navigation"
+import { useState, useTransition } from "react"
+import { toast } from "sonner"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,24 +30,51 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { api } from "@/convex/_generated/api"
-import { Id } from "@/convex/_generated/dataModel"
-import { useMutation } from "convex/react"
-import { Ellipsis, LoaderCircle } from "lucide-react"
-import { useTransition } from "react"
-import { toast } from "sonner"
+import { Doc, Id } from "@/convex/_generated/dataModel"
 
-export const PostEllipsis = ({ postId }: { postId: Id<"posts"> }) => {
+type PostEllipsisProps = {
+  postId: Id<"posts">
+  currentUser: Doc<"users">
+  postAuthorId?: Id<"users">
+  visibility?: "public" | "subscribers_only"
+  postAuthorUsername?: string
+}
+
+export const PostEllipsis = ({
+  postId,
+  currentUser,
+  postAuthorId,
+  visibility = "public",
+  postAuthorUsername,
+}: PostEllipsisProps) => {
   const [isPending, startTransition] = useTransition()
+  const [isUpdatePending, setIsUpdatePending] = useState(false)
+  const pathname = usePathname()
+
+  // Déterminer si l'utilisateur courant est l'auteur du post
+  const isAuthor = postAuthorId === currentUser._id
 
   const deletePost = useMutation(api.posts.deletePost)
+  const updatePostVisibility = useMutation(api.posts.updatePostVisibility)
+
+  // Construction de l'URL complète du post pour le partage
+  const host = typeof window !== "undefined" ? window.location.origin : ""
+  const postUsername = postAuthorUsername
+  const postUrl = `${host}/${postUsername}/post/${postId}`
 
   const deleteHandler = async () => {
     startTransition(async () => {
       try {
         await deletePost({ postId })
-
-        toast.success("Votre publication a été supprimé")
+        toast.success("Votre publication a été supprimée")
       } catch (error) {
         console.error(error)
         toast.error("Une erreur s'est produite !", {
@@ -45,23 +85,95 @@ export const PostEllipsis = ({ postId }: { postId: Id<"posts"> }) => {
     })
   }
 
+  // Fonction de partage au lieu de copie
+  const handleShareLink = () => {
+    if (navigator.share) {
+      // API Web Share si disponible (mobile principalement)
+      navigator
+        .share({
+          title: "Partager ce post",
+          url: postUrl,
+        })
+        .catch((err) => {
+          console.error("Erreur lors du partage:", err)
+          // Fallback sur la copie si le partage échoue
+          handleCopyLink()
+        })
+    } else {
+      // Fallback pour les navigateurs ne supportant pas l'API Share
+      handleCopyLink()
+    }
+  }
+
+  // Garder la fonction de copie comme fallback
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(postUrl).then(() => {
+      toast.success("Lien copié !", {
+        description: "Le lien du post a été copié dans le presse-papier",
+        icon: <CheckCircle className="h-4 w-4" />,
+      })
+    })
+  }
+
+  const handleVisibilityChange = (
+    newVisibility: "public" | "subscribers_only",
+  ) => {
+    if (newVisibility === visibility) return
+
+    setIsUpdatePending(true)
+    updatePostVisibility({
+      postId,
+      visibility: newVisibility,
+    })
+      .then(() => {
+        toast.success("Visibilité modifiée", {
+          description:
+            newVisibility === "public"
+              ? "Votre publication est maintenant visible par tous"
+              : "Votre publication est maintenant réservée aux abonnés",
+        })
+      })
+      .catch((error) => {
+        console.error(error)
+        toast.error("Erreur lors de la modification")
+      })
+      .finally(() => {
+        setIsUpdatePending(false)
+      })
+  }
+
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button size={"icon"} variant="ghost">
+      <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
+        <Button size="icon" variant="ghost">
           <Ellipsis />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-1" side="right">
+      <PopoverContent className="w-80 p-1">
+        {/* Option de partage au lieu de copie */}
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-2"
+          onClick={handleShareLink}
+        >
+          <Share2 className="size-4" />
+          Partager le post
+        </Button>
+
+        {/* Option de suppression */}
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2 text-primary hover:text-primary"
+            >
+              <Trash2 className="h-4 w-4" />
               Supprimer la publication
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Etes-vous absolument sûr ?</AlertDialogTitle>
+              <AlertDialogTitle>Êtes-vous absolument sûr ?</AlertDialogTitle>
               <AlertDialogDescription>
                 Cette action ne peut pas être annulée. Cela supprimera
                 définitivement votre publication.
@@ -79,6 +191,41 @@ export const PostEllipsis = ({ postId }: { postId: Id<"posts"> }) => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Options disponibles uniquement pour l'auteur */}
+        {isAuthor && (
+          <>
+            {/* Option de modification de visibilité */}
+            <div className="px-2 py-2">
+              <p className="mb-1 text-sm font-medium">Visibilité du post</p>
+              <Select
+                value={visibility}
+                onValueChange={(value) =>
+                  handleVisibilityChange(value as "public" | "subscribers_only")
+                }
+                disabled={isUpdatePending}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choisir la visibilité" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="public">
+                    <div className="flex items-center">
+                      <Globe className="mr-2 h-4 w-4" />
+                      <span>Public</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="subscribers_only">
+                    <div className="flex items-center">
+                      <Lock className="mr-2 h-4 w-4" />
+                      <span>Abonnés uniquement</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
       </PopoverContent>
     </Popover>
   )

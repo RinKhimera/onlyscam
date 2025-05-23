@@ -1,10 +1,13 @@
 "use client"
 
+import { useQuery } from "convex/react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import { Lock } from "lucide-react"
 import { CldImage, CldVideoPlayer } from "next-cloudinary"
 import "next-cloudinary/dist/cld-video-player.css"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import React from "react"
 import { BookmarkButton } from "@/components/home/bookmark-button"
 import { CommentButton } from "@/components/home/comment-button"
@@ -12,6 +15,8 @@ import { LikeButton } from "@/components/home/like-button"
 import { PostEllipsis } from "@/components/home/post-ellipsis"
 import { ProfileImage } from "@/components/shared/profile-image"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
 
 // ExtendedPost is a type that represents a post with an extended author field.
@@ -27,10 +32,47 @@ type PostCardProps = {
 }
 
 export const PostCard = ({ post, currentUser }: PostCardProps) => {
+  const router = useRouter()
+  const isOwnPost = currentUser._id === post.author?._id
+  const isMediaProtected = post.visibility === "subscribers_only"
+  const hasMedia = post.medias && post.medias.length > 0
+
+  // Vérifier le statut d'abonnement directement dans le composant
+  const subscriptionStatus = useQuery(
+    api.subscriptions.getFollowSubscription,
+    post.author
+      ? {
+          creatorId: post.author._id,
+          subscriberId: currentUser._id,
+        }
+      : "skip", // Éviter la requête si pas d'auteur
+  )
+
+  const isSubscriber = subscriptionStatus?.status === "active"
+
+  // Logique d'accès aux médias
+  const canViewMedia = isOwnPost || !isMediaProtected || isSubscriber
+
+  const handlePostClick = (e: React.MouseEvent) => {
+    // Ne navigue que si le clic n'est pas sur un élément interactif
+    if (
+      !(e.target as HTMLElement).closest("button") &&
+      !(e.target as HTMLElement).closest("a")
+    ) {
+      router.push(`/${post.author?.username}/post/${post._id}`)
+    }
+  }
+
   return (
-    <div className="flex space-x-4 border-b px-4 pb-2 pt-4">
+    <div
+      className="flex cursor-pointer space-x-4 border-b px-4 pb-2 pt-4 transition-colors hover:bg-muted/10"
+      onClick={handlePostClick}
+    >
       <div className="flex w-full flex-col">
-        <div className="flex items-center justify-between">
+        <div
+          className="flex items-center justify-between"
+          onClick={(e) => e.stopPropagation()}
+        >
           <Link href={`/${post.author?.username}`}>
             <div className="flex items-center gap-3">
               <Avatar>
@@ -64,70 +106,102 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
               })}
             </>
 
-            <PostEllipsis postId={post._id} />
+            <PostEllipsis
+              postId={post._id}
+              currentUser={currentUser}
+              postAuthorId={post.author?._id}
+              visibility={post.visibility || "public"}
+              postAuthorUsername={post.author?.username}
+            />
           </div>
         </div>
 
         <div className="mt-1 flex flex-col sm:ml-[52px]">
-          <Link href={`/${post.author?.username}/post/${post._id}`}>
-            <div className="w-full text-base">
-              {post.content
-                .split("\n")
-                .filter((line) => line.trim() !== "")
-                .map((line, index) => (
-                  <React.Fragment key={index}>
-                    {line}
-                    <br />
-                  </React.Fragment>
-                ))}
-            </div>
-          </Link>
+          <div className="w-full text-base">
+            {post.content
+              .split("\n")
+              .filter((line) => line.trim() !== "")
+              .map((line, index) => (
+                <React.Fragment key={index}>
+                  {line}
+                  <br />
+                </React.Fragment>
+              ))}
+          </div>
 
-          <>
-            {post.medias.map((media) => {
-              const isVideo = media.startsWith(
-                "https://res.cloudinary.com/onlyscam/video/",
-              )
-              if (isVideo) {
-                return (
-                  <CldVideoPlayer
-                    key={media}
-                    width={1620}
-                    height={1080}
-                    src={media}
-                    sourceTypes={["hls"]}
-                    logo={false}
-                    transformation={{
-                      streaming_profile: "hd",
+          {/* Media section with conditional rendering */}
+          {hasMedia && (
+            <>
+              {canViewMedia ? (
+                // Original media rendering logic
+                <>
+                  {post.medias.map((media) => {
+                    const isVideo = media.startsWith(
+                      "https://res.cloudinary.com/onlyscam/video/",
+                    )
+                    if (isVideo) {
+                      return (
+                        <div key={media} onClick={(e) => e.stopPropagation()}>
+                          <CldVideoPlayer
+                            width={1620}
+                            height={1080}
+                            src={media}
+                            logo={false}
+                            sourceTypes={["hls"]}
+                            transformation={{
+                              streaming_profile: "hd",
+                            }}
+                            className="mt-2 rounded-md"
+                          />
+                        </div>
+                      )
+                    } else {
+                      return (
+                        <CldImage
+                          key={media}
+                          src={media}
+                          alt={""}
+                          width={500}
+                          height={500}
+                          className="mt-2 max-h-[550px] rounded-md object-cover"
+                        />
+                      )
+                    }
+                  })}
+                </>
+              ) : (
+                // Locked media placeholder
+                <div className="mt-2 flex aspect-video w-full flex-col items-center justify-center rounded-md bg-muted/20 p-6">
+                  <div className="mb-3 rounded-full bg-background/90 p-3">
+                    <Lock className="size-6 text-primary" />
+                  </div>
+                  <h3 className="mb-1 text-lg font-semibold">
+                    Contenu exclusif
+                  </h3>
+                  <p className="mb-4 text-center text-sm text-muted-foreground">
+                    Ce contenu est réservé aux abonnés de @
+                    {post.author?.username}
+                  </p>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="rounded-full"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      // Logic for subscription
                     }}
-                    className="mt-2 rounded-md"
-                  />
-                )
-              } else {
-                return (
-                  <CldImage
-                    key={media}
-                    src={media}
-                    alt={""}
-                    width={500}
-                    height={500}
-                    // fill
-                    // crop={"thumb"}
-                    // gravity="center"
-                    sizes="(max-width: 768px) 100vw,
-                 (max-width: 1200px) 50vw,
-                 33vw"
-                    loading="lazy"
-                    placeholder="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-                    // blurDataURL={base64}
-                    className="mt-2 max-h-[550px] rounded-md object-cover"
-                  />
-                )
-              }
-            })}
-          </>
+                  >
+                    S&apos;abonner pour voir
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
 
-          <div className="-ml-[5px] mt-2 flex w-full items-center justify-between">
+          <div
+            className="-ml-[5px] mt-2 flex w-full items-center justify-between"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex w-full items-center space-x-2">
               <LikeButton
                 postId={post._id}
@@ -142,13 +216,15 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
             />
           </div>
 
-          <Link href={`/${post.author?.username}/post/${post._id}`}>
-            {post.likes.length > 0 && (
-              <div className="mb-1.5 text-sm font-semibold tracking-tight">
-                {post.likes.length} j&apos;aime
-              </div>
-            )}
-          </Link>
+          <div onClick={(e) => e.stopPropagation()}>
+            <Link href={`/${post.author?.username}/post/${post._id}`}>
+              {post.likes.length > 0 && (
+                <div className="mb-1.5 text-sm font-semibold tracking-tight">
+                  {post.likes.length} j&apos;aime
+                </div>
+              )}
+            </Link>
+          </div>
         </div>
       </div>
     </div>

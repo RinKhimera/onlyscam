@@ -1,9 +1,9 @@
 "use client"
 
+import { useQuery } from "convex/react"
 import { PostCard } from "@/components/shared/post-card"
 import { api } from "@/convex/_generated/api"
 import { Doc, Id } from "@/convex/_generated/dataModel"
-import { useQuery } from "convex/react"
 
 export const UserPosts = ({
   authorId,
@@ -23,7 +23,10 @@ export const UserPosts = ({
       ) : (
         <div className="flex flex-col">
           {userPosts?.map((post) => (
-            <PostCard post={post} currentUser={currentUser} key={post._id} />
+            <div key={post._id}>
+              {/* Afficher toujours le contenu textuel du post */}
+              <PostCard post={post} currentUser={currentUser} />
+            </div>
           ))}
         </div>
       )}

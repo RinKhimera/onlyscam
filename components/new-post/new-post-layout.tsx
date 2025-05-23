@@ -211,7 +211,21 @@ export const NewPostLayout = () => {
                         {/* Actions de gauche (upload + visibilité) */}
                         <div className="flex flex-wrap items-center gap-3">
                           {/* Bouton upload */}
-                          <div className="text-blue-500">
+                          {!currentUser ? (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className={cn(
+                                "flex items-center gap-2 rounded-full border-muted hover:bg-blue-600/15 hover:text-blue-500",
+                                "cursor-not-allowed opacity-60",
+                              )}
+                              disabled
+                            >
+                              <ImagePlus size={18} />
+                              <span className="hidden sm:inline">Média</span>
+                            </Button>
+                          ) : (
                             <CldUploadWidget
                               uploadPreset="post-assets"
                               signatureEndpoint="/api/sign-cloudinary-params"
@@ -222,7 +236,7 @@ export const NewPostLayout = () => {
                                   "google_drive",
                                   "url",
                                 ],
-                                publicId: `${currentUser?._id}-${randomString}`,
+                                publicId: `${currentUser._id}-${randomString}`,
                                 multiple: false,
                                 maxFileSize: 50 * 1024 * 1024,
                                 clientAllowedFormats: ["image", "video"],
@@ -231,28 +245,26 @@ export const NewPostLayout = () => {
                                 handleUploadSuccess(result, widget)
                               }
                             >
-                              {({ open }) => {
-                                return (
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    className={cn(
-                                      "flex items-center gap-2 rounded-full border-muted hover:bg-blue-600/15 hover:text-blue-500",
-                                      { "cursor-not-allowed": isPending },
-                                    )}
-                                    onClick={() => open()}
-                                    disabled={isPending}
-                                  >
-                                    <ImagePlus size={18} />
-                                    <span className="hidden sm:inline">
-                                      Média
-                                    </span>
-                                  </Button>
-                                )
-                              }}
+                              {({ open }) => (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className={cn(
+                                    "flex items-center gap-2 rounded-full border-muted hover:bg-blue-600/15 hover:text-blue-500",
+                                    { "cursor-not-allowed": isPending },
+                                  )}
+                                  onClick={() => open()}
+                                  disabled={isPending}
+                                >
+                                  <ImagePlus size={18} />
+                                  <span className="hidden sm:inline">
+                                    Média
+                                  </span>
+                                </Button>
+                              )}
                             </CldUploadWidget>
-                          </div>
+                          )}
 
                           {/* Sélecteur de visibilité */}
                           <Select

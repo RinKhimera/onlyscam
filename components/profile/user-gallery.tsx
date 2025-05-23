@@ -2,8 +2,9 @@
 
 import { useQuery } from "convex/react"
 import { Lock, Play } from "lucide-react"
-import { CldImage, CldVideoPlayer } from "next-cloudinary"
+import { CldImage } from "next-cloudinary"
 import "next-cloudinary/dist/cld-video-player.css"
+import Image from "next/image"
 import { useState } from "react"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
@@ -32,6 +33,7 @@ export const UserGallery = ({
   const isOwnProfile = authorId === currentUser._id
 
   const handleMediaClick = (media: string) => {
+    console.log("Media cliqué:", media) // Affiche la valeur immédiatement
     setSelectedMedia(media)
     setIsDialogOpen(true)
   }
@@ -41,15 +43,11 @@ export const UserGallery = ({
 
   // Fonction pour générer une URL de thumbnail à partir d'une URL de vidéo Cloudinary
   const getVideoThumbnail = (videoUrl: string) => {
-    // Extraire uniquement l'ID public de la vidéo
-    const publicIdMatch = videoUrl.match(/\/upload\/v\d+\/(.+?)(\.\w+)?$/)
-    if (!publicIdMatch || !publicIdMatch[1]) {
-      return videoUrl // Fallback si l'extraction échoue
+    if (videoUrl.includes(".")) {
+      return videoUrl.replace(/\.[^/.]+$/, ".jpg")
+    } else {
+      return `${videoUrl}.jpg`
     }
-
-    const publicId = publicIdMatch[1]
-    // Construire une URL de thumbnail fiable
-    return `https://res.cloudinary.com/onlyscam/video/upload/c_fill,h_400,w_400,q_auto,so_0/f_jpg/${publicId}`
   }
 
   return (
@@ -88,7 +86,7 @@ export const UserGallery = ({
                             <div className="absolute z-10 flex h-12 w-12 items-center justify-center rounded-full bg-primary/80">
                               <Play className="h-6 w-6 fill-white text-white" />
                             </div>
-                            <CldImage
+                            <Image
                               src={getVideoThumbnail(mediaUrl)}
                               alt="Thumbnail"
                               width={400}
@@ -127,36 +125,35 @@ export const UserGallery = ({
       )}
 
       {/* Dialog pour afficher le média en plein écran */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog
+        open={isDialogOpen}
+        onOpenChange={(open) => {
+          setIsDialogOpen(open)
+          // Si on ferme, réinitialiser la vidéo
+          if (!open) setSelectedMedia(null)
+        }}
+      >
         <DialogContent className="flex h-screen max-w-none items-center justify-center border-none bg-black/90 p-0 sm:rounded-none">
           <div className="relative max-h-[90vh] max-w-[90vw]">
-            {selectedMedia && isVideo(selectedMedia) ? (
-              <div className="video-container">
-                <CldVideoPlayer
-                  width={1080}
-                  height={720}
-                  src={selectedMedia}
-                  sourceTypes={["hls"]}
-                  controls={true}
-                  autoPlay={true}
-                  loop={false}
-                  muted={false}
-                  transformation={{
-                    streaming_profile: "hd",
-                  }}
-                  className="max-h-[90vh]"
-                />
-              </div>
-            ) : (
-              selectedMedia && (
-                <CldImage
-                  src={selectedMedia}
-                  alt="Media full view"
-                  width={1200}
-                  height={1200}
-                  className="max-h-[90vh] max-w-[90vw] object-contain"
-                />
-              )
+            {selectedMedia && (
+              <>
+                {isVideo(selectedMedia) ? (
+                  <video
+                    controls
+                    autoPlay
+                    src={selectedMedia}
+                    className="max-h-[90vh] max-w-[90vw] rounded-md"
+                  ></video>
+                ) : (
+                  <CldImage
+                    src={selectedMedia}
+                    alt="Media full view"
+                    width={1200}
+                    height={1200}
+                    className="max-h-[90vh] max-w-[90vw] object-contain"
+                  />
+                )}
+              </>
             )}
           </div>
         </DialogContent>
