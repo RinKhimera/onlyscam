@@ -48,7 +48,7 @@ export const ConversationBox = ({
         <div className="w-full">
           <div className="flex items-center">
             <h3
-              className={`text-xs lg:text-sm ${hasUnreadMessages ? "font-bold" : "font-medium"}`}
+              className={`text-sm lg:text-sm ${hasUnreadMessages ? "font-bold" : "font-medium"}`}
             >
               {conversationName}
             </h3>
@@ -63,7 +63,7 @@ export const ConversationBox = ({
               </Badge>
             )}
 
-            <span className="ml-auto text-[10px] text-muted-foreground lg:text-xs">
+            <span className="ml-auto text-xs text-muted-foreground lg:text-sm">
               {lastMessage?._creationTime || conversation?.lastActivityTime
                 ? formatDate(
                     lastMessage?._creationTime ||

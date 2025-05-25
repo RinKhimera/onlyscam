@@ -1,6 +1,6 @@
-import { buttonVariants } from "@/components/ui/button"
 import { CircleCheckBig } from "lucide-react"
 import Link from "next/link"
+import { buttonVariants } from "@/components/ui/button"
 
 const MerciPage = () => {
   return (
@@ -9,7 +9,7 @@ const MerciPage = () => {
         <CircleCheckBig size={80} />
 
         <div className="px-3 text-center text-xl">
-          Bonne nouvelle, Votre paiement a été effectué avec succès !
+          Votre paiement a été effectué avec succès !
           <br />
           Merci et profitez de votre service.
         </div>

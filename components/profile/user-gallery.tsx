@@ -57,7 +57,7 @@ export const UserGallery = ({
           Pas de médias pour le moment
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-1 p-1 pb-2">
+        <div className="grid grid-cols-3 gap-1 p-1 pb-2 max-sm:grid-cols-2">
           {userGallery.map((item) => {
             const isMediaProtected = item.visibility === "subscribers_only"
             const canViewMedia =

@@ -1,17 +1,3 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { ProfileImage } from "@/components/shared/profile-image"
-import { Skeleton } from "@/components/ui/skeleton"
-import { api } from "@/convex/_generated/api"
-import { Doc } from "@/convex/_generated/dataModel"
 import { SignOutButton } from "@clerk/nextjs"
 import { useQuery } from "convex/react"
 import {
@@ -23,6 +9,20 @@ import {
   Sparkles,
 } from "lucide-react"
 import Link from "next/link"
+import { ProfileImage } from "@/components/shared/profile-image"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Skeleton } from "@/components/ui/skeleton"
+import { api } from "@/convex/_generated/api"
+import { Doc } from "@/convex/_generated/dataModel"
 
 export const UserInfoPopover = ({
   currentUser,
@@ -121,10 +121,10 @@ export const UserInfoPopover = ({
               Collections
             </DropdownMenuItem>
           </Link>
-          <Link href="/settings">
+          <Link href="/account">
             <DropdownMenuItem className="cursor-pointer">
               <Settings className="mr-2 size-4" />
-              Paramètres
+              Compte
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>

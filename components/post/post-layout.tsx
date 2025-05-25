@@ -1,12 +1,12 @@
 "use client"
 
-import { PostCard } from "@/components/shared/post-card"
-import { api } from "@/convex/_generated/api"
-import { Doc, Id } from "@/convex/_generated/dataModel"
 import { useQuery } from "convex/react"
 import { Loader } from "lucide-react"
 import { notFound } from "next/navigation"
 import React from "react"
+import { PostCard } from "@/components/shared/post-card"
+import { api } from "@/convex/_generated/api"
+import { Doc, Id } from "@/convex/_generated/dataModel"
 import { CommentFeed } from "./comment-feed"
 import { CreateComment } from "./create-comment"
 
@@ -23,7 +23,7 @@ export const PostLayout = ({
 
   if (post === undefined || currentUser === undefined)
     return (
-      <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full">
+      <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full max-[500px]:pb-16">
         <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
           Publication
         </h1>
