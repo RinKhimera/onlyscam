@@ -28,9 +28,7 @@ export const CreateComment = ({
   postId: Id<"posts">
 }) => {
   const [isPending, startTransition] = useTransition()
-
   const createComment = useMutation(api.comments.createComment)
-
   const form = useForm<z.infer<typeof commentFormSchema>>({
     resolver: zodResolver(commentFormSchema),
     defaultValues: {
@@ -62,18 +60,36 @@ export const CreateComment = ({
   }
 
   return (
-    <div className="relative flex items-stretch space-x-3 border-b border-muted px-4 py-5 max-sm:hidden">
-      <Avatar className="overflow-hidden">
-        <ProfileImage
-          src={currentUser?.image}
-          alt={currentUser?.username || "Avatar"}
-          width={44}
-          height={44}
-        />
-        <AvatarFallback className="size-11">
-          <div className="animate-pulse rounded-full bg-gray-500"></div>
-        </AvatarFallback>
-      </Avatar>
+    <div className="relative flex items-stretch space-x-3 border-b border-muted px-4 py-5 max-sm:px-1">
+      {/* Avatar version desktop et tablette */}
+      <div className="hidden sm:block">
+        <Avatar className="overflow-hidden">
+          <ProfileImage
+            src={currentUser?.image}
+            alt={currentUser?.username || "Avatar"}
+            width={44}
+            height={44}
+          />
+          <AvatarFallback className="size-11">
+            <div className="animate-pulse rounded-full bg-gray-500"></div>
+          </AvatarFallback>
+        </Avatar>
+      </div>
+
+      {/* Avatar version mobile (plus petit) */}
+      <div className="block sm:hidden">
+        <Avatar className="size-8 overflow-hidden">
+          <ProfileImage
+            src={currentUser?.image}
+            alt={currentUser?.username || "Avatar"}
+            width={32}
+            height={32}
+          />
+          <AvatarFallback className="size-8">
+            <div className="animate-pulse rounded-full bg-gray-500"></div>
+          </AvatarFallback>
+        </Avatar>
+      </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
@@ -86,7 +102,7 @@ export const CreateComment = ({
                   <div className="flex h-full w-full flex-col">
                     <Textarea
                       placeholder="Poster votre réponse"
-                      className="mt-1 h-full w-full resize-none border-none bg-transparent text-xl outline-none"
+                      className="mt-1 h-full w-full resize-none border-none bg-transparent text-xl outline-none max-sm:text-base"
                       {...field}
                     />
 
@@ -94,7 +110,7 @@ export const CreateComment = ({
                       <Button
                         type="submit"
                         disabled={isPending}
-                        className="w-fit rounded-full bg-primary px-4 py-2 font-bold hover:bg-primary/80"
+                        className="w-fit rounded-full bg-primary px-4 py-2 font-bold hover:bg-primary/80 max-sm:px-3 max-sm:py-1.5 max-sm:text-sm"
                       >
                         {isPending ? (
                           <LoaderCircle className="animate-spin" />

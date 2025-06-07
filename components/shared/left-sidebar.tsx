@@ -3,7 +3,7 @@
 import { useConvexAuth, useQuery } from "convex/react"
 import { PenLine } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import React from "react"
 import { UserInfoPopover } from "@/components/shared/user-info-popover"
 import { Badge } from "@/components/ui/badge"
@@ -16,6 +16,7 @@ import { MobileMenu } from "./mobile-menu"
 
 export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
   const pathname = usePathname()
+  const router = useRouter()
   const { isAuthenticated } = useConvexAuth()
 
   const unreadCountsData = useQuery(
@@ -72,20 +73,38 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
             )
           })}
 
+          {/* Bouton desktop */}
           <Button
-            asChild
             className="w-full rounded-full bg-primary px-5 py-6 text-xl hover:bg-primary/80 max-lg:hidden"
+            onClick={() => {
+              if (
+                currentUser?.accountType === "CREATOR" ||
+                currentUser?.accountType === "SUPERUSER"
+              ) {
+                router.push("/new-post")
+              } else {
+                router.push("/be-creator")
+              }
+            }}
           >
-            <Link href="/new-post">Publier</Link>
+            <span>Publier</span>
           </Button>
 
+          {/* Bouton mobile/tablet */}
           <Button
-            asChild
             className="w-fit rounded-full bg-primary p-3 text-xl transition hover:bg-primary/80 lg:hidden"
+            onClick={() => {
+              if (
+                currentUser?.accountType === "CREATOR" ||
+                currentUser?.accountType === "SUPERUSER"
+              ) {
+                router.push("/new-post")
+              } else {
+                router.push("/be-creator")
+              }
+            }}
           >
-            <Link href="/new-post">
-              <PenLine className="size-6" />
-            </Link>
+            <PenLine className="size-6" />
           </Button>
         </div>
         {currentUser && <UserInfoPopover currentUser={currentUser} />}

@@ -1,7 +1,7 @@
-import { v } from "convex/values"
-import { internalMutation, mutation } from "./_generated/server"
-import { api } from "./_generated/api"
 import { fetchAction } from "convex/nextjs"
+import { v } from "convex/values"
+import { api } from "./_generated/api"
+import { internalMutation, mutation } from "./_generated/server"
 
 export const createDraftAsset = mutation({
   args: {
@@ -27,13 +27,11 @@ export const deleteDraftAsset = mutation({
   handler: async (ctx, args) => {
     const { publicId } = args
 
-    // Rechercher l'asset par publicId
     const asset = await ctx.db
       .query("assetsDraft")
       .withIndex("by_publicId", (q) => q.eq("publicId", publicId))
       .first()
 
-    // Si l'asset existe, le supprimer
     if (asset) {
       await ctx.db.delete(asset._id)
       return { success: true }
@@ -45,35 +43,57 @@ export const deleteDraftAsset = mutation({
 
 export const cleanUpDraftAssets = internalMutation({
   handler: async (ctx) => {
-    // Récupérer tous les brouillons d'assets
+    // Récupérer tous les brouillons d'assets (posts)
     const draftAssets = await ctx.db.query("assetsDraft").collect()
 
-    // Log pour debugging
-    console.log(`Found ${draftAssets.length} draft assets to clean up`)
+    // Récupérer tous les brouillons de documents de validation
+    const draftDocuments = await ctx.db
+      .query("validationDocumentsDraft")
+      .collect()
 
-    // Compter les succès et échecs
+    const totalAssets = draftAssets.length + draftDocuments.length
+    console.log(
+      `Found ${totalAssets} draft items to clean up (${draftAssets.length} post assets + ${draftDocuments.length} validation documents)`,
+    )
+
     let successCount = 0
     let errorCount = 0
 
-    // Traiter chaque asset
+    // Traiter les assets de posts
     for (const asset of draftAssets) {
       try {
         await fetchAction(api.internalActions.deleteCloudinaryAsset, {
           publicId: asset.publicId,
         })
 
-        // Supprimer l'entrée de la base de données
         await ctx.db.delete(asset._id)
-
         successCount++
       } catch (error) {
-        console.error(`Failed to delete asset ${asset.publicId}:`, error)
+        console.error(`Failed to delete post asset ${asset.publicId}:`, error)
+        errorCount++
+      }
+    }
+
+    // Traiter les documents de validation
+    for (const document of draftDocuments) {
+      try {
+        await fetchAction(api.internalActions.deleteCloudinaryAsset, {
+          publicId: document.publicId,
+        })
+
+        await ctx.db.delete(document._id)
+        successCount++
+      } catch (error) {
+        console.error(
+          `Failed to delete validation document ${document.publicId}:`,
+          error,
+        )
         errorCount++
       }
     }
 
     return {
-      total: draftAssets.length,
+      total: totalAssets,
       success: successCount,
       error: errorCount,
     }

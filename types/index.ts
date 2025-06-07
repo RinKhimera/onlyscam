@@ -108,3 +108,45 @@ export type CinetPayResponse = {
   }
   api_response_id: string
 }
+
+export type Application = {
+  _id: Id<"creatorApplications">
+  _creationTime: number
+  userId: Id<"users">
+  status: "pending" | "approved" | "rejected"
+  personalInfo: {
+    fullName: string
+    dateOfBirth: string
+    address: string
+    phoneNumber: string
+  }
+  applicationReason: string
+  identityDocuments: Array<{
+    type: "identity_card" | "passport" | "driving_license" | "selfie"
+    url: string
+    publicId: string
+    uploadedAt: number
+  }>
+  submittedAt: number
+  reviewedAt?: number
+  adminNotes?: string
+  user: {
+    _id: Id<"users">
+    _creationTime: number
+    username?: string
+    imageBanner?: string
+    bio?: string
+    location?: string
+    socials?: string[]
+    bookmarks?: Id<"posts">[]
+    isOnline: boolean
+    tokenIdentifier: string
+    externalId?: string
+    accountType: "USER" | "CREATOR" | "SUPERUSER"
+    creatorApplicationStatus?: "none" | "pending" | "approved" | "rejected"
+    name: string
+    email: string
+    image: string
+  } | null
+  riskFactors?: Array<{ message: string; level: "FAIBLE" | "MODÉRÉ" | "GRAVE" }>
+}

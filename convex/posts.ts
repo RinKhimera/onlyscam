@@ -1,4 +1,5 @@
 import { ConvexError, v } from "convex/values"
+import { api } from "./_generated/api"
 import { mutation, query } from "./_generated/server"
 
 export const createPost = mutation({
@@ -78,22 +79,64 @@ export const deletePost = mutation({
     if (!post) throw new ConvexError("Post not found")
 
     // Vérifier si l'utilisateur est autorisé à supprimer le post
-    if (post.author !== user._id)
+    if (post.author !== user._id && user.accountType !== "SUPERUSER") {
       throw new ConvexError("User not authorized to delete this post")
+    }
 
-    // Supprimer le post dans la database
-    await ctx.db.delete(args.postId)
+    // Supprimer les médias Cloudinary de manière asynchrone
+    if (post.medias && post.medias.length > 0) {
+      for (const mediaUrl of post.medias) {
+        try {
+          await ctx.scheduler.runAfter(
+            0,
+            api.internalActions.deleteCloudinaryAssetFromUrl,
+            {
+              url: mediaUrl,
+            },
+          )
+        } catch (error) {
+          console.error(
+            `Failed to schedule deletion for media ${mediaUrl}:`,
+            error,
+          )
+        }
+      }
+    }
+
+    // Supprimer tous les commentaires associés au post
+    const comments = await ctx.db
+      .query("comments")
+      .withIndex("by_post", (q) => q.eq("post", args.postId))
+      .collect()
+
+    for (const comment of comments) {
+      await ctx.db.delete(comment._id)
+    }
+
+    // Supprimer le post de tous les bookmarks
+    const users = await ctx.db.query("users").collect()
+    for (const userDoc of users) {
+      if (userDoc.bookmarks?.includes(args.postId)) {
+        await ctx.db.patch(userDoc._id, {
+          bookmarks: userDoc.bookmarks.filter((id) => id !== args.postId),
+        })
+      }
+    }
 
     // Supprimer toutes les notifications associées à ce post
-    const existingNewPostNotification = await ctx.db
+    const notifications = await ctx.db
       .query("notifications")
-      .withIndex("by_type_post_sender", (q) =>
-        q.eq("type", "newPost").eq("post", args.postId).eq("sender", user._id),
-      )
+      .filter((q) => q.eq(q.field("post"), args.postId))
       .collect()
-    for (const notification of existingNewPostNotification) {
+
+    for (const notification of notifications) {
       await ctx.db.delete(notification._id)
     }
+
+    // Supprimer le post de la base de données
+    await ctx.db.delete(args.postId)
+
+    return { success: true }
   },
 })
 

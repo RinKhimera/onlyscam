@@ -65,7 +65,14 @@ export const MobileMenu = () => {
   const handlePublishClick = () => {
     setIsOpen(false)
     setTimeout(() => {
-      router.push("/new-post")
+      if (
+        currentUser?.accountType === "CREATOR" ||
+        currentUser?.accountType === "SUPERUSER"
+      ) {
+        router.push("/new-post")
+      } else {
+        router.push("/be-creator")
+      }
     }, 150)
   }
 
@@ -177,7 +184,10 @@ export const MobileMenu = () => {
                   Publier
                 </Button>
                 <div className="flex justify-center">
-                  <UserInfoPopover currentUser={currentUser} />
+                  <UserInfoPopover
+                    currentUser={currentUser}
+                    onNavigate={() => setIsOpen(false)}
+                  />
                 </div>
               </div>
             )}

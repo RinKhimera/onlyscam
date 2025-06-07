@@ -5,7 +5,6 @@ import { internal } from "./_generated/api"
 import { Doc, Id } from "./_generated/dataModel"
 import { action } from "./_generated/server"
 
-// Définir un type pour la réponse de l'action
 type ProcessPaymentResult = {
   success: boolean
   message: string
@@ -122,6 +121,7 @@ export const deleteCloudinaryAsset = action({
   },
   handler: async (ctx, args) => {
     const cloudinary = require("cloudinary").v2
+
     cloudinary.config({
       cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
       api_key: process.env.CLOUDINARY_API_KEY,
@@ -140,3 +140,79 @@ export const deleteCloudinaryAsset = action({
     }
   },
 })
+
+export const deleteCloudinaryAssetFromUrl = action({
+  args: {
+    url: v.string(),
+  },
+  handler: async (ctx, args) => {
+    try {
+      const cloudinary = require("cloudinary").v2
+
+      cloudinary.config({
+        cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+        secure: true,
+      })
+
+      const publicId = extractPublicIdFromUrl(args.url)
+
+      if (!publicId) {
+        return {
+          success: false,
+          error: "Could not extract publicId from URL",
+          url: args.url,
+        }
+      }
+
+      const result = await cloudinary.uploader.destroy(publicId, {
+        invalidate: true,
+      })
+
+      return {
+        success: true,
+        result,
+        publicId,
+        originalUrl: args.url,
+      }
+    } catch (error) {
+      console.error(`Error deleting asset from URL ${args.url}:`, error)
+      return {
+        success: false,
+        error: String(error),
+        url: args.url,
+      }
+    }
+  },
+})
+
+const extractPublicIdFromUrl = (url: string): string | null => {
+  try {
+    // Nettoyer l'URL des paramètres de query
+    const cleanUrl = url.split("?")[0]
+
+    const patterns = [
+      // Pattern standard avec version
+      /\/(?:image|video|raw)\/upload\/(?:v\d+\/)?(.+?)(?:\.[^.\/]+)?$/,
+      // Pattern avec transformations
+      /\/(?:image|video|raw)\/upload\/(?:[^\/]+\/)*(?:v\d+\/)?(.+?)(?:\.[^.\/]+)?$/,
+      // Pattern sans version
+      /\/(?:image|video|raw)\/upload\/(.+?)(?:\.[^.\/]+)?$/,
+      // Pattern général de fallback
+      /\/upload\/(?:.*\/)?(.+?)(?:\.[^.\/]+)?$/,
+    ]
+
+    for (const pattern of patterns) {
+      const match = cleanUrl.match(pattern)
+      if (match && match[1]) {
+        return match[1]
+      }
+    }
+
+    return null
+  } catch (error) {
+    console.error("Error extracting publicId from URL:", error)
+    return null
+  }
+}

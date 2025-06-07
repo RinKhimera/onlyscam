@@ -16,7 +16,9 @@ import type {
 import type * as assetsDraft from "../assetsDraft.js";
 import type * as comments from "../comments.js";
 import type * as conversations from "../conversations.js";
+import type * as creatorApplications from "../creatorApplications.js";
 import type * as crons from "../crons.js";
+import type * as files from "../files.js";
 import type * as follows from "../follows.js";
 import type * as http from "../http.js";
 import type * as internalActions from "../internalActions.js";
@@ -25,6 +27,7 @@ import type * as notifications from "../notifications.js";
 import type * as posts from "../posts.js";
 import type * as subscriptions from "../subscriptions.js";
 import type * as users from "../users.js";
+import type * as validationDocuments from "../validationDocuments.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -38,7 +41,9 @@ declare const fullApi: ApiFromModules<{
   assetsDraft: typeof assetsDraft;
   comments: typeof comments;
   conversations: typeof conversations;
+  creatorApplications: typeof creatorApplications;
   crons: typeof crons;
+  files: typeof files;
   follows: typeof follows;
   http: typeof http;
   internalActions: typeof internalActions;
@@ -47,6 +52,7 @@ declare const fullApi: ApiFromModules<{
   posts: typeof posts;
   subscriptions: typeof subscriptions;
   users: typeof users;
+  validationDocuments: typeof validationDocuments;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

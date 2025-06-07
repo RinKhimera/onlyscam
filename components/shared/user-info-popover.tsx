@@ -3,14 +3,15 @@ import { useQuery } from "convex/react"
 import {
   BookmarkPlus,
   ChevronsUpDown,
-  Home,
+  CircleUserRound,
   LogOut,
   Settings,
   Sparkles,
 } from "lucide-react"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ProfileImage } from "@/components/shared/profile-image"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,9 +27,13 @@ import { Doc } from "@/convex/_generated/dataModel"
 
 export const UserInfoPopover = ({
   currentUser,
+  onNavigate,
 }: {
   currentUser: Doc<"users">
+  onNavigate?: () => void
 }) => {
+  const router = useRouter()
+
   const getFollowers = useQuery(api.follows.getFollowers, {
     userId: currentUser._id,
   })
@@ -36,6 +41,17 @@ export const UserInfoPopover = ({
   const getFollowings = useQuery(api.follows.getFollowings, {
     userId: currentUser._id,
   })
+
+  const handleNavigation = (href: string) => {
+    if (onNavigate) {
+      onNavigate()
+      setTimeout(() => {
+        router.push(href)
+      }, 150)
+    } else {
+      router.push(href)
+    }
+  }
 
   return (
     <DropdownMenu>
@@ -104,29 +120,43 @@ export const UserInfoPopover = ({
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <Sparkles className="mr-2 size-4" />
-            Passer à la version Pro
+            Passer au compte Créateur
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <Link href={`/${currentUser?.username}`}>
-            <DropdownMenuItem className="cursor-pointer">
-              <Home className="mr-2 size-4" />
-              Mon Profil
+          <Button
+            variant="ghost"
+            className="h-auto w-full justify-start p-0"
+            onClick={() => handleNavigation(`/${currentUser?.username}`)}
+          >
+            <DropdownMenuItem className="w-full cursor-pointer">
+              <CircleUserRound className="mr-2 size-4" />
+              Profil
             </DropdownMenuItem>
-          </Link>
-          <Link href="/collections">
-            <DropdownMenuItem className="cursor-pointer">
+          </Button>
+
+          <Button
+            variant="ghost"
+            className="h-auto w-full justify-start p-0"
+            onClick={() => handleNavigation("/collections")}
+          >
+            <DropdownMenuItem className="w-full cursor-pointer">
               <BookmarkPlus className="mr-2 size-4" />
               Collections
             </DropdownMenuItem>
-          </Link>
-          <Link href="/account">
-            <DropdownMenuItem className="cursor-pointer">
+          </Button>
+
+          <Button
+            variant="ghost"
+            className="h-auto w-full justify-start p-0"
+            onClick={() => handleNavigation("/account")}
+          >
+            <DropdownMenuItem className="w-full cursor-pointer">
               <Settings className="mr-2 size-4" />
               Compte
             </DropdownMenuItem>
-          </Link>
+          </Button>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <SignOutButton>

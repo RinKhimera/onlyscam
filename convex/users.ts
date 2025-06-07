@@ -1,11 +1,11 @@
-import { ConvexError, v, Validator } from "convex/values"
+import { UserJSON } from "@clerk/backend"
+import { ConvexError, Validator, v } from "convex/values"
 import {
+  QueryCtx,
   internalMutation,
   mutation,
   query,
-  QueryCtx,
 } from "./_generated/server"
-import { UserJSON } from "@clerk/backend"
 
 async function userByExternalId(ctx: QueryCtx, externalId: string) {
   return await ctx.db
@@ -15,7 +15,7 @@ async function userByExternalId(ctx: QueryCtx, externalId: string) {
 }
 
 export const upsertFromClerk = internalMutation({
-  args: { data: v.any() as Validator<UserJSON> }, // Coming from Clerk
+  args: { data: v.any() as Validator<UserJSON> }, // Vient de Clerk
   async handler(ctx, { data }) {
     const userAttributes = {
       externalId: data.id,
@@ -23,7 +23,7 @@ export const upsertFromClerk = internalMutation({
       name: `${data.first_name} ${data.last_name}`,
       email: data.email_addresses[0]?.email_address,
       image: data.image_url,
-      accountType: "USER",
+      accountType: "USER" as const,
       isOnline: true,
     }
 
@@ -287,5 +287,37 @@ export const getAvailableUsername = query({
       .unique()
 
     return !existingUsername
+  },
+})
+
+export const upgradeToCreator = mutation({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error("Unauthorized")
+
+    const currentUser = await ctx.db
+      .query("users")
+      .withIndex("by_tokenIdentifier", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique()
+
+    if (!currentUser || currentUser._id !== args.userId) {
+      throw new Error("Unauthorized")
+    }
+
+    if (
+      currentUser.accountType === "CREATOR" ||
+      currentUser.accountType === "SUPERUSER"
+    ) {
+      throw new Error("User is already a creator")
+    }
+
+    await ctx.db.patch(args.userId, {
+      accountType: "CREATOR",
+    })
+
+    return { success: true }
   },
 })

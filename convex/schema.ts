@@ -12,16 +12,68 @@ export default defineSchema({
     location: v.optional(v.string()),
     socials: v.optional(v.array(v.string())),
     bookmarks: v.optional(v.array(v.id("posts"))),
-    accountType: v.string(),
     isOnline: v.boolean(),
     tokenIdentifier: v.string(),
     externalId: v.optional(v.string()),
-    // following: v.optional(v.array(v.id("users"))),
-    // followers: v.optional(v.array(v.id("users"))),
+    accountType: v.union(
+      v.literal("USER"),
+      v.literal("CREATOR"),
+      v.literal("SUPERUSER"),
+    ),
+    creatorApplicationStatus: v.optional(
+      v.union(
+        v.literal("none"),
+        v.literal("pending"),
+        v.literal("approved"),
+        v.literal("rejected"),
+      ),
+    ),
   })
     .index("by_tokenIdentifier", ["tokenIdentifier"])
     .index("by_username", ["username"])
     .index("byExternalId", ["externalId"]),
+
+  creatorApplications: defineTable({
+    userId: v.id("users"),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("approved"),
+      v.literal("rejected"),
+    ),
+    identityDocuments: v.array(
+      v.object({
+        type: v.union(
+          v.literal("identity_card"),
+          v.literal("passport"),
+          v.literal("driving_license"),
+          v.literal("selfie"),
+        ),
+        url: v.string(),
+        publicId: v.string(),
+        uploadedAt: v.number(),
+      }),
+    ),
+    personalInfo: v.object({
+      fullName: v.string(),
+      dateOfBirth: v.string(),
+      address: v.string(),
+      phoneNumber: v.string(),
+    }),
+    applicationReason: v.string(),
+    adminNotes: v.optional(v.string()),
+    submittedAt: v.number(),
+    reviewedAt: v.optional(v.number()),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_status", ["status"]),
+
+  validationDocumentsDraft: defineTable({
+    userId: v.id("users"),
+    publicId: v.string(),
+    documentType: v.union(v.literal("identity_card"), v.literal("selfie")),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_publicId", ["publicId"]),
 
   posts: defineTable({
     author: v.id("users"),
@@ -49,7 +101,6 @@ export default defineSchema({
     post: v.id("posts"),
     content: v.string(),
     likes: v.array(v.id("users")),
-    // subComments: v.optional(v.array(v.id("comments"))),
   }).index("by_post", ["post"]),
 
   conversations: defineTable({
@@ -73,9 +124,9 @@ export default defineSchema({
   }).index("by_conversation", ["conversation"]),
 
   follows: defineTable({
-    followerId: v.id("users"), // L'utilisateur qui suit
-    followingId: v.id("users"), // L'utilisateur qui est suivi
-    subscriptionId: v.id("subscriptions"), // Id de l'abonnement valide
+    followerId: v.id("users"),
+    followingId: v.id("users"),
+    subscriptionId: v.id("subscriptions"),
   })
     .index("by_follower", ["followerId"])
     .index("by_following", ["followingId"])
@@ -89,7 +140,7 @@ export default defineSchema({
     amountPaid: v.number(),
     subscriber: v.id("users"),
     creator: v.id("users"),
-    status: v.string(), // "active", "expired", "cancelled"
+    status: v.string(),
     transactionId: v.optional(v.string()),
     renewalCount: v.number(),
     lastUpdateTime: v.number(),
@@ -101,7 +152,7 @@ export default defineSchema({
     .index("by_endDate", ["endDate"]),
 
   notifications: defineTable({
-    type: v.string(), // "like", "comment", "newSubscription", "renewSubscription", "newPost from followings"
+    type: v.string(),
     recipientId: v.id("users"),
     sender: v.id("users"),
     read: v.boolean(),
