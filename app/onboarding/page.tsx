@@ -1,19 +1,31 @@
-import { getAuthToken } from "@/app/auth"
+"use client"
+
+import { useConvexAuth } from "convex/react"
+import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { UpdateImages } from "@/components/profile/update-images"
 import { EditProfileForm } from "@/components/shared/edit-profile-form"
 import { ImageUploadInfo } from "@/components/shared/image-upload-info"
 import { Label } from "@/components/ui/label"
-import { api } from "@/convex/_generated/api"
-import { fetchQuery } from "convex/nextjs"
-import { redirect } from "next/navigation"
+import { useCurrentUser } from "@/hooks/useCurrentUser"
 
-const OnboardingPage = async () => {
-  const token = await getAuthToken()
-  const currentUser = await fetchQuery(api.users.getCurrentUser, undefined, {
-    token,
-  })
+const OnboardingPage = () => {
+  const router = useRouter()
+  const { isLoading: isAuthLoading } = useConvexAuth()
+  const currentUser = useCurrentUser()
 
-  if (currentUser?.username) redirect("/")
+  if (isAuthLoading || currentUser === undefined) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="mt-4 text-lg text-muted-foreground">
+          Préparation de votre profil...
+        </p>
+      </div>
+    )
+  }
+
+  if (currentUser?.username) router.push("/")
 
   return (
     <div className="container mx-auto my-4 max-w-2xl">

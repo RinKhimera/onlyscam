@@ -1,5 +1,13 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation, useQuery } from "convex/react"
+import { CircleX, LoaderCircle } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { useTransition } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -16,19 +24,11 @@ import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
 import { cn } from "@/lib/utils"
 import { profileFormSchema } from "@/schemas/profile"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation, useQuery } from "convex/react"
-import { CircleX, LoaderCircle } from "lucide-react"
-import { usePathname, useRouter } from "next/navigation"
-import { useTransition } from "react"
-import { useFieldArray, useForm } from "react-hook-form"
-import { toast } from "sonner"
-import { z } from "zod"
 
 export const EditProfileForm = ({
   currentUser,
 }: {
-  currentUser: Doc<"users">
+  currentUser: Doc<"users"> | undefined
 }) => {
   const router = useRouter()
   const pathname = usePathname()

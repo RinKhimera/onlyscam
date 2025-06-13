@@ -8,7 +8,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Doc } from "@/convex/_generated/dataModel"
 
-export const CreatePost = ({ currentUser }: { currentUser: Doc<"users"> }) => {
+export const CreatePost = ({
+  currentUser,
+}: {
+  currentUser: Doc<"users"> | undefined
+}) => {
   const router = useRouter()
 
   const handleCreatePostClick = () => {
