@@ -163,6 +163,34 @@ export const getPendingApplications = query({
   },
 })
 
+export const getApplicationById = query({
+  args: { applicationId: v.id("creatorApplications") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error("Unauthorized")
+
+    const currentUser = await ctx.db
+      .query("users")
+      .withIndex("by_tokenIdentifier", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique()
+
+    if (!currentUser || currentUser.accountType !== "SUPERUSER") {
+      throw new Error("Unauthorized")
+    }
+
+    const application = await ctx.db.get(args.applicationId)
+    if (!application) return null
+
+    const user = await ctx.db.get(application.userId)
+    return {
+      ...application,
+      user,
+    }
+  },
+})
+
 export const reviewApplication = mutation({
   args: {
     applicationId: v.id("creatorApplications"),

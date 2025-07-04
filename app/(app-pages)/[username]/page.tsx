@@ -34,7 +34,7 @@ const UserProfilePage = async (props: {
             currentUserId={currentUser._id}
           />
         ) : (
-          <SuggestionSidebar authToken={token} />
+          <SuggestionSidebar />
         )}
       </>
     </>
