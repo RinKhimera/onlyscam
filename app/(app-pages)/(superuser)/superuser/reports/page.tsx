@@ -13,6 +13,7 @@ import {
   User,
   X,
 } from "lucide-react"
+import Link from "next/link"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -205,7 +206,19 @@ const ReportsPage = () => {
                 <Calendar className="mr-1 h-4 w-4" />
                 Signalé le {formatDate(report.createdAt)}
               </div>
-              <div>Signalé par {report.reporter?.name}</div>
+              <div>
+                Signalé par{" "}
+                {report.reporter?.username ? (
+                  <Link
+                    href={`/${report.reporter.username}`}
+                    className="font-medium text-primary hover:underline"
+                  >
+                    {report.reporter.name}
+                  </Link>
+                ) : (
+                  <span className="font-medium">{report.reporter?.name}</span>
+                )}
+              </div>
             </div>
 
             {report.type === "user" && report.reportedUser && (
@@ -213,9 +226,18 @@ const ReportsPage = () => {
                 <p className="text-sm font-medium">Utilisateur signalé :</p>
                 <div className="mt-1 flex items-center gap-2">
                   <User className="h-4 w-4" />
-                  <span className="font-medium">
-                    {report.reportedUser.name}
-                  </span>
+                  {report.reportedUser.username ? (
+                    <Link
+                      href={`/${report.reportedUser.username}`}
+                      className="font-medium text-primary hover:underline"
+                    >
+                      {report.reportedUser.name}
+                    </Link>
+                  ) : (
+                    <span className="font-medium">
+                      {report.reportedUser.name}
+                    </span>
+                  )}
                   <span className="text-muted-foreground">
                     @{report.reportedUser.username}
                   </span>
@@ -231,7 +253,19 @@ const ReportsPage = () => {
                     {report.reportedPost.content}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Par {report.reportedPost.author?.name}
+                    Par{" "}
+                    {report.reportedPost.author?.username ? (
+                      <Link
+                        href={`/${report.reportedPost.author.username}`}
+                        className="font-medium text-primary hover:underline"
+                      >
+                        {report.reportedPost.author.name}
+                      </Link>
+                    ) : (
+                      <span className="font-medium">
+                        {report.reportedPost.author?.name}
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>
@@ -271,7 +305,7 @@ const ReportsPage = () => {
   const rejectedReports = allReports.filter((r) => r.status === "rejected")
 
   return (
-    <main className="flex h-full min-h-screen w-full flex-col border-l border-r border-muted sm:w-[80%] lg:w-[60%]">
+    <main className="flex h-full min-h-screen w-full flex-col border-l border-r border-muted max-lg:pb-16 sm:w-[80%] lg:w-[60%]">
       {/* Header */}
       <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
         <div className="flex items-center justify-between">
@@ -415,7 +449,7 @@ const ReportsPage = () => {
                 {getStatusBadge(selectedReport.status)}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">
                     Motif
@@ -432,6 +466,63 @@ const ReportsPage = () => {
                     {formatDate(selectedReport.createdAt)}
                   </p>
                 </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Signalé par
+                  </p>
+                  {selectedReport.reporter?.username ? (
+                    <Link
+                      href={`/${selectedReport.reporter.username}`}
+                      className="font-medium text-primary hover:underline"
+                    >
+                      {selectedReport.reporter.name}
+                    </Link>
+                  ) : (
+                    <p className="font-medium">
+                      {selectedReport.reporter?.name}
+                    </p>
+                  )}
+                </div>
+                {selectedReport.type === "user" &&
+                  selectedReport.reportedUser && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Utilisateur signalé
+                      </p>
+                      {selectedReport.reportedUser.username ? (
+                        <Link
+                          href={`/${selectedReport.reportedUser.username}`}
+                          className="font-medium text-primary hover:underline"
+                        >
+                          {selectedReport.reportedUser.name}
+                        </Link>
+                      ) : (
+                        <p className="font-medium">
+                          {selectedReport.reportedUser.name}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                {selectedReport.type === "post" &&
+                  selectedReport.reportedPost?.author && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Auteur du post
+                      </p>
+                      {selectedReport.reportedPost.author.username ? (
+                        <Link
+                          href={`/${selectedReport.reportedPost.author.username}`}
+                          className="font-medium text-primary hover:underline"
+                        >
+                          {selectedReport.reportedPost.author.name}
+                        </Link>
+                      ) : (
+                        <p className="font-medium">
+                          {selectedReport.reportedPost.author.name}
+                        </p>
+                      )}
+                    </div>
+                  )}
               </div>
 
               {selectedReport.description && (
@@ -459,7 +550,7 @@ const ReportsPage = () => {
 
               {selectedReport.status === "pending" ||
               selectedReport.status === "reviewing" ? (
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row">
                   <Button
                     onClick={() =>
                       handleStatusUpdate(selectedReport._id, "reviewing")
