@@ -25,7 +25,23 @@ const OnboardingPage = () => {
     )
   }
 
-  if (currentUser?.username) router.push("/")
+  // Redirection si l'utilisateur a déjà un username (profil complété)
+  if (currentUser?.username) {
+    router.push("/")
+    return null
+  }
+
+  // Si currentUser est null après le chargement, erreur
+  if (!currentUser) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="mt-4 text-lg text-muted-foreground">
+          Erreur de chargement du profil...
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto my-4 max-w-2xl">

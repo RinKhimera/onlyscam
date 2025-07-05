@@ -8,7 +8,7 @@ const CollectionsPage = async () => {
   return (
     <>
       <CollectionsLayout />
-      <SuggestionSidebar authToken={token} />
+      <SuggestionSidebar />
     </>
   )
 }

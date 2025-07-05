@@ -1,10 +1,10 @@
+import { fetchQuery } from "convex/nextjs"
+import { redirect } from "next/navigation"
 import { getAuthToken } from "@/app/auth"
 import { PaymentCheckLayout } from "@/components/payment-check/payment-check-layout"
 import { LeftSidebar } from "@/components/shared/left-sidebar"
 import { SuggestionSidebar } from "@/components/shared/suggestion-sidebar"
 import { api } from "@/convex/_generated/api"
-import { fetchQuery } from "convex/nextjs"
-import { redirect } from "next/navigation"
 
 const PaymentCheckPage = async () => {
   const token = await getAuthToken()
@@ -19,7 +19,7 @@ const PaymentCheckPage = async () => {
       <div className="relative flex h-full w-full max-w-screen-xl">
         <LeftSidebar currentUser={currentUser} />
         <PaymentCheckLayout />
-        <SuggestionSidebar authToken={token} />
+        <SuggestionSidebar />
       </div>
     </div>
   )

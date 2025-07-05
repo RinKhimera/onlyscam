@@ -7,7 +7,7 @@ const NewPostPage = async () => {
   return (
     <>
       <NewPostLayout />
-      <SuggestionSidebar authToken={token} />
+      <SuggestionSidebar />
     </>
   )
 }

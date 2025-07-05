@@ -8,7 +8,7 @@ const NotificationsPage = async () => {
   return (
     <>
       <NotificationsLayout />
-      <SuggestionSidebar authToken={token} />
+      <SuggestionSidebar />
     </>
   )
 }

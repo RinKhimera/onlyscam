@@ -7,7 +7,7 @@ const ExplorePage = async () => {
   return (
     <>
       <ExploreLayout />
-      <SuggestionSidebar authToken={token} />
+      <SuggestionSidebar />
     </>
   )
 }
