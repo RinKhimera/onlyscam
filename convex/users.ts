@@ -96,22 +96,16 @@ export const createUser = internalMutation({
 
 export const getCurrentUser = query({
   args: {},
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity()
-    if (!identity) {
-      throw new ConvexError("Not authenticated")
-    }
+    if (!identity) return null
 
-    const user = await ctx.db
+    return await ctx.db
       .query("users")
       .withIndex("by_tokenIdentifier", (q) =>
         q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique()
-
-    if (!user) throw new ConvexError("User not found")
-
-    return user
   },
 })
 

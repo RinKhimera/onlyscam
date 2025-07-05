@@ -25,6 +25,7 @@ import type * as internalActions from "../internalActions.js";
 import type * as messages from "../messages.js";
 import type * as notifications from "../notifications.js";
 import type * as posts from "../posts.js";
+import type * as reports from "../reports.js";
 import type * as subscriptions from "../subscriptions.js";
 import type * as users from "../users.js";
 import type * as validationDocuments from "../validationDocuments.js";
@@ -50,6 +51,7 @@ declare const fullApi: ApiFromModules<{
   messages: typeof messages;
   notifications: typeof notifications;
   posts: typeof posts;
+  reports: typeof reports;
   subscriptions: typeof subscriptions;
   users: typeof users;
   validationDocuments: typeof validationDocuments;

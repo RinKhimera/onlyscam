@@ -150,3 +150,52 @@ export type Application = {
   } | null
   riskFactors?: Array<{ message: string; level: "FAIBLE" | "MODÉRÉ" | "GRAVE" }>
 }
+
+export interface Report {
+  _id: string
+  _creationTime: number
+  reporterId: string
+  reportedUserId?: string
+  reportedPostId?: string
+  type: "user" | "post" | "comment"
+  reason:
+    | "spam"
+    | "harassment"
+    | "inappropriate_content"
+    | "fake_account"
+    | "copyright"
+    | "violence"
+    | "hate_speech"
+    | "other"
+  description?: string
+  status: "pending" | "reviewing" | "resolved" | "rejected"
+  adminNotes?: string
+  reviewedBy?: string
+  reviewedAt?: number
+  createdAt: number
+  reporter?: {
+    _id: string
+    name: string
+    username?: string
+    email: string
+  }
+  reportedUser?: {
+    _id: string
+    name: string
+    username?: string
+    email: string
+  }
+  reportedPost?: {
+    _id: string
+    content: string
+    author?: {
+      _id: string
+      name: string
+      username?: string
+    }
+  }
+  reviewedByUser?: {
+    _id: string
+    name: string
+  }
+}

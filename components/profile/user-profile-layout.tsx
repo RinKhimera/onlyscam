@@ -9,6 +9,7 @@ import { RenewDialog } from "@/components/profile/renew-dialog"
 import { SubscribeDialog } from "@/components/profile/subscribe-dialog"
 import { UnsubscribeDialog } from "@/components/profile/unsubscribe-dialog"
 import { UserPosts } from "@/components/profile/user-posts"
+import { UserReportButton } from "@/components/profile/user-report-button"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
@@ -109,7 +110,12 @@ export const UserProfileLayout = ({
             </Button>
           </div>
         ) : (
-          <div className="mt-[68px]"></div>
+          <div className="mr-5 mt-4 flex justify-end gap-2">
+            <UserReportButton
+              userId={userProfile._id}
+              username={userProfile.username}
+            />
+          </div>
         )}
       </>
 

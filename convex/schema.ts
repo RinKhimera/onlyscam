@@ -170,4 +170,38 @@ export default defineSchema({
     .index("by_blocker", ["blockerId"])
     .index("by_blocked", ["blockedId"])
     .index("by_blocker_blocked", ["blockerId", "blockedId"]),
+
+  reports: defineTable({
+    reporterId: v.id("users"),
+    reportedUserId: v.optional(v.id("users")),
+    reportedPostId: v.optional(v.id("posts")),
+    type: v.union(v.literal("user"), v.literal("post"), v.literal("comment")),
+    reason: v.union(
+      v.literal("spam"),
+      v.literal("harassment"),
+      v.literal("inappropriate_content"),
+      v.literal("fake_account"),
+      v.literal("copyright"),
+      v.literal("violence"),
+      v.literal("hate_speech"),
+      v.literal("other"),
+    ),
+    description: v.optional(v.string()),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("reviewing"),
+      v.literal("resolved"),
+      v.literal("rejected"),
+    ),
+    adminNotes: v.optional(v.string()),
+    reviewedBy: v.optional(v.id("users")),
+    reviewedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index("by_reporter", ["reporterId"])
+    .index("by_reported_user", ["reportedUserId"])
+    .index("by_reported_post", ["reportedPostId"])
+    .index("by_status", ["status"])
+    .index("by_type", ["type"])
+    .index("by_created_at", ["createdAt"]),
 })

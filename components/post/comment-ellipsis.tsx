@@ -1,3 +1,8 @@
+import { useMutation, useQuery } from "convex/react"
+import { Ellipsis, LoaderCircle } from "lucide-react"
+import { useTransition } from "react"
+import { toast } from "sonner"
+import { ReportDialog } from "@/components/shared/report-dialog"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,10 +22,6 @@ import {
 } from "@/components/ui/popover"
 import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
-import { useMutation } from "convex/react"
-import { Ellipsis, LoaderCircle } from "lucide-react"
-import { useTransition } from "react"
-import { toast } from "sonner"
 
 export const CommentEllipsis = ({
   commentId,
@@ -30,6 +31,12 @@ export const CommentEllipsis = ({
   const [isPending, startTransition] = useTransition()
 
   const deleteComment = useMutation(api.comments.deleteComment)
+
+  // Récupérer les informations du commentaire pour vérifier le propriétaire
+  const comment = useQuery(api.comments.getComment, { commentId })
+  const currentUser = useQuery(api.users.getCurrentUser, {})
+
+  const isOwner = comment?.author?._id === currentUser?._id
 
   const deleteHandler = async () => {
     startTransition(async () => {
@@ -55,32 +62,45 @@ export const CommentEllipsis = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-1" side="right">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="ghost" className="w-full justify-start">
-              Supprimer le commentaire
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Etes-vous absolument sûr ?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Cette action ne peut pas être annulée. Cela supprimera
-                définitivement votre commentaire.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Annuler</AlertDialogCancel>
-              <AlertDialogAction onClick={deleteHandler} disabled={isPending}>
-                {isPending ? (
-                  <LoaderCircle className="animate-spin" />
-                ) : (
-                  "Supprimer"
-                )}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        {/* Option de suppression (seulement pour le propriétaire) */}
+        {isOwner && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" className="w-full justify-start">
+                Supprimer le commentaire
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Etes-vous absolument sûr ?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Cette action ne peut pas être annulée. Cela supprimera
+                  définitivement votre commentaire.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                <AlertDialogAction onClick={deleteHandler} disabled={isPending}>
+                  {isPending ? (
+                    <LoaderCircle className="animate-spin" />
+                  ) : (
+                    "Supprimer"
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+
+        {/* Option de signalement (pour tous sauf le propriétaire) */}
+        {!isOwner && comment && (
+          <ReportDialog
+            reportedUserId={comment.author?._id}
+            type="comment"
+            triggerText="Signaler le commentaire"
+            username={comment.author?.username}
+          />
+        )}
       </PopoverContent>
     </Popover>
   )

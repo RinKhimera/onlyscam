@@ -203,3 +203,19 @@ export const unlikeComment = mutation({
     })
   },
 })
+
+// Récupérer un commentaire spécifique
+export const getComment = query({
+  args: { commentId: v.id("comments") },
+  handler: async (ctx, args) => {
+    const comment = await ctx.db.get(args.commentId)
+    if (!comment) return null
+
+    const author = await ctx.db.get(comment.author)
+
+    return {
+      ...comment,
+      author,
+    }
+  },
+})

@@ -13,6 +13,7 @@ import {
 import { usePathname } from "next/navigation"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
+import { ReportDialog } from "@/components/shared/report-dialog"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -230,6 +231,16 @@ export const PostEllipsis = ({
               </Select>
             </div>
           </>
+        )}
+
+        {/* Option de signalement (disponible pour tous sauf l'auteur) */}
+        {!isAuthor && (
+          <ReportDialog
+            reportedPostId={postId}
+            reportedUserId={postAuthorId}
+            type="post"
+            triggerText="Signaler la publication"
+          />
         )}
       </PopoverContent>
     </Popover>

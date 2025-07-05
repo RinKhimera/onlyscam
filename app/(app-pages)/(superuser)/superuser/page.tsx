@@ -40,6 +40,11 @@ const SuperUserPage = () => {
     currentUser?.accountType === "SUPERUSER" ? {} : "skip",
   )
 
+  const reportsStats = useQuery(
+    api.reports.getReportsStats,
+    currentUser?.accountType === "SUPERUSER" ? {} : "skip",
+  )
+
   if (!currentUser || currentUser.accountType !== "SUPERUSER") {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -231,7 +236,7 @@ const SuperUserPage = () => {
                   <p className="text-sm font-medium">Signalements actifs</p>
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary" className="text-xs">
-                      0
+                      {reportsStats?.pending || 0}
                     </Badge>
                     <span className="text-xs text-muted-foreground">
                       à traiter
@@ -249,11 +254,15 @@ const SuperUserPage = () => {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Posts signalés</span>
-                  <span className="font-medium">0</span>
+                  <span className="font-medium">
+                    {reportsStats?.postReports || 0}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Utilisateurs signalés</span>
-                  <span className="font-medium">0</span>
+                  <span className="font-medium">
+                    {reportsStats?.userReports || 0}
+                  </span>
                 </div>
               </div>
             </CardContent>
