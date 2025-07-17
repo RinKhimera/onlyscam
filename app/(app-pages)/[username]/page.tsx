@@ -1,6 +1,7 @@
 "use client"
 
 import { useQuery } from "convex/react"
+import { Loader2 } from "lucide-react"
 import { notFound } from "next/navigation"
 import { use } from "react"
 import { UserProfileLayout } from "@/components/profile/user-profile-layout"
@@ -23,11 +24,9 @@ const UserProfilePage = ({
 
   if (userProfile === undefined) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-          <p className="text-muted-foreground">Chargement du profil...</p>
-        </div>
+      <div className="flex h-screen w-[50%] flex-col items-center justify-center border-l border-r border-muted max-lg:w-[50%] max-sm:w-full max-[500px]:pb-16">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="mt-4 text-sm text-muted-foreground">Chargement...</p>
       </div>
     )
   }
