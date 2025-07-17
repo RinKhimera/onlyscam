@@ -1,22 +1,24 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { api } from "@/convex/_generated/api"
-import { Id } from "@/convex/_generated/dataModel"
-import { cn } from "@/lib/utils"
 import { useMutation } from "convex/react"
 import { Bookmark } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import { api } from "@/convex/_generated/api"
+import { Id } from "@/convex/_generated/dataModel"
+import { cn } from "@/lib/utils"
 
 type BookmarkButtonProps = {
   postId: Id<"posts">
   currentUserBookmark: Id<"posts">[]
+  disabled?: boolean
 }
 
 export const BookmarkButton = ({
   postId,
   currentUserBookmark,
+  disabled = false,
 }: BookmarkButtonProps) => {
   const initialBookmarked = currentUserBookmark.includes(postId)
 
@@ -58,24 +60,29 @@ export const BookmarkButton = ({
     })
   }
 
+  const handleBookmark = async () => {
+    if (disabled) return
+
+    if (isBookmarked) {
+      handleRemoveBookmark()
+    } else {
+      handleAddBookmark()
+    }
+  }
+
   return (
     <Button
       variant={"ghost"}
       size={"icon"}
-      disabled={isPending}
-      onClick={() => {
-        if (isBookmarked) {
-          handleRemoveBookmark()
-        } else {
-          handleAddBookmark()
-        }
-      }}
-      className={cn(
-        "size-8 rounded-full hover:bg-blue-600/15 hover:text-blue-500",
-        { "text-blue-500": isBookmarked },
-      )}
+      disabled={isPending || disabled}
+      onClick={handleBookmark}
+      className={cn("size-8 rounded-full transition-colors", {
+        "cursor-not-allowed opacity-50": disabled,
+        "bg-blue-600/15 text-blue-500": isBookmarked,
+        "hover:bg-blue-600/15 hover:text-blue-500": !disabled && !isBookmarked,
+      })}
     >
-      <Bookmark size={20} fill={isBookmarked ? "blue" : undefined} />
+      <Bookmark size={20} className={isBookmarked ? "fill-current" : ""} />
     </Button>
   )
 }

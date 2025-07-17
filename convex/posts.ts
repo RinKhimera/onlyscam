@@ -403,6 +403,25 @@ export const likePost = mutation({
 
     if (!post) throw new ConvexError("Post not found")
 
+    // Vérifier l'accès au contenu restreint
+    if (post.visibility === "subscribers_only" && post.author !== user._id) {
+      const subscription = await ctx.db
+        .query("follows")
+        .withIndex("by_follower_following", (q) =>
+          q.eq("followerId", user._id).eq("followingId", post.author),
+        )
+        .unique()
+
+      if (!subscription) {
+        throw new ConvexError("Access denied: subscription required")
+      }
+
+      const subscriptionDetails = await ctx.db.get(subscription.subscriptionId)
+      if (!subscriptionDetails || subscriptionDetails.status !== "active") {
+        throw new ConvexError("Access denied: active subscription required")
+      }
+    }
+
     // Ajouter l'utilisateur à la liste des likes
     await ctx.db.patch(args.postId, {
       likes: [...(post.likes || []), user._id],

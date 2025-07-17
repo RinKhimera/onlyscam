@@ -211,13 +211,14 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
                   postId={post._id}
                   postLikes={post.likes}
                   currentUserId={currentUser._id}
+                  disabled={!canViewMedia}
                 />
               </div>
               <div onClick={(e) => e.stopPropagation()}>
                 <CommentButton
-                  postId={post._id}
                   onToggleComments={toggleComments}
                   isCommentsOpen={isCommentsOpen}
+                  disabled={!canViewMedia}
                 />
               </div>
             </div>
@@ -225,6 +226,7 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
               <BookmarkButton
                 postId={post._id}
                 currentUserBookmark={currentUser.bookmarks || []}
+                disabled={!canViewMedia}
               />
             </div>
           </div>
@@ -252,6 +254,7 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
             postId={post._id}
             currentUser={currentUser}
             isOpen={isCommentsOpen}
+            disabled={!canViewMedia}
           />
         </div>
       </div>

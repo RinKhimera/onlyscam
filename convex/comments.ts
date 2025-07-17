@@ -29,6 +29,29 @@ export const createComment = mutation({
 
     if (!postToComment) throw new ConvexError("Post not found")
 
+    // Vérifier l'accès au contenu restreint
+    if (
+      postToComment.visibility === "subscribers_only" &&
+      postToComment.author !== user._id
+    ) {
+      // Vérifier si l'utilisateur a un abonnement actif
+      const subscription = await ctx.db
+        .query("follows")
+        .withIndex("by_follower_following", (q) =>
+          q.eq("followerId", user._id).eq("followingId", postToComment.author),
+        )
+        .unique()
+
+      if (!subscription) {
+        throw new ConvexError("Access denied: subscription required")
+      }
+
+      const subscriptionDetails = await ctx.db.get(subscription.subscriptionId)
+      if (!subscriptionDetails || subscriptionDetails.status !== "active") {
+        throw new ConvexError("Access denied: active subscription required")
+      }
+    }
+
     // Créer le commentaire
     const comment = await ctx.db.insert("comments", {
       author: user._id,
