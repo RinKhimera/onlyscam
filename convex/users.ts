@@ -315,3 +315,44 @@ export const upgradeToCreator = mutation({
     return { success: true }
   },
 })
+
+export const searchUsers = query({
+  args: {
+    searchTerm: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) return []
+
+    const currentUser = await ctx.db
+      .query("users")
+      .withIndex("by_tokenIdentifier", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique()
+
+    if (!currentUser) return []
+
+    // Récupérer tous les utilisateurs (sauf l'utilisateur actuel)
+    const allUsers = await ctx.db
+      .query("users")
+      .filter((q) =>
+        q.and(
+          q.neq(q.field("_id"), currentUser._id),
+          q.neq(q.field("username"), undefined),
+        ),
+      )
+      .collect()
+
+    // Recherche flexible (contient le terme)
+    const searchTermLower = args.searchTerm.toLowerCase()
+    const filteredUsers = allUsers.filter(
+      (user) =>
+        user.name?.toLowerCase().includes(searchTermLower) ||
+        user.username?.toLowerCase().includes(searchTermLower),
+    )
+
+    // Limiter à 10 résultats
+    return filteredUsers.slice(0, 10)
+  },
+})

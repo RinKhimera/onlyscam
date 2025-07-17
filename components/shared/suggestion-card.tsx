@@ -1,12 +1,32 @@
 "use client"
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { ProfileImage } from "@/components/shared/profile-image"
-import { UserProps } from "@/types"
 import { CldImage } from "next-cloudinary"
 import Link from "next/link"
+import { ProfileImage } from "@/components/shared/profile-image"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { UserProps } from "@/types"
 
-export const SuggestionCard = ({ user }: { user: UserProps }) => {
+interface SuggestionCardProps {
+  user: UserProps
+  searchTerm?: string
+}
+
+export const SuggestionCard = ({ user, searchTerm }: SuggestionCardProps) => {
+  const highlightText = (text: string, term?: string) => {
+    if (!term) return text
+
+    const parts = text.split(new RegExp(`(${term})`, "gi"))
+    return parts.map((part, index) =>
+      part.toLowerCase() === term.toLowerCase() ? (
+        <mark key={index} className="bg-yellow-200 text-yellow-800">
+          {part}
+        </mark>
+      ) : (
+        part
+      ),
+    )
+  }
+
   return (
     <div className="relative mb-2.5 h-[140px] rounded-lg">
       <Link href={`/${user?.username}`} className="flex h-full flex-col">
@@ -46,9 +66,11 @@ export const SuggestionCard = ({ user }: { user: UserProps }) => {
         <div className="relative flex flex-1 bg-black/30">
           <div className="ml-[120px] flex flex-col justify-center gap-1 text-white">
             <div className="truncate text-lg font-semibold leading-none">
-              {user?.name}
+              {highlightText(user?.name || "Utilisateur", searchTerm)}
             </div>
-            <div className="text-sm leading-none">@{user?.username}</div>
+            <div className="text-sm leading-none">
+              @{highlightText(user?.username || "", searchTerm)}
+            </div>
           </div>
         </div>
       </Link>
