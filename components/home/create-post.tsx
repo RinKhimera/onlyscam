@@ -16,7 +16,14 @@ export const CreatePost = ({
   const router = useRouter()
 
   const handleCreatePostClick = () => {
-    router.push("/new-post")
+    if (
+      currentUser?.accountType === "CREATOR" ||
+      currentUser?.accountType === "SUPERUSER"
+    ) {
+      router.push("/new-post")
+    } else {
+      router.push("/be-creator")
+    }
   }
 
   return (
@@ -36,11 +43,11 @@ export const CreatePost = ({
         </AvatarFallback>
       </Avatar>
 
-      <form className="w-full" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full">
         <div className="flex h-full w-full flex-col">
           <Textarea
             placeholder="Partager une publication"
-            className="mt-1 h-full w-full resize-none border-none bg-transparent text-xl outline-none"
+            className="mt-1 h-full w-full cursor-pointer resize-none border-none bg-transparent text-xl outline-none"
             onClick={(e) => {
               e.stopPropagation()
               handleCreatePostClick()
@@ -48,24 +55,28 @@ export const CreatePost = ({
             readOnly
           />
 
-          <div className="mt-8 flex w-full items-center justify-between">
+          <div
+            className="mt-8 flex w-full cursor-pointer items-center justify-between"
+            onClick={handleCreatePostClick}
+          >
             {currentUser !== undefined && (
-              <div className="-ml-2 text-blue-500">
-                <button
+              <div className="-ml-2">
+                <Button
                   type="button"
-                  className="rounded-full p-2 transition hover:bg-blue-600/15 hover:text-blue-500"
+                  size={"icon"}
+                  className="rounded-full p-2 transition"
                   onClick={(e) => {
                     e.stopPropagation()
                     handleCreatePostClick()
                   }}
                 >
                   <ImagePlus size={20} />
-                </button>
+                </Button>
               </div>
             )}
 
             <Button
-              className="w-fit rounded-full bg-sky-500 px-4 py-2 font-bold hover:bg-sky-600"
+              className="w-fit rounded-full px-4 py-2 font-bold"
               onClick={(e) => {
                 e.stopPropagation()
                 handleCreatePostClick()
@@ -76,7 +87,7 @@ export const CreatePost = ({
             </Button>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   )
 }

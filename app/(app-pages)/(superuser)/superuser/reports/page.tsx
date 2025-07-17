@@ -39,7 +39,7 @@ import { Id } from "@/convex/_generated/dataModel"
 import { useCurrentUser } from "@/hooks/useCurrentUser"
 
 const ReportsPage = () => {
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
   const [selectedReport, setSelectedReport] = useState<any>(null)
   const [adminNotes, setAdminNotes] = useState("")
   const [isPending, startTransition] = useTransition()

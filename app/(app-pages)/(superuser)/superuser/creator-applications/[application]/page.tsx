@@ -38,7 +38,7 @@ interface ApplicationDetailsProps {
 
 const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
   const { application: applicationId } = use(params)
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
   const [adminNotes, setAdminNotes] = useState("")
   const [isPending, startTransition] = useTransition()
   const [selectedImage, setSelectedImage] = useState<{

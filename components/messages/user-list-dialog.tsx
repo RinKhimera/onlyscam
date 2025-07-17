@@ -25,7 +25,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser"
 
 export const UserListDialog = () => {
   const { isAuthenticated } = useConvexAuth()
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
 
   const users = useQuery(
     api.users.getUsers,

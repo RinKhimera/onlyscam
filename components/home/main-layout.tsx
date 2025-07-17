@@ -5,7 +5,7 @@ import { NewsFeed } from "@/components/home/news-feed"
 import { useCurrentUser } from "@/hooks/useCurrentUser"
 
 export const MainLayout = () => {
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
   const user = currentUser ?? undefined
 
   return (

@@ -22,7 +22,7 @@ import { detectRiskFactors, getRiskBadge } from "@/utils/detectRiskFactors"
 import { getStatusBadge } from "@/utils/getStatusBadge"
 
 const CreatorApplicationsPage = () => {
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
 
   // Query pour toutes les candidatures
   const allApplications = useQuery(
@@ -204,7 +204,7 @@ const CreatorApplicationsPage = () => {
   ).length
 
   return (
-    <main className="flex h-full min-h-screen w-full flex-col border-l border-r border-muted sm:w-[80%] lg:w-[50%]">
+    <main className="flex h-full min-h-screen w-full flex-col border-l border-r border-muted sm:w-[80%] lg:w-[60%]">
       <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Candidatures Créateur</h1>

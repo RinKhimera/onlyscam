@@ -24,7 +24,7 @@ export const MobileMenu = () => {
   const pathname = usePathname()
   const router = useRouter()
 
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
   const { isAuthenticated } = useConvexAuth()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -80,7 +80,6 @@ export const MobileMenu = () => {
     <section className="fixed bottom-0 z-30 h-16 w-full border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 min-[500px]:hidden">
       <div className="flex h-full items-center justify-around px-1">
         {displayedQuickAccessLinks.map((link) => {
-          if (!isAuthenticated && link.requiresAuth) return null
           const IconComponent = link.icon
           const badgeValue = link.badge ? link.badge(unreadCounts) : null
           const href = getHref(link)
@@ -137,7 +136,6 @@ export const MobileMenu = () => {
             <nav className="flex-1 overflow-y-auto px-2 py-3">
               <div className="flex flex-col space-y-1">
                 {navigationLinks.map((link) => {
-                  if (!isAuthenticated && link.requiresAuth) return null
                   const IconComponent = link.icon
                   const badgeValue = link.badge
                     ? link.badge(unreadCounts)

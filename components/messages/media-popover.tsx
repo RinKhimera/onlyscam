@@ -14,7 +14,7 @@ export const MediaPopover = ({
 }: {
   conversation: ConversationProps
 }) => {
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
 
   const [isPending, startTransition] = useTransition()
 

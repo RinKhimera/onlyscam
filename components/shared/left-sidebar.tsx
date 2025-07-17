@@ -36,13 +36,19 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
     return link.href
   }
 
+  const filteredNavigationLinks = navigationLinks.filter((link) => {
+    if (link.id === "superuser") {
+      return currentUser?.accountType === "SUPERUSER"
+    }
+    return true
+  })
+
   return (
     <>
       {/* Navigation Desktop */}
       <section className="sticky top-0 flex h-screen w-[20%] flex-col items-stretch px-3 max-lg:w-[15%] max-lg:items-end max-[500px]:hidden">
         <div className="mt-4 flex h-full flex-col space-y-5 font-semibold max-lg:items-center">
-          {navigationLinks.map((link) => {
-            if (!isAuthenticated && link.requiresAuth) return null
+          {filteredNavigationLinks.map((link) => {
             const IconComponent = link.icon
             const badgeValue = link.badge ? link.badge(unreadCounts) : null
             const href = getHref(link)

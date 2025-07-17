@@ -68,25 +68,25 @@
   }
 }
 
-/* width */
+/* Custom scrollbar styles */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
-/* Track */
+/* Track - adapté selon le thème */
 ::-webkit-scrollbar-track {
-  background: #363636;
+  background: hsl(var(--muted));
 }
 
-/* Handle */
+/* Handle - utilise la couleur principale */
 ::-webkit-scrollbar-thumb {
-  background: #e11d48;
+  background: hsl(var(--primary));
   border-radius: 4px;
 }
 
-/* Handle on hover */
+/* Handle on hover - version plus foncée de la couleur principale */
 ::-webkit-scrollbar-thumb:hover {
-  background: #e70f3eee;
+  background: hsl(var(--primary) / 0.8);
 }
 
 /* For Webkit-based browsers (Chrome, Safari and Opera) */

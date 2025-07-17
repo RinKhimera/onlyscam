@@ -5,7 +5,7 @@ import { UserCollections } from "@/components/collections/user-collections"
 import { useCurrentUser } from "@/hooks/useCurrentUser"
 
 export const CollectionsLayout = () => {
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
 
   if (!currentUser)
     return (

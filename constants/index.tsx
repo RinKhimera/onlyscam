@@ -4,6 +4,7 @@ import {
   CircleUserRound,
   Home,
   Mail,
+  Sparkles,
   Users,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
@@ -17,7 +18,6 @@ export interface NavLink {
     unreadMessages: number
     unreadNotifications: number
   }) => number | null
-  requiresAuth?: boolean
   mobileQuickAccess?: boolean
 }
 
@@ -36,7 +36,6 @@ export const navigationLinks: NavLink[] = [
     icon: Bell,
     badge: (counts) =>
       counts.unreadNotifications > 0 ? counts.unreadNotifications : null,
-    requiresAuth: true,
     mobileQuickAccess: true,
   },
   {
@@ -46,7 +45,6 @@ export const navigationLinks: NavLink[] = [
     icon: Mail,
     badge: (counts) =>
       counts.unreadMessages > 0 ? counts.unreadMessages : null,
-    requiresAuth: true,
     mobileQuickAccess: true,
   },
   {
@@ -54,20 +52,23 @@ export const navigationLinks: NavLink[] = [
     title: "Collections",
     href: "/collections",
     icon: Bookmark,
-    requiresAuth: true,
   },
   {
     id: "subscriptions",
     title: "Abonnements",
     href: "/user-lists",
     icon: Users,
-    requiresAuth: true,
   },
   {
     id: "profile",
     title: "Profil",
     href: (username?: string) => (username ? `/${username}` : "/profile"),
     icon: CircleUserRound,
-    requiresAuth: true,
+  },
+  {
+    id: "superuser",
+    title: "Administration",
+    href: "/superuser",
+    icon: Sparkles,
   },
 ]

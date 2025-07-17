@@ -28,7 +28,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser"
 
 const BeCreatorPage = () => {
   const router = useRouter()
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
 
   // Vérifier s'il y a déjà une demande en cours
   const existingApplication = useQuery(

@@ -13,7 +13,7 @@ import { ConversationProps } from "@/types"
 import { MessagesList } from "./messages-list"
 
 export const ConversationContent = () => {
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
   const { isAuthenticated } = useConvexAuth()
 
   const params = useParams()

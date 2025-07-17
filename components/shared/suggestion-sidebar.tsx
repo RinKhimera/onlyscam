@@ -25,7 +25,7 @@ const chunkArray = (array: any[], size: number): any[][] => {
 }
 
 export const SuggestionSidebar = () => {
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
   const [searchTerm, setSearchTerm] = useState("")
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("")
 

@@ -22,7 +22,7 @@ import { api } from "@/convex/_generated/api"
 import { useCurrentUser } from "@/hooks/useCurrentUser"
 
 const SuperUserPage = () => {
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
 
   // Queries pour récupérer les statistiques
   const allApplications = useQuery(
@@ -47,7 +47,7 @@ const SuperUserPage = () => {
 
   if (!currentUser || currentUser.accountType !== "SUPERUSER") {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex h-full min-h-screen w-full flex-col items-center justify-center border-l border-r border-muted p-4 max-[500px]:pb-16 sm:w-[80%] lg:w-[60%]">
         <div className="text-center">
           <h1 className="text-3xl font-bold">Accès refusé</h1>
           <p className="mt-4 text-lg">
@@ -86,7 +86,7 @@ const SuperUserPage = () => {
   const isLoading = !allApplications || !allPosts || !allUsers
 
   return (
-    <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full max-[500px]:pb-16">
+    <main className="flex h-full min-h-screen w-full flex-col border-l border-r border-muted max-[500px]:pb-16 sm:w-[80%] lg:w-[60%]">
       <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Dashboard Administrateur</h1>

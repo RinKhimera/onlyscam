@@ -1,20 +1,55 @@
-import { LeftSidebar } from "@/components/shared/left-sidebar"
-import { getAuthToken } from "@/app/auth"
-import { fetchQuery } from "convex/nextjs"
-import { redirect } from "next/navigation"
-import { api } from "@/convex/_generated/api"
+"use client"
 
-export default async function DashboardLayout({
+import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { LeftSidebar } from "@/components/shared/left-sidebar"
+import { useCurrentUser } from "@/hooks/useCurrentUser"
+
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const token = await getAuthToken()
-  const currentUser = await fetchQuery(api.users.getCurrentUser, undefined, {
-    token,
-  })
+  const router = useRouter()
+  const { currentUser, isLoading } = useCurrentUser()
 
-  if (!currentUser?.username) redirect("/onboarding")
+  // État de chargement pendant l'auth ou le chargement de l'utilisateur
+  if (isLoading || currentUser === undefined) {
+    return (
+      <section>
+        <div className="flex h-screen w-full items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-primary" />
+            <p className="text-lg text-muted-foreground">
+              Chargement de votre profil...
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Redirection vers l'onboarding si pas de username (profil incomplet)
+  if (!currentUser?.username) {
+    router.push("/onboarding")
+    return null
+  }
+
+  // Si currentUser est null après le chargement, erreur
+  if (!currentUser) {
+    return (
+      <section>
+        <div className="flex h-screen w-full items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-primary" />
+            <p className="text-lg text-muted-foreground">
+              Erreur de chargement du profil...
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section>

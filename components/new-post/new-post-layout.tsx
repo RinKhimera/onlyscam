@@ -42,12 +42,12 @@ import { generateRandomString } from "@/utils/generateRandomString"
 import { ProfileImage } from "../shared/profile-image"
 
 export const NewPostLayout = () => {
-  const currentUser = useCurrentUser()
+  const router = useRouter()
+
+  const { currentUser } = useCurrentUser()
 
   const createDraftAsset = useMutation(api.assetsDraft.createDraftAsset)
   const deleteDraftAsset = useMutation(api.assetsDraft.deleteDraftAsset)
-
-  const router = useRouter()
 
   const [medias, setMedias] = useState<string>("")
   const [publicId, setPublicId] = useState<string>("")
@@ -58,6 +58,8 @@ export const NewPostLayout = () => {
   )
 
   const isPostCreatedRef = useRef(false)
+
+  if (currentUser?.accountType === "USER") router.push("/")
 
   useEffect(() => {
     return () => {
@@ -248,10 +250,10 @@ export const NewPostLayout = () => {
                               {({ open }) => (
                                 <Button
                                   type="button"
-                                  variant="outline"
+                                  variant="default"
                                   size="sm"
                                   className={cn(
-                                    "flex items-center gap-2 rounded-full border-muted hover:bg-blue-600/15 hover:text-blue-500",
+                                    "flex items-center gap-2 rounded-full border-muted",
                                     { "cursor-not-allowed": isPending },
                                   )}
                                   onClick={() => open()}
@@ -313,7 +315,7 @@ export const NewPostLayout = () => {
                         <Button
                           type="submit"
                           disabled={isPending}
-                          className="w-full rounded-full bg-sky-500 px-4 py-2 font-bold hover:bg-sky-600 sm:w-auto"
+                          className="w-full rounded-full px-4 py-2 font-bold sm:w-auto"
                         >
                           {isPending ? (
                             <LoaderCircle className="mr-2 animate-spin" />

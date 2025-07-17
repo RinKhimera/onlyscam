@@ -22,7 +22,7 @@ export const ConversationBox = ({
   const hasUnreadMessages = conversation?.hasUnreadMessages
   const unreadCount = conversation?.unreadCount || 0
 
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
 
   return (
     <>

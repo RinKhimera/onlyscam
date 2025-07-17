@@ -1,6 +1,5 @@
 "use client"
 
-import { useConvexAuth } from "convex/react"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { UpdateImages } from "@/components/profile/update-images"
@@ -11,10 +10,9 @@ import { useCurrentUser } from "@/hooks/useCurrentUser"
 
 const OnboardingPage = () => {
   const router = useRouter()
-  const { isLoading: isAuthLoading } = useConvexAuth()
-  const currentUser = useCurrentUser()
+  const { currentUser, isLoading } = useCurrentUser()
 
-  if (isAuthLoading || currentUser === undefined) {
+  if (isLoading || currentUser === undefined) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />

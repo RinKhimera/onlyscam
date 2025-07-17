@@ -23,7 +23,7 @@ type SubscribeDialogProps = {
 }
 
 export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
   const { processPayment, isPending } = usePayment()
 
   const handleSubscribe = () => {

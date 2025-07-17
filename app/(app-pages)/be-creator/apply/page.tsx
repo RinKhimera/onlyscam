@@ -121,7 +121,7 @@ const motivationOptions = [
 ]
 
 const ApplyCreatorPage = () => {
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
   const [isPending, startTransition] = useTransition()
   const [uploadedDocuments, setUploadedDocuments] = useState<{
     identityCard?: UploadedDocument

@@ -23,7 +23,7 @@ type RenewDialogProps = {
 }
 
 export const RenewDialog = ({ userProfile }: RenewDialogProps) => {
-  const currentUser = useCurrentUser()
+  const { currentUser } = useCurrentUser()
   const { processPayment, isPending } = usePayment()
 
   const handleRenew = () => {
