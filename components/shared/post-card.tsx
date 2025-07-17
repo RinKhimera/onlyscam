@@ -8,11 +8,12 @@ import { CldImage, CldVideoPlayer } from "next-cloudinary"
 import "next-cloudinary/dist/cld-video-player.css"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import React from "react"
+import React, { useState } from "react"
 import { BookmarkButton } from "@/components/home/bookmark-button"
 import { CommentButton } from "@/components/home/comment-button"
 import { LikeButton } from "@/components/home/like-button"
 import { PostEllipsis } from "@/components/home/post-ellipsis"
+import { CommentSection } from "@/components/shared/comment-section"
 import { ProfileImage } from "@/components/shared/profile-image"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -32,6 +33,7 @@ type PostCardProps = {
 }
 
 export const PostCard = ({ post, currentUser }: PostCardProps) => {
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false)
   const router = useRouter()
   const isOwnPost = currentUser._id === post.author?._id
   const isMediaProtected = post.visibility === "subscribers_only"
@@ -61,6 +63,10 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
     ) {
       router.push(`/${post.author?.username}/post/${post._id}`)
     }
+  }
+
+  const toggleComments = () => {
+    setIsCommentsOpen(!isCommentsOpen)
   }
 
   return (
@@ -198,33 +204,55 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
             </>
           )}
 
-          <div
-            className="-ml-[5px] mt-2 flex w-full items-center justify-between"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="-ml-[5px] mt-2 flex w-full items-center justify-between">
             <div className="flex w-full items-center space-x-2">
-              <LikeButton
-                postId={post._id}
-                postLikes={post.likes}
-                currentUserId={currentUser._id}
-              />
-              <CommentButton postId={post._id} />
+              <div onClick={(e) => e.stopPropagation()}>
+                <LikeButton
+                  postId={post._id}
+                  postLikes={post.likes}
+                  currentUserId={currentUser._id}
+                />
+              </div>
+              <div onClick={(e) => e.stopPropagation()}>
+                <CommentButton
+                  postId={post._id}
+                  onToggleComments={toggleComments}
+                  isCommentsOpen={isCommentsOpen}
+                />
+              </div>
             </div>
-            <BookmarkButton
-              postId={post._id}
-              currentUserBookmark={currentUser.bookmarks || []}
-            />
+            <div onClick={(e) => e.stopPropagation()}>
+              <BookmarkButton
+                postId={post._id}
+                currentUserBookmark={currentUser.bookmarks || []}
+              />
+            </div>
           </div>
 
-          <div onClick={(e) => e.stopPropagation()}>
-            <Link href={`/${post.author?.username}/post/${post._id}`}>
+          <div>
+            <div className="mb-1.5 flex items-center gap-2 text-sm font-semibold tracking-tight">
               {post.likes.length > 0 && (
-                <div className="mb-1.5 text-sm font-semibold tracking-tight">
-                  {post.likes.length} j&apos;aime
-                </div>
+                <span>{post.likes.length} j&apos;aime</span>
               )}
-            </Link>
+
+              {post.comments && post.comments.length > 0 && (
+                <>
+                  {post.likes.length > 0 && <span>•</span>}
+                  <span>
+                    {post.comments.length} commentaire
+                    {post.comments.length > 1 ? "s" : ""}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
+
+          {/* Section des commentaires */}
+          <CommentSection
+            postId={post._id}
+            currentUser={currentUser}
+            isOpen={isCommentsOpen}
+          />
         </div>
       </div>
     </div>

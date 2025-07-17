@@ -65,7 +65,7 @@ export const navigationLinks: NavLink[] = [
   },
   {
     id: "profile",
-    title: "Profile",
+    title: "Profil",
     href: (username?: string) => (username ? `/${username}` : "/profile"),
     icon: CircleUserRound,
     requiresAuth: true,
