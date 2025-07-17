@@ -2,7 +2,7 @@
 
 import { frFR } from "@clerk/localizations"
 import { ClerkProvider, useAuth } from "@clerk/nextjs"
-import { dark } from "@clerk/themes"
+import { dark, shadesOfPurple } from "@clerk/themes"
 import { ConvexReactClient } from "convex/react"
 import { ConvexProviderWithClerk } from "convex/react-clerk"
 import { ReactNode } from "react"
@@ -18,7 +18,7 @@ export default function ConvexClientProvider({
     <ClerkProvider
       localization={frFR}
       appearance={{
-        baseTheme: dark,
+        baseTheme: [dark, shadesOfPurple],
       }}
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}
     >

@@ -2,10 +2,6 @@
 
 import { Check, LoaderCircle } from "lucide-react"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { useTransition } from "react"
-import { toast } from "sonner"
-import { v4 as uuidv4 } from "uuid"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -17,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { usePayment } from "@/hooks/useCinetpayPayment"
 import { useCurrentUser } from "@/hooks/useCurrentUser"
 import { cn } from "@/lib/utils"
 import { UserProps } from "@/types"
@@ -27,71 +24,21 @@ type RenewDialogProps = {
 
 export const RenewDialog = ({ userProfile }: RenewDialogProps) => {
   const currentUser = useCurrentUser()
-  const router = useRouter()
+  const { processPayment, isPending } = usePayment()
 
-  const [isPending, startTransition] = useTransition()
+  const handleRenew = () => {
+    if (!currentUser || !userProfile) return
 
-  const handleFollow = () => {
-    startTransition(async () => {
-      try {
-        const transactionId = uuidv4()
-
-        const metadataObj = {
-          creatorId: userProfile?._id,
-          subscriberId: currentUser?._id,
-        }
-        const metadataString = JSON.stringify(metadataObj)
-
-        const resp = await fetch(
-          "https://api-checkout.cinetpay.com/v2/payment",
-          {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              apikey: process.env.NEXT_PUBLIC_CINETPAY_API_KEY,
-              site_id: process.env.NEXT_PUBLIC_CINETPAY_SITE_ID,
-              transaction_id: transactionId,
-              amount: 100,
-              currency: "XAF",
-              // alternative_currency: "",
-              description: "Abonnement mensuel",
-              // customer_id: "172",
-              // customer_name: "KOUADIO",
-              // customer_surname: "Francisse",
-              // customer_email: "harrissylver@gmail.com",
-              // customer_phone_number: "+225004315545",
-              // customer_address: "Antananarivo",
-              // customer_city: "Antananarivo",
-              // customer_country: "CM",
-              // customer_state: "CM",
-              // customer_zip_code: "065100",
-              notify_url: "https://fantribe.io/api/notification",
-              return_url: "https://fantribe.io/api/return",
-              channels: "ALL",
-              metadata: metadataString,
-              lang: "FR",
-              invoice_data: {
-                Donnee1: "",
-                Donnee2: "",
-                Donnee3: "",
-              },
-            }),
-          },
-        )
-
-        const data = await resp.json()
-        console.log(data)
-
-        router.push(data.data.payment_url)
-      } catch (error) {
-        console.error(error)
-        toast.error("Une erreur s'est produite !", {
-          description:
-            "Veuillez vérifier votre connexion internet et réessayer",
-        })
-      }
+    processPayment({
+      creatorId: userProfile._id,
+      subscriberId: currentUser._id,
+      creatorUsername: userProfile.username,
+      amount: 1000,
+      description: `Renouvellement d'abonnement - ${userProfile.username}`,
+      customFields: {
+        type: "subscription",
+        action: "renew",
+      },
     })
   }
 
@@ -100,7 +47,7 @@ export const RenewDialog = ({ userProfile }: RenewDialogProps) => {
       <DialogTrigger asChild>
         <Button className="mt-3 w-full justify-between rounded-3xl border-2 border-primary text-lg">
           <>
-            <div>EXPIRÉ</div>
+            <div>RENOUVELER</div>
             <div className="font-bold">1000 XAF</div>
           </>
         </Button>
@@ -158,13 +105,14 @@ export const RenewDialog = ({ userProfile }: RenewDialogProps) => {
               className={cn("w-full", "text-lg", {
                 "justify-between": !isPending,
               })}
-              onClick={handleFollow}
+              onClick={handleRenew}
+              disabled={isPending}
             >
               {isPending ? (
                 <LoaderCircle className="animate-spin" />
               ) : (
                 <>
-                  <div>S&apos;ABONNER</div>
+                  <div>RENOUVELER</div>
                   <div className="font-bold">1000 XAF</div>
                 </>
               )}
