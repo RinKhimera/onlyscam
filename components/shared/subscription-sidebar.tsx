@@ -1,5 +1,6 @@
 "use client"
 
+import { useQuery } from "convex/react"
 import { RenewDialog } from "@/components/profile/renew-dialog"
 import { SubscribeDialog } from "@/components/profile/subscribe-dialog"
 import { UnsubscribeDialog } from "@/components/profile/unsubscribe-dialog"
@@ -12,10 +13,9 @@ import {
 } from "@/components/ui/card"
 import { api } from "@/convex/_generated/api"
 import { Doc, Id } from "@/convex/_generated/dataModel"
-import { useQuery } from "convex/react"
 
 type SubscriptionSidebarProps = {
-  currentUserId: Id<"users">
+  currentUserId: Id<"users"> | undefined | null
   userProfile: Doc<"users">
 }
 
@@ -25,7 +25,7 @@ export const SubscriptionSidebar = ({
 }: SubscriptionSidebarProps) => {
   const subscriptionStatus = useQuery(api.subscriptions.getFollowSubscription, {
     creatorId: userProfile._id,
-    subscriberId: currentUserId,
+    subscriberId: currentUserId!,
   })
   return (
     <section className="sticky top-0 h-screen w-[30%] items-stretch overflow-auto pl-6 pr-2 max-lg:hidden">

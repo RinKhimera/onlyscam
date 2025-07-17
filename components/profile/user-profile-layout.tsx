@@ -21,7 +21,7 @@ import { ProfileImage } from "../shared/profile-image"
 import { Button } from "../ui/button"
 
 type UserProfileLayoutProps = {
-  currentUser: Doc<"users">
+  currentUser: Doc<"users"> | undefined
   userProfile: Doc<"users">
 }
 
@@ -31,12 +31,15 @@ export const UserProfileLayout = ({
 }: UserProfileLayoutProps) => {
   const subscriptionStatus = useQuery(api.subscriptions.getFollowSubscription, {
     creatorId: userProfile._id,
-    subscriberId: currentUser._id,
+    subscriberId: currentUser!._id,
   })
 
   const pathname = usePathname()
   const username = userProfile.username
   const isGalleryActive = pathname.includes(`/${username}/gallery`)
+  const canSubscribe =
+    userProfile.accountType === "CREATOR" ||
+    userProfile.accountType === "SUPERUSER"
 
   return (
     <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full max-[500px]:pb-16">
@@ -104,7 +107,7 @@ export const UserProfileLayout = ({
               variant={"outline"}
               className="rounded-3xl border-2"
             >
-              <Link href={`/${currentUser.username}/edit`}>
+              <Link href={`/${currentUser?.username}/edit`}>
                 Modifier le profil
               </Link>
             </Button>
@@ -151,7 +154,7 @@ export const UserProfileLayout = ({
       </div>
 
       <>
-        {currentUser?.username !== userProfile.username && (
+        {currentUser?.username !== userProfile.username && canSubscribe && (
           <div className="border-b border-muted px-4 py-4">
             <div className="text-2xl font-semibold leading-none tracking-tight">
               Abonnement

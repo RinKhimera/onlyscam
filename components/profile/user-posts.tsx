@@ -10,7 +10,7 @@ export const UserPosts = ({
   currentUser,
 }: {
   authorId: Id<"users">
-  currentUser: Doc<"users">
+  currentUser: Doc<"users"> | undefined
 }) => {
   const userPosts = useQuery(api.posts.getUserPosts, { authorId })
 
@@ -25,7 +25,7 @@ export const UserPosts = ({
           {userPosts?.map((post) => (
             <div key={post._id}>
               {/* Afficher toujours le contenu textuel du post */}
-              <PostCard post={post} currentUser={currentUser} />
+              <PostCard post={post} currentUser={currentUser!} />
             </div>
           ))}
         </div>

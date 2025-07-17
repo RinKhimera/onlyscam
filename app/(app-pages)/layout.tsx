@@ -20,9 +20,7 @@ export default function DashboardLayout({
         <div className="flex h-screen w-full items-center justify-center">
           <div className="text-center">
             <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-primary" />
-            <p className="text-lg text-muted-foreground">
-              Chargement de votre profil...
-            </p>
+            <p className="text-lg text-muted-foreground">Chargement...</p>
           </div>
         </div>
       </section>
