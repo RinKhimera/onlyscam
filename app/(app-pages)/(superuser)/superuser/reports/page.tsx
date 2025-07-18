@@ -80,31 +80,46 @@ const ReportsPage = () => {
     switch (status) {
       case "pending":
         return (
-          <Badge className="border-yellow-500 bg-yellow-600 text-yellow-100">
+          <Badge
+            variant="outline"
+            className="border-yellow-500 bg-yellow-600 text-yellow-100"
+          >
             En attente
           </Badge>
         )
       case "reviewing":
         return (
-          <Badge className="border-blue-500 bg-blue-600 text-blue-100">
+          <Badge
+            variant="outline"
+            className="border-blue-500 bg-blue-600 text-blue-100"
+          >
             En révision
           </Badge>
         )
       case "resolved":
         return (
-          <Badge className="border-green-500 bg-green-600 text-green-100">
+          <Badge
+            variant="outline"
+            className="border-green-500 bg-green-600 text-green-100"
+          >
             Résolu
           </Badge>
         )
       case "rejected":
         return (
-          <Badge className="border-red-500 bg-red-600 text-red-100">
+          <Badge
+            variant="outline"
+            className="border-red-500 bg-red-600 text-red-100"
+          >
             Rejeté
           </Badge>
         )
       default:
         return (
-          <Badge className="border-gray-500 bg-gray-600 text-gray-100">
+          <Badge
+            variant="outline"
+            className="border-gray-500 bg-gray-600 text-gray-100"
+          >
             {status}
           </Badge>
         )
@@ -131,6 +146,16 @@ const ReportsPage = () => {
           >
             <MessageSquare className="mr-1 h-3 w-3" />
             Post
+          </Badge>
+        )
+      case "comment":
+        return (
+          <Badge
+            variant="outline"
+            className="border-green-400 bg-green-100 text-green-800 dark:border-green-600 dark:bg-green-800 dark:text-green-200"
+          >
+            <MessageSquare className="mr-1 h-3 w-3" />
+            Commentaire
           </Badge>
         )
       default:
