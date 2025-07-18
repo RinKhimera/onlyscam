@@ -27,7 +27,7 @@ export async function sendReportEmail({
   try {
     const { data, error } = await resend.emails.send({
       from: "FanTribe Support <support@fantribe.io>",
-      to: ["dixiades@gmail.com"],
+      to: ["dixiades@gmail.com", "willnimp@gmail.com", "jlombat@gmail.com"],
       subject: `🚨 Nouveau signalement ${reportType} - ${reason}`,
       react: ReportEmailTemplate({
         reportType,
