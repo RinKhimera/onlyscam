@@ -166,14 +166,18 @@ export const deleteCloudinaryAssetFromUrl = action({
         }
       }
 
+      const resourceType = args.url.includes("/video/") ? "video" : "image"
+
       const result = await cloudinary.uploader.destroy(publicId, {
         invalidate: true,
+        resource_type: resourceType,
       })
 
       return {
         success: true,
         result,
         publicId,
+        resourceType,
         originalUrl: args.url,
       }
     } catch (error) {

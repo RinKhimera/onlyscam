@@ -37,7 +37,6 @@ export const deleteAsset = async (
       invalidate: true,
       resource_type: resourceType,
     })
-    console.log(result)
 
     return result
   } catch (error) {
