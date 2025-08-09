@@ -12,6 +12,7 @@ import {
   CldUploadWidget,
   CloudinaryUploadWidgetInfo,
 } from "next-cloudinary"
+import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState, useTransition } from "react"
 import Textarea from "react-expanding-textarea"
@@ -41,6 +42,19 @@ import { postFormSchema } from "@/schemas/post"
 import { generateRandomString } from "@/utils/generateRandomString"
 import { ProfileImage } from "../shared/profile-image"
 
+// Import dynamique du CldVideoPlayer pour éviter les problèmes SSR
+const CldVideoPlayer = dynamic(
+  () => import("next-cloudinary").then((mod) => mod.CldVideoPlayer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="mt-2 flex h-[300px] w-[500px] items-center justify-center rounded-md bg-muted">
+        <LoaderCircle className="animate-spin" size={32} />
+      </div>
+    ),
+  },
+)
+
 export const NewPostLayout = () => {
   const router = useRouter()
 
@@ -51,6 +65,7 @@ export const NewPostLayout = () => {
 
   const [medias, setMedias] = useState<string>("")
   const [publicId, setPublicId] = useState<string>("")
+  const [mediaType, setMediaType] = useState<"image" | "video" | null>(null)
   const [randomString] = useState(() => generateRandomString(6))
   const [isPending, startTransition] = useTransition()
   const [visibility, setVisibility] = useState<"public" | "subscribers_only">(
@@ -65,7 +80,7 @@ export const NewPostLayout = () => {
     return () => {
       // Ne supprime l'asset que s'il existe et que le post n'a pas été créé
       if (publicId && !isPostCreatedRef.current) {
-        deleteAsset(publicId).catch((error) => {
+        deleteAsset(publicId, mediaType || "image").catch((error) => {
           console.error("Erreur lors de la suppression de l'asset:", error)
         })
 
@@ -76,7 +91,7 @@ export const NewPostLayout = () => {
         }
       }
     }
-  }, [publicId, deleteDraftAsset])
+  }, [publicId, mediaType, deleteDraftAsset])
 
   const createPost = useMutation(api.posts.createPost)
 
@@ -95,6 +110,12 @@ export const NewPostLayout = () => {
     const data = result.info as CloudinaryUploadWidgetInfo
     setMedias(data.secure_url)
     setPublicId(data.public_id)
+
+    const isVideo = data.secure_url.startsWith(
+      "https://res.cloudinary.com/onlyscam/video/",
+    )
+
+    setMediaType(isVideo ? "video" : "image")
 
     if (currentUser) {
       createDraftAsset({
@@ -180,32 +201,54 @@ export const NewPostLayout = () => {
                         <div className="relative w-fit">
                           <Button
                             size={"icon"}
-                            className="absolute right-[10px] top-3 size-8 bg-muted"
+                            className="absolute right-[10px] top-3 z-10 size-8 bg-muted"
                             onClick={async () => {
+                              const currentPublicId = publicId
+                              const currentMediaType = mediaType
+
                               setMedias("")
                               setPublicId("")
-                              deleteAsset(publicId)
+                              setMediaType(null)
 
-                              if (publicId) {
-                                deleteDraftAsset({ publicId })
+                              deleteAsset(
+                                currentPublicId,
+                                currentMediaType || "image",
+                              )
+
+                              if (currentPublicId) {
+                                deleteDraftAsset({ publicId: currentPublicId })
                               }
                             }}
                           >
                             <CircleX size={22} />
                           </Button>
-                          <CldImage
-                            src={medias}
-                            alt={""}
-                            width={500}
-                            height={500}
-                            // fill
-                            // crop={"thumb"}
-                            // gravity="center"
-                            sizes="(max-width: 768px) 100vw,
+
+                          {/* Affichage conditionnel selon le type de média */}
+                          {mediaType === "video" ? (
+                            <div className="mt-2">
+                              <video
+                                src={medias}
+                                controls
+                                width={500}
+                                height={300}
+                                className="max-h-[550px] rounded-md"
+                              >
+                                Votre navigateur ne supporte pas la lecture
+                                vidéo.
+                              </video>
+                            </div>
+                          ) : (
+                            <CldImage
+                              src={medias}
+                              alt={""}
+                              width={500}
+                              height={500}
+                              sizes="(max-width: 768px) 100vw,
                           (max-width: 1200px) 50vw,
                           33vw"
-                            className="mt-2 max-h-[550px] rounded-md object-cover"
-                          />
+                              className="mt-2 max-h-[550px] rounded-md object-cover"
+                            />
+                          )}
                         </div>
                       )}
 

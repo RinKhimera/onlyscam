@@ -15,7 +15,7 @@ export const uploadImage = async (imagePath: string | File | ArrayBuffer) => {
     use_filename: true,
     unique_filename: false,
     overwrite: true,
-    resource_type: "video",
+    resource_type: "auto",
   }
 
   try {
@@ -28,10 +28,14 @@ export const uploadImage = async (imagePath: string | File | ArrayBuffer) => {
   }
 }
 
-export const deleteAsset = async (publicId: string) => {
+export const deleteAsset = async (
+  publicId: string,
+  resourceType: "image" | "video" = "image",
+) => {
   try {
     const result = await cloudinary.uploader.destroy(publicId, {
       invalidate: true,
+      resource_type: resourceType,
     })
     console.log(result)
 
