@@ -49,13 +49,17 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
           creatorId: post.author._id,
           subscriberId: currentUser._id,
         }
-      : "skip", // Éviter la requête si pas d'auteur
+      : "skip",
   )
 
   const isSubscriber = subscriptionStatus?.status === "active"
 
   // Logique d'accès aux médias
-  const canViewMedia = isOwnPost || !isMediaProtected || isSubscriber
+  const canViewMedia =
+    isOwnPost ||
+    !isMediaProtected ||
+    isSubscriber ||
+    currentUser.accountType === "SUPERUSER"
 
   const handlePostClick = (e: React.MouseEvent) => {
     // Ne navigue que si le clic n'est pas sur un élément interactif

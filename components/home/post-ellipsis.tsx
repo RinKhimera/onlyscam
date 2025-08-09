@@ -10,7 +10,6 @@ import {
   Share2,
   Trash2,
 } from "lucide-react"
-import { usePathname } from "next/navigation"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 import { ReportDialog } from "@/components/shared/report-dialog"
@@ -58,10 +57,10 @@ export const PostEllipsis = ({
 }: PostEllipsisProps) => {
   const [isPending, startTransition] = useTransition()
   const [isUpdatePending, setIsUpdatePending] = useState(false)
-  const pathname = usePathname()
 
   // Déterminer si l'utilisateur courant est l'auteur du post
   const isAuthor = postAuthorId === currentUser._id
+  const canDelete = isAuthor || currentUser.accountType === "SUPERUSER"
 
   const deletePost = useMutation(api.posts.deletePost)
   const updatePostVisibility = useMutation(api.posts.updatePostVisibility)
@@ -162,7 +161,7 @@ export const PostEllipsis = ({
         </Button>
 
         {/* Options disponibles uniquement pour l'auteur */}
-        {isAuthor && (
+        {canDelete && (
           <>
             {/* Option de suppression */}
             <AlertDialog>
@@ -172,7 +171,9 @@ export const PostEllipsis = ({
                   className="w-full justify-start gap-2 text-primary hover:text-primary"
                 >
                   <Trash2 className="h-4 w-4" />
-                  Supprimer la publication
+                  {isAuthor
+                    ? "Supprimer la publication"
+                    : "Supprimer la publication (Admin)"}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -182,7 +183,7 @@ export const PostEllipsis = ({
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     Cette action ne peut pas être annulée. Cela supprimera
-                    définitivement votre publication.
+                    définitivement {isAuthor ? "votre" : "cette"} publication.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -201,35 +202,39 @@ export const PostEllipsis = ({
               </AlertDialogContent>
             </AlertDialog>
 
-            {/* Option de modification de visibilité */}
-            <div className="px-2 py-2">
-              <p className="mb-1 text-sm font-medium">Visibilité du post</p>
-              <Select
-                value={visibility}
-                onValueChange={(value) =>
-                  handleVisibilityChange(value as "public" | "subscribers_only")
-                }
-                disabled={isUpdatePending}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Choisir la visibilité" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="public">
-                    <div className="flex items-center">
-                      <Globe className="mr-2 h-4 w-4" />
-                      <span>Public</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="subscribers_only">
-                    <div className="flex items-center">
-                      <Lock className="mr-2 h-4 w-4" />
-                      <span>Abonnés uniquement</span>
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Option de visibilité - uniquement pour l'auteur */}
+            {isAuthor && (
+              <div className="px-2 py-2">
+                <p className="mb-1 text-sm font-medium">Visibilité du post</p>
+                <Select
+                  value={visibility}
+                  onValueChange={(value) =>
+                    handleVisibilityChange(
+                      value as "public" | "subscribers_only",
+                    )
+                  }
+                  disabled={isUpdatePending}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Choisir la visibilité" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="public">
+                      <div className="flex items-center">
+                        <Globe className="mr-2 h-4 w-4" />
+                        <span>Public</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="subscribers_only">
+                      <div className="flex items-center">
+                        <Lock className="mr-2 h-4 w-4" />
+                        <span>Abonnés uniquement</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </>
         )}
 

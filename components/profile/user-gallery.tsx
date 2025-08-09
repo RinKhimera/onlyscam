@@ -61,7 +61,10 @@ export const UserGallery = ({
           {userGallery.map((item) => {
             const isMediaProtected = item.visibility === "subscribers_only"
             const canViewMedia =
-              isOwnProfile || !isMediaProtected || isSubscriber
+              isOwnProfile ||
+              !isMediaProtected ||
+              isSubscriber ||
+              currentUser.accountType === "SUPERUSER"
             const mediaUrl = item.medias[0]
             const isVideoMedia = isVideo(mediaUrl)
 

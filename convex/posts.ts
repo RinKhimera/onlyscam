@@ -315,6 +315,35 @@ export const getHomePosts = query({
     currentUserId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    const currentUser = await ctx.db
+      .query("users")
+      .withIndex("by_id", (q) => q.eq("_id", args.currentUserId))
+      .unique()
+
+    if (!currentUser) throw new ConvexError("User not found")
+
+    // Si l'utilisateur est un superuser, retourner tous les posts
+    if (currentUser.accountType === "SUPERUSER") {
+      const allPosts = await ctx.db.query("posts").order("desc").take(100)
+
+      const postsWithAuthor = await Promise.all(
+        allPosts.map(async (post) => {
+          const author = await ctx.db
+            .query("users")
+            .filter((q) => q.eq(q.field("_id"), post.author))
+            .unique()
+
+          return {
+            ...post,
+            author,
+          }
+        }),
+      )
+
+      return postsWithAuthor
+    }
+
+    // Pour les utilisateurs normaux:
     // 1. Récupérer tous les utilisateurs que l'utilisateur courant suit avec une souscription active
     const activeSubscriptions = await ctx.db
       .query("follows")
