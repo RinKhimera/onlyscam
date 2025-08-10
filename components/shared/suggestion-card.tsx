@@ -64,11 +64,11 @@ export const SuggestionCard = ({ user, searchTerm }: SuggestionCardProps) => {
         </div>
 
         <div className="relative flex flex-1 bg-black/30">
-          <div className="ml-[120px] flex flex-col justify-center gap-1 text-white">
+          <div className="ml-[120px] flex min-w-0 flex-1 flex-col justify-center gap-2 pr-4 text-white">
             <div className="truncate text-lg font-semibold leading-none">
               {highlightText(user?.name || "Utilisateur", searchTerm)}
             </div>
-            <div className="text-sm leading-none">
+            <div className="truncate text-sm leading-none">
               @{highlightText(user?.username || "", searchTerm)}
             </div>
           </div>

@@ -147,6 +147,32 @@ export const getValidatedCreators = query({
   },
 })
 
+export const getSuggestedCreators = query({
+  // Le refreshKey permet de forcer une nouvelle randomisation
+  args: { refreshKey: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) {
+      throw new ConvexError("Not authenticated")
+    }
+
+    const creators = await ctx.db
+      .query("users")
+      .withIndex("by_accountType", (q) => q.eq("accountType", "CREATOR"))
+      .collect()
+
+    const validatedCreators = creators.filter(
+      (user) =>
+        user.tokenIdentifier !== identity.tokenIdentifier &&
+        user.creatorApplicationStatus === "approved",
+    )
+
+    // Mélanger aléatoirement et prendre les 48 premiers
+    const shuffled = validatedCreators.sort(() => 0.5 - Math.random())
+    return shuffled.slice(0, 48)
+  },
+})
+
 export const setUserOnline = internalMutation({
   args: { tokenIdentifier: v.string() },
   handler: async (ctx, args) => {

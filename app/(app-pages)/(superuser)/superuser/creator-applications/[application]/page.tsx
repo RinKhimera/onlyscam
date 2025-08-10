@@ -27,7 +27,7 @@ import { detectRiskFactors, getRiskBadge } from "@/utils/detectRiskFactors"
 import { getStatusBadge } from "@/utils/getStatusBadge"
 
 interface ApplicationDetailsProps {
-  params: Promise<{ application: string }>
+  params: Promise<{ application: Id<"creatorApplications"> }>
 }
 
 const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
@@ -44,7 +44,7 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
   const application = useQuery(
     api.creatorApplications.getApplicationById,
     currentUser?.accountType === "SUPERUSER"
-      ? { applicationId: applicationId as Id<"creatorApplications"> }
+      ? { applicationId: applicationId }
       : "skip",
   )
 
@@ -109,6 +109,32 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
     )
   }
 
+  // Cas où l'application n'existe pas (ID invalide ou application supprimée)
+  if (application === null) {
+    return (
+      <main className="flex h-full min-h-screen w-full flex-col border-l border-r border-muted sm:w-[80%] lg:w-[60%]">
+        <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
+          <h1 className="text-xl font-bold">Candidature introuvable</h1>
+        </div>
+        <div className="flex flex-1 items-center justify-center p-6">
+          <Card className="max-w-md text-center">
+            <CardHeader>
+              <CardTitle>Candidature introuvable</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">
+                Cette candidature n&apos;existe pas ou a été supprimée.
+              </p>
+              <Link href="/superuser/creator-applications">
+                <Button className="w-full">Retour aux candidatures</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    )
+  }
+
   // Calcul des facteurs de risque
   const riskFactors = detectRiskFactors(application, allApplications)
   const hasRisk = riskFactors.length > 0
@@ -123,12 +149,6 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
       {/* Header avec bouton retour */}
       <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
         <div className="flex items-center gap-4">
-          {/* <Link href="/superuser/creator-applications">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Retour
-            </Button>
-          </Link> */}
           <div className="flex-1">
             <h1 className="text-xl font-bold">
               Candidature de {application.personalInfo.fullName}
