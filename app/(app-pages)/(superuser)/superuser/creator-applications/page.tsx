@@ -168,21 +168,6 @@ const CreatorApplicationsPage = () => {
     </Card>
   )
 
-  if (!currentUser || currentUser.accountType !== "SUPERUSER") {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Card className="p-6 text-center">
-          <CardHeader>
-            <CardTitle>Accès refusé</CardTitle>
-            <CardDescription>
-              Vous n&apos;avez pas les permissions pour accéder à cette page.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    )
-  }
-
   if (!allApplications) {
     return (
       <div className="flex min-h-screen items-center justify-center">

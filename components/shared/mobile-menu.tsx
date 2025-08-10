@@ -39,8 +39,18 @@ export const MobileMenu = () => {
     unreadNotifications: unreadCountsData?.unreadNotificationsCount || 0,
   }
 
+  // Liens réservés aux superusers
+  const filteredNavigationLinks = navigationLinks.filter((link) => {
+    const superuserOnlyLinks = ["superuser", "messages"]
+
+    if (superuserOnlyLinks.includes(link.id)) {
+      return currentUser?.accountType === "SUPERUSER"
+    }
+    return true
+  })
+
   // Filtrer les liens rapides pour la barre inférieure
-  const quickAccessLinks = navigationLinks.filter(
+  const quickAccessLinks = filteredNavigationLinks.filter(
     (link) => link.mobileQuickAccess,
   )
   // S'assurer qu'on a au maximum 3 liens rapides + le bouton menu
@@ -135,7 +145,7 @@ export const MobileMenu = () => {
 
             <nav className="flex-1 overflow-y-auto px-2 py-3">
               <div className="flex flex-col space-y-1">
-                {navigationLinks.map((link) => {
+                {filteredNavigationLinks.map((link) => {
                   const IconComponent = link.icon
                   const badgeValue = link.badge
                     ? link.badge(unreadCounts)

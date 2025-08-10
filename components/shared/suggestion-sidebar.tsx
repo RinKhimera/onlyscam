@@ -132,32 +132,50 @@ export const SuggestionSidebar = () => {
           </div>
         ) : (
           /* Suggestions par défaut */
-          <Carousel className="static my-4 w-full">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-xl font-bold">Suggestions</h3>
+          <div className="my-4">
+            <h3 className="mb-4 text-xl font-bold">Suggestions</h3>
 
-              <div className="flex gap-2">
-                <CarouselPrevious
-                  variant="ghost"
-                  className="static translate-y-0"
-                />
-                <CarouselNext
-                  variant="ghost"
-                  className="static translate-y-0"
-                />
+            {!validatedCreators || validatedCreators.length === 0 ? (
+              <div className="flex items-center justify-center">
+                <div className="rounded-lg border p-4 text-center">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                    <Search className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <p className="mt-3 font-medium text-foreground">
+                    Aucune suggestion disponible
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Revenez plus tard pour découvrir de nouveaux créateurs
+                  </p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <Carousel className="static w-full">
+                <div className="mb-4 flex items-center justify-between">
+                  <div className="flex gap-2">
+                    <CarouselPrevious
+                      variant="ghost"
+                      className="static translate-y-0"
+                    />
+                    <CarouselNext
+                      variant="ghost"
+                      className="static translate-y-0"
+                    />
+                  </div>
+                </div>
 
-            <CarouselContent>
-              {userGroups.map((group, index) => (
-                <CarouselItem key={index}>
-                  {group.map((user) => (
-                    <SuggestionCard key={user._id} user={user} />
+                <CarouselContent>
+                  {userGroups.map((group, index) => (
+                    <CarouselItem key={index}>
+                      {group.map((user) => (
+                        <SuggestionCard key={user._id} user={user} />
+                      ))}
+                    </CarouselItem>
                   ))}
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
+                </CarouselContent>
+              </Carousel>
+            )}
+          </div>
         )}
       </div>
     </section>

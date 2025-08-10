@@ -36,8 +36,11 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
     return link.href
   }
 
+  // Liens réservés aux superusers
   const filteredNavigationLinks = navigationLinks.filter((link) => {
-    if (link.id === "superuser") {
+    const superuserOnlyLinks = ["superuser", "messages"]
+
+    if (superuserOnlyLinks.includes(link.id)) {
       return currentUser?.accountType === "SUPERUSER"
     }
     return true

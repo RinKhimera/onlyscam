@@ -25,10 +25,10 @@ export default function NotFound() {
         <div className="mb-8 text-center">
           <h1 className="mb-2 text-6xl font-bold text-primary">404</h1>
           <h2 className="mb-4 text-2xl font-semibold text-foreground">
-            Profil introuvable
+            Page introuvable
           </h2>
           <p className="max-w-md text-muted-foreground">
-            Le profil que vous recherchez n&apos;existe pas ou a été supprimé.
+            La page que vous recherchez n&apos;existe pas ou a été supprimée.
             Vérifiez le nom d&apos;utilisateur ou explorez d&apos;autres
             profils.
           </p>

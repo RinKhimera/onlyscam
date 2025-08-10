@@ -12,13 +12,7 @@ import { ProfileImage } from "@/components/shared/profile-image"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -104,22 +98,6 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
       default:
         return type
     }
-  }
-
-  // Vérification des permissions
-  if (!currentUser || currentUser.accountType !== "SUPERUSER") {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Card className="p-6 text-center">
-          <CardHeader>
-            <CardTitle>Accès refusé</CardTitle>
-            <CardDescription>
-              Vous n&apos;avez pas les permissions pour accéder à cette page.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    )
   }
 
   // États de chargement

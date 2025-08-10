@@ -45,20 +45,6 @@ const SuperUserPage = () => {
     currentUser?.accountType === "SUPERUSER" ? {} : "skip",
   )
 
-  if (!currentUser || currentUser.accountType !== "SUPERUSER") {
-    return (
-      <div className="flex h-full min-h-screen w-full flex-col items-center justify-center border-l border-r border-muted p-4 max-[500px]:pb-16 sm:w-[80%] lg:w-[60%]">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">Accès refusé</h1>
-          <p className="mt-4 text-lg">
-            Vous n&apos;avez pas les droits nécessaires pour accéder à cette
-            page.
-          </p>
-        </div>
-      </div>
-    )
-  }
-
   // Calcul des statistiques
   const pendingApplications =
     allApplications?.filter((app) => app.status === "pending") || []
