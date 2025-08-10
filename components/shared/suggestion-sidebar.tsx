@@ -13,7 +13,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import { api } from "@/convex/_generated/api"
-import { useCurrentUser } from "@/hooks/useCurrentUser"
 
 // Fonction pour diviser le tableau en sous-tableaux de taille n
 const chunkArray = (array: any[], size: number): any[][] => {
@@ -25,7 +24,6 @@ const chunkArray = (array: any[], size: number): any[][] => {
 }
 
 export const SuggestionSidebar = () => {
-  const { currentUser } = useCurrentUser()
   const [searchTerm, setSearchTerm] = useState("")
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("")
 
@@ -38,8 +36,8 @@ export const SuggestionSidebar = () => {
     return () => clearTimeout(timer)
   }, [searchTerm])
 
-  // Query pour les utilisateurs suggérés par défaut
-  const users = useQuery(api.users.getUsers)
+  // Récupérer uniquement les créateurs validés
+  const validatedCreators = useQuery(api.users.getValidatedCreators)
 
   // Query pour la recherche
   const searchResults = useQuery(
@@ -49,10 +47,8 @@ export const SuggestionSidebar = () => {
       : "skip",
   )
 
-  const suggestedUsers = users?.filter((user) => Boolean(user.username))
-
-  // Diviser suggestedUsers en sous-tableaux de 3 éléments
-  const userGroups = chunkArray(suggestedUsers || [], 3)
+  // Diviser validatedCreators en sous-tableaux de 3 éléments
+  const userGroups = chunkArray(validatedCreators || [], 3)
 
   const clearSearch = () => {
     setSearchTerm("")

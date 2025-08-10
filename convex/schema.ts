@@ -31,7 +31,8 @@ export default defineSchema({
   })
     .index("by_tokenIdentifier", ["tokenIdentifier"])
     .index("by_username", ["username"])
-    .index("byExternalId", ["externalId"]),
+    .index("byExternalId", ["externalId"])
+    .index("by_accountType", ["accountType"]),
 
   creatorApplications: defineTable({
     userId: v.id("users"),

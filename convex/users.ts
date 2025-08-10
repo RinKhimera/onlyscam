@@ -126,6 +126,27 @@ export const getUsers = query({
   },
 })
 
+export const getValidatedCreators = query({
+  args: {},
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) {
+      throw new ConvexError("Not authenticated")
+    }
+
+    const creators = await ctx.db
+      .query("users")
+      .withIndex("by_accountType", (q) => q.eq("accountType", "CREATOR"))
+      .collect()
+
+    return creators.filter(
+      (user) =>
+        user.tokenIdentifier !== identity.tokenIdentifier &&
+        user.creatorApplicationStatus === "approved",
+    )
+  },
+})
+
 export const setUserOnline = internalMutation({
   args: { tokenIdentifier: v.string() },
   handler: async (ctx, args) => {
