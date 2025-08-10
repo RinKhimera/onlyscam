@@ -7,6 +7,43 @@ import {
   query,
 } from "./_generated/server"
 
+export const canUserSubscribe = query({
+  args: { creatorId: v.id("users") },
+  handler: async (ctx, args) => {
+    const creator = await ctx.db.get(args.creatorId)
+
+    if (!creator) {
+      return {
+        canSubscribe: false,
+        reason: "Creator not found",
+        message: "Cet utilisateur n'existe pas",
+      }
+    }
+
+    if (creator.accountType === "USER") {
+      return {
+        canSubscribe: false,
+        reason: "User is not a creator",
+        message: "Cet utilisateur n'est pas un créateur",
+      }
+    }
+
+    if (creator.creatorApplicationStatus !== "approved") {
+      return {
+        canSubscribe: false,
+        reason: "Creator application is not approved",
+        message: "Ce créateur n'est pas encore approuvé",
+      }
+    }
+
+    return {
+      canSubscribe: true,
+      reason: null,
+      message: null,
+    }
+  },
+})
+
 export const getFollowSubscription = query({
   args: { creatorId: v.id("users"), subscriberId: v.id("users") },
   handler: async (ctx, args) => {

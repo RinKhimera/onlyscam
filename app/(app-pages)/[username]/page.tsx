@@ -22,6 +22,12 @@ const UserProfilePage = ({
     username: username,
   })
 
+  // Vérifier si l'utilisateur peut être suivi
+  const canSubscribeCheck = useQuery(
+    api.subscriptions.canUserSubscribe,
+    userProfile?._id ? { creatorId: userProfile._id } : "skip",
+  )
+
   if (userProfile === undefined) {
     return (
       <div className="flex h-screen w-[50%] flex-col items-center justify-center border-l border-r border-muted max-lg:w-[50%] max-sm:w-full max-[500px]:pb-16">
@@ -35,9 +41,7 @@ const UserProfilePage = ({
     notFound()
   }
 
-  const canSubscribe =
-    userProfile.accountType === "CREATOR" ||
-    userProfile.accountType === "SUPERUSER"
+  const canSubscribe = canSubscribeCheck?.canSubscribe || false
 
   return (
     <>

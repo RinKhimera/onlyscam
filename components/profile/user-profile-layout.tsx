@@ -34,12 +34,16 @@ export const UserProfileLayout = ({
     subscriberId: currentUser!._id,
   })
 
+  // Vérifier si l'utilisateur peut être suivi
+  const canSubscribeCheck = useQuery(
+    api.subscriptions.canUserSubscribe,
+    userProfile?._id ? { creatorId: userProfile._id } : "skip",
+  )
+
   const pathname = usePathname()
   const username = userProfile.username
   const isGalleryActive = pathname.includes(`/${username}/gallery`)
-  const canSubscribe =
-    userProfile.accountType === "CREATOR" ||
-    userProfile.accountType === "SUPERUSER"
+  const canSubscribe = canSubscribeCheck?.canSubscribe || false
 
   return (
     <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full max-[500px]:pb-16">

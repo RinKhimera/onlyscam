@@ -1,18 +1,19 @@
 "use client"
 
-import { Check, LoaderCircle } from "lucide-react"
+import { useQuery } from "convex/react"
+import { Check, Crown, LoaderCircle, MessageCircle, Star } from "lucide-react"
 import Image from "next/image"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
+import { toast } from "sonner"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { api } from "@/convex/_generated/api"
 import { usePayment } from "@/hooks/useCinetpayPayment"
 import { useCurrentUser } from "@/hooks/useCurrentUser"
 import { cn } from "@/lib/utils"
@@ -26,14 +27,26 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
   const { currentUser } = useCurrentUser()
   const { processPayment, isPending } = usePayment()
 
+  const canSubscribe = useQuery(
+    api.subscriptions.canUserSubscribe,
+    userProfile?._id ? { creatorId: userProfile._id } : "skip",
+  )
+
   const handleSubscribe = () => {
     if (!currentUser || !userProfile) return
+
+    if (!canSubscribe?.canSubscribe) {
+      toast.error(
+        canSubscribe?.message || "Impossible de s'abonner à cet utilisateur",
+      )
+      return
+    }
 
     processPayment({
       creatorId: userProfile._id,
       subscriberId: currentUser._id,
       creatorUsername: userProfile.username,
-      amount: 1000,
+      amount: 100,
       description: `Abonnement mensuel - ${userProfile.username}`,
       customFields: {
         type: "subscription",
@@ -45,79 +58,126 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="mt-3 w-full justify-between rounded-3xl border-2 border-primary text-lg">
-          <>
-            <div>S&apos;ABONNER</div>
-            <div className="font-bold">1000 XAF</div>
-          </>
+        <Button className="mt-3 w-full justify-between rounded-2xl bg-gradient-to-r from-primary to-primary/80 text-lg font-semibold shadow-lg transition-all hover:shadow-xl">
+          <div className="flex items-center gap-2">
+            <Crown className="h-5 w-5" />
+            S&apos;ABONNER
+          </div>
+          <div className="font-bold">1000 XAF</div>
         </Button>
       </DialogTrigger>
-      <DialogContent className="h-5/6 max-w-md overflow-auto p-0">
-        <div className="relative flex flex-col justify-evenly px-4">
-          <div className="relative h-fit">
-            <div>
-              <AspectRatio ratio={3 / 1} className="bg-muted">
-                <Image
-                  className="object-cover"
-                  src={
-                    (userProfile?.imageBanner as string) ||
-                    "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
-                  }
-                  alt={userProfile?.name as string}
-                  fill
-                />
-              </AspectRatio>
-            </div>
-            <div className="absolute -bottom-[48px] left-5 max-sm:-bottom-[38px]">
-              <Avatar className="relative size-28 border-4 border-accent object-none object-center max-sm:size-24">
+      <DialogContent className="max-w-sm overflow-hidden border-0 p-0 shadow-2xl">
+        {/* Header avec image de fond */}
+        <div className="relative">
+          <div className="h-32 overflow-hidden">
+            <Image
+              className="h-full w-full object-cover"
+              src={
+                (userProfile?.imageBanner as string) ||
+                "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
+              }
+              alt={userProfile?.name as string}
+              width={400}
+              height={128}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          </div>
+
+          {/* Avatar centré */}
+          <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
+            <div className="relative">
+              <Avatar className="h-24 w-24 border-4 border-background shadow-xl">
                 <AvatarImage
                   src={userProfile?.image}
                   className="object-cover"
                 />
-                <AvatarFallback className="size-11">
-                  <div className="animate-pulse rounded-full bg-gray-500"></div>
+                <AvatarFallback className="bg-muted">
+                  <div className="h-full w-full animate-pulse rounded-full bg-muted-foreground/20" />
                 </AvatarFallback>
               </Avatar>
+              <div className="absolute -bottom-1 -right-1 rounded-full bg-primary p-1">
+                <Crown className="h-4 w-4 text-primary-foreground" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Contenu principal */}
+        <div className="px-6 pb-6 pt-16">
+          <div className="text-center">
+            <DialogTitle className="text-xl font-bold">
+              Rejoignez {userProfile?.name}
+            </DialogTitle>
+            <DialogDescription className="mt-2 text-muted-foreground">
+              Débloquez un contenu exclusif et bien plus encore
+            </DialogDescription>
+          </div>
+
+          {/* Avantages avec icônes modernes */}
+          <div className="mt-6 space-y-4">
+            <div className="flex items-center gap-3 rounded-lg bg-muted/50 p-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                <Star className="h-4 w-4 text-primary" />
+              </div>
+              <div className="text-sm font-medium">
+                Contenu exclusif et premium
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg bg-muted/50 p-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                <MessageCircle className="h-4 w-4 text-primary" />
+              </div>
+              <div className="text-sm font-medium">
+                Accès à la communauté privée
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg bg-muted/50 p-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                <Check className="h-4 w-4 text-primary" />
+              </div>
+              <div className="text-sm font-medium">
+                Résiliation à tout moment
+              </div>
             </div>
           </div>
 
-          <DialogTitle className="mt-5 text-center text-xl">
-            Abonnez-vous et bénéficiez des avantages suivants :
-          </DialogTitle>
+          {/* Prix et bouton */}
+          <div className="mt-6">
+            <div className="mb-4 text-center">
+              <div className="text-3xl font-bold">1000 XAF</div>
+              <div className="text-sm text-muted-foreground">par mois</div>
+            </div>
 
-          <DialogDescription className="text-base">
-            <div className="flex gap-1">
-              <Check className="shrink-0 text-primary" />
-              <div>Accès complet au contenu de cet utilisateur</div>
-            </div>
-            <div className="flex gap-1">
-              <Check className="shrink-0 text-primary" />
-              <div>Message direct avec cet utilisateur</div>
-            </div>
-            <div className="flex gap-1">
-              <Check className="shrink-0 text-primary" />
-              <div>Annuler votre abonnement à tout moment</div>
-            </div>
-          </DialogDescription>
-
-          <DialogFooter>
             <Button
-              className={cn("w-full", "text-lg", {
-                "justify-between": !isPending,
-              })}
+              className={cn(
+                "w-full rounded-xl bg-gradient-to-r from-primary to-primary/80 text-lg font-semibold shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl",
+                {
+                  "pointer-events-none opacity-70": isPending,
+                },
+              )}
               onClick={handleSubscribe}
               disabled={isPending}
+              size="lg"
             >
               {isPending ? (
-                <LoaderCircle className="animate-spin" />
+                <div className="flex items-center gap-2">
+                  <LoaderCircle className="h-5 w-5 animate-spin" />
+                  Traitement...
+                </div>
               ) : (
-                <>
-                  <div>S&apos;ABONNER</div>
-                  <div className="font-bold">1000 XAF</div>
-                </>
+                <div className="flex items-center gap-2">
+                  <Crown className="h-5 w-5" />
+                  Commencer l&apos;abonnement
+                </div>
               )}
             </Button>
-          </DialogFooter>
+
+            <p className="mt-3 text-center text-xs text-muted-foreground">
+              Paiement sécurisé • Annulation facile
+            </p>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
