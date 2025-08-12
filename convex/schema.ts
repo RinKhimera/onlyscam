@@ -176,6 +176,7 @@ export default defineSchema({
     reporterId: v.id("users"),
     reportedUserId: v.optional(v.id("users")),
     reportedPostId: v.optional(v.id("posts")),
+    reportedCommentId: v.optional(v.id("comments")),
     type: v.union(v.literal("user"), v.literal("post"), v.literal("comment")),
     reason: v.union(
       v.literal("spam"),

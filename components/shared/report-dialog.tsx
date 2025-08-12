@@ -4,7 +4,7 @@ import { useMutation } from "convex/react"
 import { Flag } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
-import { sendReportEmail } from "@/actions/send-report-email"
+// import { sendReportEmail } from "@/actions/send-report-email"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -25,11 +25,11 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
-import { useCurrentUser } from "@/hooks/useCurrentUser"
 
 interface ReportDialogProps {
   reportedUserId?: Id<"users">
   reportedPostId?: Id<"posts">
+  reportedCommentId?: Id<"comments">
   type: "user" | "post" | "comment"
   triggerText?: string
   username?: string
@@ -38,6 +38,7 @@ interface ReportDialogProps {
 export const ReportDialog = ({
   reportedUserId,
   reportedPostId,
+  reportedCommentId,
   type,
   triggerText = "Signaler",
   username,
@@ -47,7 +48,6 @@ export const ReportDialog = ({
   const [description, setDescription] = useState("")
   const [isPending, startTransition] = useTransition()
 
-  const { currentUser } = useCurrentUser()
   const createReport = useMutation(api.reports.createReport)
 
   const reasons = [
@@ -72,19 +72,20 @@ export const ReportDialog = ({
         await createReport({
           reportedUserId,
           reportedPostId,
+          reportedCommentId,
           type,
           reason: reason as any,
           description: description || undefined,
         })
 
-        await sendReportEmail({
-          reportType: type,
-          reason,
-          description,
-          reporterUsername: currentUser?.username!,
-          reportedUsername: username,
-          reportedContent: reportedPostId ? "Post content here" : undefined,
-        })
+        // await sendReportEmail({
+        //   reportType: type,
+        //   reason,
+        //   description,
+        //   reporterUsername: currentUser?.username!,
+        //   reportedUsername: username,
+        //   reportedContent: reportedPostId ? "Post content here" : undefined,
+        // })
 
         toast.success("Signalement envoyé", {
           description:

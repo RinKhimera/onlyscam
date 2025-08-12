@@ -198,14 +198,12 @@ const ReportsPage = () => {
                 {getStatusBadge(report.status)}
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => openReportDetails(report)}
-            >
-              <Eye className="mr-1 h-4 w-4" />
-              Voir
-            </Button>
+            <Link href={`/superuser/reports/${report._id}`}>
+              <Button variant="outline" size="sm">
+                <Eye className="mr-1 h-4 w-4" />
+                Voir détails
+              </Button>
+            </Link>
           </div>
         </CardHeader>
         <CardContent>

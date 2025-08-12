@@ -92,10 +92,11 @@ export const CommentEllipsis = ({
           </AlertDialog>
         )}
 
-        {/* Option de signalement (pour tous sauf le propriétaire) */}
+        {/* Option de signalement */}
         {!isOwner && comment && (
           <ReportDialog
             reportedUserId={comment.author?._id}
+            reportedCommentId={commentId}
             type="comment"
             triggerText="Signaler le commentaire"
             username={comment.author?.username}
