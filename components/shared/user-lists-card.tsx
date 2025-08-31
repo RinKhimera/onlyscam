@@ -74,7 +74,7 @@ export const UserListsCard = ({
             className="object-cover"
           />
         ) : (
-          <div className="h-full w-full bg-linear-to-r from-purple-500 to-blue-500" />
+          <div className="bg-linear-to-r h-full w-full from-purple-500 to-blue-500" />
         )}
       </Link>
 
@@ -83,7 +83,7 @@ export const UserListsCard = ({
           {/* Avatar cliquable */}
           <Link
             href={profileUrl}
-            className="-mt-14 block rounded-full border-4 border-background"
+            className="border-background -mt-14 block rounded-full border-4"
           >
             <Avatar className="h-20 w-20 overflow-hidden">
               <ProfileImage
@@ -108,7 +108,7 @@ export const UserListsCard = ({
               </Link>
               {/* Nom d'utilisateur cliquable avec soulignement au survol */}
               <Link href={profileUrl} className="block">
-                <p className="truncate text-sm text-muted-foreground hover:underline">
+                <p className="text-muted-foreground truncate text-sm hover:underline">
                   @{user.username}
                 </p>
               </Link>
@@ -118,7 +118,7 @@ export const UserListsCard = ({
               {/* Bouton d'abonnement */}
               {!isBlockedPage && onSubscribe && (
                 <Button
-                  variant={isSubscribed ? "outline-solid" : "default"}
+                  variant={isSubscribed ? "outline" : "default"}
                   size="sm"
                   onClick={onSubscribe}
                 >

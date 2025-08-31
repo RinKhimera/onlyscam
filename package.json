@@ -3,11 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "type-check": "tsc",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "lint-check": "eslint . --ext .ts,.tsx --max-warnings 0",
+    "build-check": "npm run type-check && npm run lint-check",
+    "fix-lint": "eslint . --ext .ts,.tsx --fix"
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.0.2",
@@ -34,7 +37,7 @@
     "clsx": "^2.1.1",
     "convex": "^1.23.0",
     "date-fns": "^4.1.0",
-    "embla-carousel-react": "^8.1.5",
+    "embla-carousel-react": "^8.6.0",
     "emoji-picker-react": "^4.9.2",
     "lucide-react": "^0.542.0",
     "next": "^15.5.2",

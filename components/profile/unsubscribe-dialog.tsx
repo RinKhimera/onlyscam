@@ -1,5 +1,10 @@
 "use client"
 
+import { useMutation } from "convex/react"
+import { LoaderCircle } from "lucide-react"
+import Image from "next/image"
+import { useTransition } from "react"
+import { toast } from "sonner"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -13,11 +18,6 @@ import {
 } from "@/components/ui/dialog"
 import { api } from "@/convex/_generated/api"
 import { UserProps } from "@/types"
-import { useMutation } from "convex/react"
-import { LoaderCircle } from "lucide-react"
-import Image from "next/image"
-import { useTransition } from "react"
-import { toast } from "sonner"
 
 type SubscribeDialogProps = {
   userProfile: UserProps
@@ -50,8 +50,8 @@ export const UnsubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          variant={"outline-solid"}
-          className="mt-3 w-full justify-between rounded-3xl border-2 border-muted text-lg"
+          variant={"outline"}
+          className="border-muted mt-3 w-full justify-between rounded-3xl border-2 text-lg"
         >
           <>
             <div>ABONNÉ</div>
@@ -76,7 +76,7 @@ export const UnsubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
               </AspectRatio>
             </div>
             <div className="absolute -bottom-[48px] left-5 max-sm:-bottom-[38px]">
-              <Avatar className="relative size-28 border-4 border-accent object-none object-center max-sm:size-24">
+              <Avatar className="border-accent relative size-28 border-4 object-none object-center max-sm:size-24">
                 <AvatarImage
                   src={userProfile?.image}
                   className="object-cover"
