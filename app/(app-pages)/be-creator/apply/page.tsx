@@ -41,7 +41,9 @@ const applicationSchema = z.object({
   fullName: z.string().min(2, "Le nom complet est requis"),
   dateOfBirth: z.string().min(1, "La date de naissance est requise"),
   address: z.string().min(10, "L'adresse complète est requise"),
-  phoneNumber: z.string().min(10, "Le numéro de téléphone est requis"),
+  phoneNumber: z
+    .string()
+    .regex(/^\d{9}$/, "Le numéro doit contenir exactement 9 chiffres"),
   applicationReason: z.enum(
     [
       "monetisation",
@@ -276,7 +278,7 @@ const ApplyCreatorPage = () => {
             fullName: data.fullName,
             dateOfBirth: data.dateOfBirth,
             address: data.address,
-            phoneNumber: data.phoneNumber,
+            phoneNumber: `+237${data.phoneNumber}`,
           },
           applicationReason: finalReason || "",
           identityDocuments: documents,
@@ -309,8 +311,8 @@ const ApplyCreatorPage = () => {
   }
 
   return (
-    <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full max-[500px]:pb-16">
-      <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur-sm">
+    <main className="border-muted flex h-full min-h-screen w-[50%] flex-col border-l border-r max-lg:w-[80%] max-sm:w-full max-[500px]:pb-16">
+      <div className="border-muted bg-background/95 sticky top-0 z-20 border-b p-4 backdrop-blur-sm">
         <h1 className="text-2xl font-bold">Candidature Créateur</h1>
       </div>
 
@@ -379,10 +381,21 @@ const ApplyCreatorPage = () => {
                       <FormItem>
                         <FormLabel>Numéro de téléphone</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Votre numéro de téléphone"
-                            {...field}
-                          />
+                          <div className="flex">
+                            <div className="border-input text-muted-foreground flex items-center rounded-l-md border border-r-0 px-3 text-sm">
+                              +237
+                            </div>
+                            <Input
+                              placeholder="123456789"
+                              className="rounded-l-none"
+                              maxLength={9}
+                              {...field}
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, "")
+                                field.onChange(value)
+                              }}
+                            />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -410,7 +423,7 @@ const ApplyCreatorPage = () => {
                       Pièce d&apos;identité (carte d&apos;identité, passeport,
                       permis)
                     </label>
-                    <div className="rounded-lg border-2 border-dashed border-muted p-6 text-center">
+                    <div className="border-muted rounded-lg border-2 border-dashed p-6 text-center">
                       {uploadedDocuments.identityCard ? (
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-green-600">
@@ -442,11 +455,11 @@ const ApplyCreatorPage = () => {
                         >
                           {({ open }) => (
                             <div>
-                              <Upload className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
+                              <Upload className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
                               <button
                                 type="button"
                                 onClick={() => open()}
-                                className="cursor-pointer text-primary"
+                                className="text-primary cursor-pointer"
                               >
                                 Cliquez pour uploader
                               </button>
@@ -462,7 +475,7 @@ const ApplyCreatorPage = () => {
                     <label className="mb-2 block text-sm font-medium">
                       Selfie avec votre pièce d&apos;identité
                     </label>
-                    <div className="rounded-lg border-2 border-dashed border-muted p-6 text-center">
+                    <div className="border-muted rounded-lg border-2 border-dashed p-6 text-center">
                       {uploadedDocuments.selfie ? (
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-green-600">
@@ -494,11 +507,11 @@ const ApplyCreatorPage = () => {
                         >
                           {({ open }) => (
                             <div>
-                              <Camera className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
+                              <Camera className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
                               <button
                                 type="button"
                                 onClick={() => open()}
-                                className="cursor-pointer text-primary"
+                                className="text-primary cursor-pointer"
                               >
                                 Cliquez pour uploader
                               </button>
@@ -549,7 +562,7 @@ const ApplyCreatorPage = () => {
                                   >
                                     {option.label}
                                   </Label>
-                                  <p className="text-xs text-muted-foreground">
+                                  <p className="text-muted-foreground text-xs">
                                     {option.description}
                                   </p>
                                 </div>
