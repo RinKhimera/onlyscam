@@ -173,7 +173,7 @@ export const UserListDialog = () => {
             >
               <Avatar className="overflow-visible">
                 {user.isOnline && (
-                  <div className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full border-2 border-foreground bg-green-500" />
+                  <div className="border-foreground absolute right-0 top-0 h-2.5 w-2.5 rounded-full border-2 bg-green-500" />
                 )}
                 <ProfileImage
                   src={user.image}
@@ -183,7 +183,7 @@ export const UserListDialog = () => {
                   className="rounded-full object-cover"
                 />
                 <AvatarFallback>
-                  <div className="h-full w-full animate-pulse rounded-full bg-muted"></div>
+                  <div className="bg-muted h-full w-full animate-pulse rounded-full"></div>
                 </AvatarFallback>
               </Avatar>
 

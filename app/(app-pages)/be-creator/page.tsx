@@ -94,7 +94,7 @@ const BeCreatorPage = () => {
   ) {
     return (
       <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full max-[500px]:pb-16">
-        <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
+        <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur-sm">
           <h1 className="text-2xl font-bold">Compte Créateur</h1>
         </div>
         <div className="flex flex-1 items-center justify-center p-6">
@@ -210,7 +210,7 @@ const BeCreatorPage = () => {
 
   return (
     <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full max-[500px]:pb-16">
-      <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
+      <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur-sm">
         <h1 className="text-2xl font-bold">Devenir Créateur</h1>
       </div>
 

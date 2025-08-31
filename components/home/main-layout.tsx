@@ -9,8 +9,8 @@ export const MainLayout = () => {
   const user = currentUser ?? undefined
 
   return (
-    <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full max-[500px]:pb-16">
-      <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
+    <main className="border-muted flex h-full min-h-screen w-[50%] flex-col border-l border-r max-lg:w-[80%] max-sm:w-full max-[500px]:pb-16">
+      <h1 className="border-muted sticky top-0 z-20 border-b p-4 text-2xl font-bold backdrop-blur-sm">
         Accueil
       </h1>
       <CreatePost currentUser={user} />

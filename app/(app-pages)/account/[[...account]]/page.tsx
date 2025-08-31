@@ -3,7 +3,7 @@ import { UserProfile } from "@clerk/nextjs"
 const AccountPage = () => {
   return (
     <main className="flex w-[80%] flex-col border-l border-r border-muted max-sm:w-full max-[500px]:pb-16">
-      <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
+      <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur-sm">
         Compte
       </h1>
       {/* This div will now manage the layout for UserProfile */}

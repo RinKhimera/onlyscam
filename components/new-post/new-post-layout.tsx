@@ -15,8 +15,8 @@ import {
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState, useTransition } from "react"
-import Textarea from "react-expanding-textarea"
 import { useForm } from "react-hook-form"
+import TextareaAutosize from "react-textarea-autosize"
 import { toast } from "sonner"
 import { z } from "zod"
 import { deleteAsset } from "@/actions/upload-cloudinary"
@@ -48,7 +48,7 @@ const CldVideoPlayer = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="mt-2 flex h-[300px] w-[500px] items-center justify-center rounded-md bg-muted">
+      <div className="bg-muted mt-2 flex h-[300px] w-[500px] items-center justify-center rounded-md">
         <LoaderCircle className="animate-spin" size={32} />
       </div>
     ),
@@ -161,12 +161,12 @@ export const NewPostLayout = () => {
     })
   }
   return (
-    <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full">
-      <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
+    <main className="border-muted flex h-full min-h-screen w-[50%] flex-col border-l border-r max-lg:w-[80%] max-sm:w-full">
+      <h1 className="border-muted sticky top-0 z-20 border-b p-4 text-2xl font-bold backdrop-blur-sm">
         Nouvelle publication
       </h1>
 
-      <div className="relative flex items-stretch space-x-3 border-b border-muted px-4 py-5">
+      <div className="border-muted relative flex items-stretch space-x-3 border-b px-4 py-5">
         <Avatar>
           {currentUser?.image ? (
             <ProfileImage
@@ -191,9 +191,11 @@ export const NewPostLayout = () => {
                 <FormItem>
                   <FormControl>
                     <div className="flex h-full w-full flex-col">
-                      <Textarea
+                      <TextareaAutosize
                         placeholder="Ecrivez une nouvelle publication"
-                        className="mt-1 h-full w-full resize-none border-none bg-transparent text-xl outline-none"
+                        className="outline-hidden mt-1 h-full w-full  resize-none border-none text-xl"
+                        minRows={2}
+                        maxRows={10}
                         {...field}
                       />
 
@@ -201,7 +203,7 @@ export const NewPostLayout = () => {
                         <div className="relative w-fit">
                           <Button
                             size={"icon"}
-                            className="absolute right-[10px] top-3 z-10 size-8 bg-muted"
+                            className="bg-muted absolute right-[10px] top-3 z-10 size-8"
                             onClick={async () => {
                               const currentPublicId = publicId
                               const currentMediaType = mediaType
@@ -252,7 +254,7 @@ export const NewPostLayout = () => {
                         </div>
                       )}
 
-                      <div className="mt-8 flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="mt-2 flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         {/* Actions de gauche (upload + visibilité) */}
                         <div className="flex flex-wrap items-center gap-3">
                           {/* Bouton upload */}
@@ -262,7 +264,7 @@ export const NewPostLayout = () => {
                               variant="outline"
                               size="sm"
                               className={cn(
-                                "flex items-center gap-2 rounded-full border-muted hover:bg-blue-600/15 hover:text-blue-500",
+                                "border-muted flex items-center gap-2 rounded-full hover:bg-blue-600/15 hover:text-blue-500",
                                 "cursor-not-allowed opacity-60",
                               )}
                               disabled
@@ -296,7 +298,7 @@ export const NewPostLayout = () => {
                                   variant="default"
                                   size="sm"
                                   className={cn(
-                                    "flex items-center gap-2 rounded-full border-muted",
+                                    "border-muted flex items-center gap-2 rounded-full",
                                     { "cursor-not-allowed": isPending },
                                   )}
                                   onClick={() => open()}
@@ -320,7 +322,7 @@ export const NewPostLayout = () => {
                               )
                             }
                           >
-                            <SelectTrigger className="h-9 w-auto rounded-full border-muted bg-transparent hover:bg-muted/30">
+                            <SelectTrigger className="border-muted hover:bg-muted/30 h-9 w-auto rounded-full bg-transparent">
                               {visibility === "public" ? (
                                 <div className="flex items-center gap-2">
                                   <Globe size={18} className="text-green-500" />

@@ -101,7 +101,7 @@ export const SuggestionSidebar = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Rechercher sur FanTribe"
-            className="h-full w-full rounded-xl border-none bg-muted py-4 pl-14 pr-12 outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
+            className="h-full w-full rounded-xl border-none bg-muted py-4 pl-14 pr-12 outline-hidden placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
           />
 
           {searchTerm && (

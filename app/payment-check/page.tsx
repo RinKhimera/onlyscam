@@ -16,7 +16,7 @@ const PaymentCheckPage = async () => {
 
   return (
     <div className="relative flex h-full w-full items-center justify-center">
-      <div className="relative flex h-full w-full max-w-screen-xl">
+      <div className="relative flex h-full w-full max-w-(--breakpoint-xl)">
         <LeftSidebar currentUser={currentUser} />
         <PaymentCheckLayout />
         <SuggestionSidebar />

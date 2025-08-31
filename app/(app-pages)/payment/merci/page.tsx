@@ -4,7 +4,7 @@ import { buttonVariants } from "@/components/ui/button"
 
 const MerciPage = () => {
   return (
-    <main className="flex h-full min-h-screen w-[50%] flex-col items-center justify-center border-l border-r border-muted max-lg:w-[100%]">
+    <main className="flex h-full min-h-screen w-[50%] flex-col items-center justify-center border-l border-r border-muted max-lg:w-full">
       <div className="flex flex-col items-center gap-10">
         <CircleCheckBig size={80} />
 

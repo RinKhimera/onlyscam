@@ -38,8 +38,8 @@ export const UserGalleryLayout = ({
   const isGalleryActive = pathname.includes(`/${username}/gallery`)
 
   return (
-    <main className="flex h-full min-h-screen w-[50%] flex-col border-l border-r border-muted max-lg:w-[80%] max-sm:w-full max-[500px]:pb-16">
-      <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
+    <main className="border-muted flex h-full min-h-screen w-[50%] flex-col border-l border-r max-lg:w-[80%] max-sm:w-full max-[500px]:pb-16">
+      <h1 className="border-muted sticky top-0 z-20 border-b p-4 text-2xl font-bold backdrop-blur-sm">
         {userProfile?.name}
       </h1>
 
@@ -60,7 +60,7 @@ export const UserGalleryLayout = ({
         <div className="absolute -bottom-[65px] left-5 max-sm:-bottom-[38px]">
           <Dialog>
             <DialogTrigger asChild>
-              <Avatar className="size-36 cursor-pointer border-4 border-accent object-none object-center max-sm:size-24">
+              <Avatar className="border-accent size-36 cursor-pointer border-4 object-none object-center max-sm:size-24">
                 {userProfile?.image ? (
                   <ProfileImage
                     src={userProfile.image}
@@ -113,12 +113,12 @@ export const UserGalleryLayout = ({
         )}
       </>
 
-      <div className="border-b border-muted px-4 py-4">
+      <div className="border-muted border-b px-4 py-4">
         <div className="text-2xl font-bold">{userProfile?.name}</div>
         <div className="text-muted-foreground">@{userProfile?.username}</div>
 
         <div className="mt-3">{userProfile?.bio}</div>
-        <div className="-ml-0.5 flex items-center gap-1 text-muted-foreground">
+        <div className="text-muted-foreground -ml-0.5 flex items-center gap-1">
           <MapPin size={18} />
           {userProfile?.location}
         </div>
@@ -127,7 +127,7 @@ export const UserGalleryLayout = ({
           {userProfile?.socials?.map((url) => (
             <div
               key={url}
-              className="-ml-0.5 flex items-center gap-1 text-muted-foreground"
+              className="text-muted-foreground -ml-0.5 flex items-center gap-1"
             >
               <LucideLink size={18} />
 
@@ -146,7 +146,7 @@ export const UserGalleryLayout = ({
 
       <>
         {currentUser?.username !== userProfile.username && (
-          <div className="border-b border-muted px-4 py-4">
+          <div className="border-muted border-b px-4 py-4">
             <div className="text-2xl font-semibold leading-none tracking-tight">
               Abonnement
             </div>
@@ -173,7 +173,7 @@ export const UserGalleryLayout = ({
       </>
 
       {/* Navigation tabs pour Posts et Médias */}
-      <div className="border-b border-muted">
+      <div className="border-muted border-b">
         <Tabs
           defaultValue={isGalleryActive ? "media" : "posts"}
           className="w-full"
@@ -185,7 +185,7 @@ export const UserGalleryLayout = ({
                 className={cn(
                   "w-full rounded-none transition-colors duration-200",
                   "hover:bg-primary/10 data-[state=active]:bg-muted/30",
-                  !isGalleryActive && "border-b-2 border-primary",
+                  !isGalleryActive && "border-primary border-b-2",
                 )}
               >
                 Posts
@@ -197,7 +197,7 @@ export const UserGalleryLayout = ({
                 className={cn(
                   "w-full rounded-none transition-colors duration-200",
                   "hover:bg-primary/10 data-[state=active]:bg-muted/30",
-                  isGalleryActive && "border-b-2 border-primary",
+                  isGalleryActive && "border-primary border-b-2",
                 )}
               >
                 Médias

@@ -84,7 +84,7 @@ export const MessageForm = ({
             <Input
               type="text"
               placeholder="Ecrivez un message..."
-              className="bg-gray-tertiary w-full rounded-lg py-2 text-sm shadow-sm focus-visible:ring-transparent"
+              className="bg-gray-tertiary w-full rounded-lg py-2 text-sm shadow-xs focus-visible:ring-transparent"
               value={msgText}
               onChange={(e) => setMsgText(e.target.value)}
             />

@@ -87,7 +87,7 @@ export const MobileMenu = () => {
   }
 
   return (
-    <section className="fixed bottom-0 z-30 h-16 w-full border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 min-[500px]:hidden">
+    <section className="fixed bottom-0 z-30 h-16 w-full border-t border-border bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60 min-[500px]:hidden">
       <div className="flex h-full items-center justify-around px-1">
         {displayedQuickAccessLinks.map((link) => {
           const IconComponent = link.icon

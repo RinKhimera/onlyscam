@@ -113,7 +113,7 @@ export const SubscriptionModal = ({
             {/* Liste des avantages */}
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
                 <div className="text-sm">
                   <span className="font-medium">Contenu exclusif</span>
                   <p className="text-muted-foreground">
@@ -123,7 +123,7 @@ export const SubscriptionModal = ({
               </div>
 
               <div className="flex items-start gap-3">
-                <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
                 <div className="text-sm">
                   <span className="font-medium">Messages directs</span>
                   <p className="text-muted-foreground">
@@ -133,7 +133,7 @@ export const SubscriptionModal = ({
               </div>
 
               <div className="flex items-start gap-3">
-                <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
                 <div className="text-sm">
                   <span className="font-medium">Flexibilité</span>
                   <p className="text-muted-foreground">

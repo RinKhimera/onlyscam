@@ -112,8 +112,8 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
   // Cas où l'application n'existe pas (ID invalide ou application supprimée)
   if (application === null) {
     return (
-      <main className="flex h-full min-h-screen w-full flex-col border-l border-r border-muted sm:w-[80%] lg:w-[60%]">
-        <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
+      <main className="border-muted flex h-full min-h-screen w-full flex-col border-l border-r sm:w-[80%] lg:w-[60%]">
+        <div className="border-muted bg-background/95 sticky top-0 z-20 border-b p-4 backdrop-blur-sm">
           <h1 className="text-xl font-bold">Candidature introuvable</h1>
         </div>
         <div className="flex flex-1 items-center justify-center p-6">
@@ -145,15 +145,15 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
   }
 
   return (
-    <main className="flex h-full min-h-screen w-full flex-col border-l border-r border-muted max-lg:pb-12 sm:w-[80%] lg:w-[60%]">
+    <main className="border-muted flex h-full min-h-screen w-full flex-col border-l border-r max-lg:pb-12 sm:w-[80%] lg:w-[60%]">
       {/* Header avec bouton retour */}
-      <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
+      <div className="border-muted bg-background/95 sticky top-0 z-20 border-b p-4 backdrop-blur-sm">
         <div className="flex items-center gap-4">
           <div className="flex-1">
             <h1 className="text-xl font-bold">
               Candidature de {application.personalInfo.fullName}
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Soumise le {formatDate(application.submittedAt)}
               {application.reviewedAt && (
                 <span className="ml-2">
@@ -202,8 +202,8 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
           </CardHeader>
           <CardContent>
             <Link href={`/${application.user?.username}`}>
-              <div className="flex cursor-pointer items-center space-x-4 rounded-lg p-2 transition-colors hover:bg-muted/50">
-                <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-muted">
+              <div className="hover:bg-muted/50 flex cursor-pointer items-center space-x-4 rounded-lg p-2 transition-colors">
+                <div className="bg-muted flex h-12 w-12 items-center justify-center overflow-hidden rounded-full">
                   {application.user?.image ? (
                     <ProfileImage
                       src={application.user.image}
@@ -218,12 +218,12 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold">{application.user?.name}</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     @{application.user?.username || "N/A"} •{" "}
                     {application.user?.email}
                   </p>
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-muted-foreground text-xs">
                   Cliquez pour voir le profil
                 </div>
               </div>
@@ -241,13 +241,13 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">
+              <p className="text-muted-foreground text-sm font-medium">
                 Nom complet
               </p>
               <p className="font-medium">{application.personalInfo.fullName}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">
+              <p className="text-muted-foreground text-sm font-medium">
                 Date de naissance
               </p>
               <p className="font-medium">
@@ -255,7 +255,7 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
               </p>
             </div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">
+              <p className="text-muted-foreground text-sm font-medium">
                 Téléphone
               </p>
               <p className="font-medium">
@@ -263,7 +263,7 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
               </p>
             </div>
             <div className="md:col-span-2">
-              <p className="text-sm font-medium text-muted-foreground">
+              <p className="text-muted-foreground text-sm font-medium">
                 Adresse
               </p>
               <p className="font-medium">{application.personalInfo.address}</p>
@@ -292,7 +292,7 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
                     </Badge>
                   </div>
                   <div
-                    className="relative aspect-video cursor-pointer overflow-hidden rounded-lg border bg-muted transition-opacity hover:opacity-90"
+                    className="bg-muted relative aspect-video cursor-pointer overflow-hidden rounded-lg border transition-opacity hover:opacity-90"
                     onClick={() =>
                       setSelectedImage({
                         url: doc.url,
@@ -331,7 +331,7 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
             <CardTitle className="text-lg">
               Notes administratives
               {isEditingStatus && (
-                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                <span className="text-muted-foreground ml-2 text-sm font-normal">
                   (Modifiable)
                 </span>
               )}
@@ -346,7 +346,7 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
                 className="min-h-20"
               />
             ) : (
-              <div className="rounded-lg bg-muted p-4">
+              <div className="bg-muted rounded-lg p-4">
                 <p className="whitespace-pre-wrap text-sm">
                   {application.adminNotes || "Aucune note administrative"}
                 </p>
@@ -362,7 +362,7 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
           </CardHeader>
           <CardContent>
             {application.status === "pending" ? (
-              <div className="flex flex-col gap-3 @md:flex-row">
+              <div className="@md:flex-row flex flex-col gap-3">
                 <Button
                   onClick={() => handleReview("approved")}
                   disabled={isPending}
@@ -383,14 +383,14 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="flex flex-col gap-3 @md:flex-row @md:items-center @md:justify-between">
+                <div className="@md:flex-row @md:items-center @md:justify-between flex flex-col gap-3">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">
+                    <p className="text-muted-foreground text-sm font-medium">
                       Statut actuel
                     </p>
                     <div className="mt-1 flex items-center gap-2">
                       {getStatusBadge(application.status)}
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-muted-foreground text-sm">
                         • Traitée le {formatDate(application.reviewedAt!)}
                       </span>
                     </div>
@@ -399,7 +399,7 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
                     variant="outline"
                     size="sm"
                     onClick={() => setIsEditingStatus(true)}
-                    className="gap-2 @md:mt-0"
+                    className="@md:mt-0 gap-2"
                   >
                     <Edit className="h-4 w-4" />
                     Modifier
@@ -407,11 +407,11 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
                 </div>
 
                 {isEditingStatus && (
-                  <div className="space-y-3 rounded-lg border bg-muted/50 p-4">
+                  <div className="bg-muted/50 space-y-3 rounded-lg border p-4">
                     <p className="text-sm font-medium">
                       Modifier le statut de la candidature
                     </p>
-                    <div className="flex flex-col gap-3 @md:flex-row">
+                    <div className="@md:flex-row flex flex-col gap-3">
                       <Button
                         onClick={() => {
                           handleReview("approved")

@@ -73,7 +73,6 @@ export const BookmarkButton = ({
   return (
     <Button
       variant={"ghost"}
-      size={"icon"}
       disabled={isPending || disabled}
       onClick={handleBookmark}
       className={cn("size-8 rounded-full transition-colors", {
@@ -82,7 +81,9 @@ export const BookmarkButton = ({
         "hover:bg-blue-600/15 hover:text-blue-500": !disabled && !isBookmarked,
       })}
     >
-      <Bookmark size={20} className={isBookmarked ? "fill-current" : ""} />
+      <Bookmark
+        className={cn("!size-[19px]", isBookmarked ? "fill-current" : "")}
+      />
     </Button>
   )
 }
