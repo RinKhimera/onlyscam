@@ -2,7 +2,7 @@
 
 import { ImagePlus } from "lucide-react"
 import { useRouter } from "next/navigation"
-import Textarea from "react-expanding-textarea"
+// import Textarea from "react-expanding-textarea"
 import { ProfileImage } from "@/components/shared/profile-image"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -45,7 +45,7 @@ export const CreatePost = ({
 
       <div className="w-full">
         <div className="flex h-full w-full flex-col">
-          <Textarea
+          {/* <Textarea
             placeholder="Partager une publication"
             className="mt-1 h-full w-full cursor-pointer resize-none border-none bg-transparent text-xl outline-none"
             onClick={(e) => {
@@ -53,7 +53,7 @@ export const CreatePost = ({
               handleCreatePostClick()
             }}
             readOnly
-          />
+          /> */}
 
           <div
             className="mt-8 flex w-full cursor-pointer items-center justify-between"

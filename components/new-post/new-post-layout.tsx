@@ -15,7 +15,7 @@ import {
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState, useTransition } from "react"
-import Textarea from "react-expanding-textarea"
+// import Textarea from "react-expanding-textarea"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -191,11 +191,11 @@ export const NewPostLayout = () => {
                 <FormItem>
                   <FormControl>
                     <div className="flex h-full w-full flex-col">
-                      <Textarea
+                      {/* <Textarea
                         placeholder="Ecrivez une nouvelle publication"
                         className="mt-1 h-full w-full resize-none border-none bg-transparent text-xl outline-none"
                         {...field}
-                      />
+                      /> */}
 
                       {medias && (
                         <div className="relative w-fit">

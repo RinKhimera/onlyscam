@@ -3,6 +3,7 @@
 import { CreatePost } from "@/components/home/create-post"
 import { NewsFeed } from "@/components/home/news-feed"
 import { useCurrentUser } from "@/hooks/useCurrentUser"
+import { ModeToggle } from "../shared/toggle-mode"
 
 export const MainLayout = () => {
   const { currentUser } = useCurrentUser()
@@ -13,6 +14,7 @@ export const MainLayout = () => {
       <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
         Accueil
       </h1>
+      <ModeToggle />
       <CreatePost currentUser={user} />
       <NewsFeed currentUser={user} />
     </main>

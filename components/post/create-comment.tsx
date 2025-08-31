@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "convex/react"
 import { LoaderCircle } from "lucide-react"
 import { useTransition } from "react"
-import Textarea from "react-expanding-textarea"
+// import Textarea from "react-expanding-textarea"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -100,11 +100,11 @@ export const CreateComment = ({
               <FormItem>
                 <FormControl>
                   <div className="flex h-full w-full flex-col">
-                    <Textarea
+                    {/* <Textarea
                       placeholder="Poster votre réponse"
                       className="mt-1 h-full w-full resize-none border-none bg-transparent text-xl outline-none max-sm:text-base"
                       {...field}
-                    />
+                    /> */}
 
                     <div className="mt-2 flex w-full justify-end">
                       <Button
