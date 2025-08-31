@@ -33,7 +33,7 @@ export const CommentButton = ({
       onClick={handleClick}
       disabled={disabled}
     >
-      <MessageCircle size={20} />
+      <MessageCircle className="!size-[19px]" />
     </Button>
   )
 }

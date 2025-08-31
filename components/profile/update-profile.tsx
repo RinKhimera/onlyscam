@@ -104,7 +104,7 @@ export const UpdateProfileDialog = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant={"outline"} className="rounded-3xl border-2">
+        <Button variant={"outline-solid"} className="rounded-3xl border-2">
           Modifier le profil
         </Button>
       </DialogTrigger>

@@ -68,7 +68,7 @@ export const CommentSection = ({
           className="flex gap-3"
           onClick={(e) => e.stopPropagation()}
         >
-          <Avatar className="h-8 w-8 flex-shrink-0">
+          <Avatar className="h-8 w-8 shrink-0">
             {currentUser.image ? (
               <ProfileImage
                 src={currentUser.image}

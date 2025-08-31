@@ -62,12 +62,12 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
                 href={href}
                 className={cn(
                   buttonVariants({ variant: "navLink" }),
-                  "flex w-fit items-center space-x-4 rounded-3xl text-xl transition hover:bg-foreground/10 hover:text-primary",
+                  "hover:bg-foreground/10 hover:text-primary flex w-fit items-center space-x-4 rounded-3xl text-xl transition",
                   { "text-muted-foreground": pathname !== href },
                 )}
               >
                 <div className="relative">
-                  <IconComponent className="size-6" />
+                  <IconComponent className="!size-6" />
                   {badgeValue && (
                     <Badge
                       variant="destructive"
@@ -84,7 +84,7 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
 
           {/* Bouton desktop */}
           <Button
-            className="w-full rounded-full bg-primary px-5 py-6 text-xl hover:bg-primary/80 max-lg:hidden"
+            className="bg-primary hover:bg-primary/80 w-full rounded-full px-5 py-6 text-xl max-lg:hidden"
             onClick={() => {
               if (
                 currentUser?.accountType === "CREATOR" ||
@@ -101,7 +101,7 @@ export const LeftSidebar = ({ currentUser }: { currentUser: Doc<"users"> }) => {
 
           {/* Bouton mobile/tablet */}
           <Button
-            className="w-fit rounded-full bg-primary p-3 text-xl transition hover:bg-primary/80 lg:hidden"
+            className="bg-primary hover:bg-primary/80 w-fit rounded-full p-3 text-xl transition lg:hidden"
             onClick={() => {
               if (
                 currentUser?.accountType === "CREATOR" ||

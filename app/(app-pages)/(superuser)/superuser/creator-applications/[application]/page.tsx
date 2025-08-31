@@ -113,7 +113,7 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
   if (application === null) {
     return (
       <main className="flex h-full min-h-screen w-full flex-col border-l border-r border-muted sm:w-[80%] lg:w-[60%]">
-        <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
+        <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur-sm">
           <h1 className="text-xl font-bold">Candidature introuvable</h1>
         </div>
         <div className="flex flex-1 items-center justify-center p-6">
@@ -147,7 +147,7 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
   return (
     <main className="flex h-full min-h-screen w-full flex-col border-l border-r border-muted max-lg:pb-12 sm:w-[80%] lg:w-[60%]">
       {/* Header avec bouton retour */}
-      <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
+      <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur-sm">
         <div className="flex items-center gap-4">
           <div className="flex-1">
             <h1 className="text-xl font-bold">
@@ -287,7 +287,7 @@ const ApplicationDetails = ({ params }: ApplicationDetailsProps) => {
                     <span className="text-sm font-medium">
                       {getDocumentTypeLabel(doc.type)}
                     </span>
-                    <Badge variant={"outline"}>
+                    <Badge variant={"outline-solid"}>
                       {formatDate(doc.uploadedAt)}
                     </Badge>
                   </div>

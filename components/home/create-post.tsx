@@ -2,7 +2,7 @@
 
 import { ImagePlus } from "lucide-react"
 import { useRouter } from "next/navigation"
-// import Textarea from "react-expanding-textarea"
+import TextareaAutosize from "react-textarea-autosize"
 import { ProfileImage } from "@/components/shared/profile-image"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -28,7 +28,7 @@ export const CreatePost = ({
 
   return (
     <div
-      className="relative flex cursor-pointer items-stretch space-x-3 border-b border-muted px-4 py-5 max-sm:hidden"
+      className="border-muted relative flex cursor-pointer items-stretch space-x-3 border-b px-4 py-5 max-sm:hidden"
       onClick={handleCreatePostClick}
     >
       <Avatar>
@@ -45,18 +45,20 @@ export const CreatePost = ({
 
       <div className="w-full">
         <div className="flex h-full w-full flex-col">
-          {/* <Textarea
+          <TextareaAutosize
             placeholder="Partager une publication"
-            className="mt-1 h-full w-full cursor-pointer resize-none border-none bg-transparent text-xl outline-none"
+            className="outline-hidden mt-1 h-full w-full cursor-pointer resize-none border-none bg-transparent text-xl"
             onClick={(e) => {
               e.stopPropagation()
               handleCreatePostClick()
             }}
             readOnly
-          /> */}
+            minRows={2}
+            maxRows={4}
+          />
 
           <div
-            className="mt-8 flex w-full cursor-pointer items-center justify-between"
+            className="mt-2 flex w-full cursor-pointer items-center justify-between"
             onClick={handleCreatePostClick}
           >
             {currentUser !== undefined && (

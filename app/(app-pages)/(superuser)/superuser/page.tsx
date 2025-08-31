@@ -73,7 +73,7 @@ const SuperUserPage = () => {
 
   return (
     <main className="flex h-full min-h-screen w-full flex-col border-l border-r border-muted max-[500px]:pb-16 sm:w-[80%] lg:w-[60%]">
-      <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
+      <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Dashboard Administrateur</h1>
           <Badge variant="outline" className="hidden sm:inline-flex">
@@ -91,7 +91,7 @@ const SuperUserPage = () => {
               <CardTitle className="flex-1 text-sm font-medium">
                 Utilisateurs Total
               </CardTitle>
-              <Users className="ml-2 h-6 w-6 flex-shrink-0 text-muted-foreground" />
+              <Users className="ml-2 h-6 w-6 shrink-0 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -109,7 +109,7 @@ const SuperUserPage = () => {
               <CardTitle className="flex-1 text-sm font-medium">
                 Posts Publiés
               </CardTitle>
-              <FileText className="ml-2 h-6 w-6 flex-shrink-0 text-muted-foreground" />
+              <FileText className="ml-2 h-6 w-6 shrink-0 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -126,7 +126,7 @@ const SuperUserPage = () => {
               <CardTitle className="flex-1 text-sm font-medium">
                 Candidatures
               </CardTitle>
-              <UserPlus className="ml-2 h-6 w-6 flex-shrink-0 text-muted-foreground" />
+              <UserPlus className="ml-2 h-6 w-6 shrink-0 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -143,7 +143,7 @@ const SuperUserPage = () => {
               <CardTitle className="flex-1 text-sm font-medium">
                 Taux d&apos;Approbation
               </CardTitle>
-              <TrendingUp className="ml-2 h-6 w-6 flex-shrink-0 text-muted-foreground" />
+              <TrendingUp className="ml-2 h-6 w-6 shrink-0 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">

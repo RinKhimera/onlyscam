@@ -88,7 +88,7 @@ const CreatorApplicationsPage = () => {
             </div>
 
             {/* Bouton - Positionné différemment selon la taille du conteneur */}
-            <div className="@md:ml-4 @md:flex-shrink-0">
+            <div className="@md:ml-4 @md:shrink-0">
               <Link href={`/superuser/creator-applications/${application._id}`}>
                 <Button
                   variant="outline"
@@ -190,7 +190,7 @@ const CreatorApplicationsPage = () => {
 
   return (
     <main className="flex h-full min-h-screen w-full flex-col border-l border-r border-muted sm:w-[80%] lg:w-[60%]">
-      <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
+      <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Candidatures Créateur</h1>
           <div className="flex items-center space-x-2">

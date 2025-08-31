@@ -5,7 +5,7 @@ import { UserListDialog } from "./user-list-dialog"
 export const ConversationIdLayout = () => {
   return (
     <main className="flex h-screen w-[80%] flex-col border-l border-r border-muted max-sm:w-full max-[500px]:pb-16">
-      <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur">
+      <h1 className="sticky top-0 z-20 border-b border-muted p-4 text-2xl font-bold backdrop-blur-sm">
         Messages
       </h1>
 

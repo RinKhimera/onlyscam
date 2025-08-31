@@ -74,7 +74,7 @@ export const UserGallery = ({
                   <div
                     className={cn(
                       "relative h-full w-full cursor-pointer",
-                      !canViewMedia && "bg-muted/50 backdrop-blur-sm",
+                      !canViewMedia && "bg-muted/50 backdrop-blur-xs",
                     )}
                     onClick={() => {
                       if (canViewMedia) {

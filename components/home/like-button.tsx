@@ -61,12 +61,11 @@ export const LikeButton = ({
     <div className="flex items-center space-x-1">
       <Button
         variant="ghost"
-        size="icon"
         className={cn("size-8 rounded-full transition-colors", {
-          "cursor-not-allowed opacity-50": disabled,
+          "cursor-not-allowed opacity-50": disabled || isPending,
           "bg-red-600/15 text-red-500": postLikes.includes(currentUserId),
           "hover:bg-red-600/15 hover:text-red-500":
-            !disabled && !postLikes.includes(currentUserId),
+            !disabled && !isPending && !postLikes.includes(currentUserId),
         })}
         onClick={() => {
           if (postLikes.includes(currentUserId)) {
@@ -75,11 +74,13 @@ export const LikeButton = ({
             handleLike()
           }
         }}
-        disabled={disabled}
+        disabled={disabled || isPending}
       >
         <Heart
-          size={20}
-          className={postLikes.includes(currentUserId) ? "fill-current" : ""}
+          className={cn(
+            "!size-[20px]",
+            postLikes.includes(currentUserId) ? "fill-current" : "",
+          )}
         />
       </Button>
     </div>

@@ -58,7 +58,7 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="mt-3 w-full justify-between rounded-2xl bg-gradient-to-r from-primary to-primary/80 text-lg font-semibold shadow-lg transition-all hover:shadow-xl">
+        <Button className="mt-3 w-full justify-between rounded-2xl bg-linear-to-r from-primary to-primary/80 text-lg font-semibold shadow-lg transition-all hover:shadow-xl">
           <div className="flex items-center gap-2">
             <Crown className="h-5 w-5" />
             S&apos;ABONNER
@@ -80,7 +80,7 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
               width={400}
               height={128}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
           </div>
 
           {/* Avatar centré */}
@@ -152,7 +152,7 @@ export const SubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
 
             <Button
               className={cn(
-                "w-full rounded-xl bg-gradient-to-r from-primary to-primary/80 text-lg font-semibold shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl",
+                "w-full rounded-xl bg-linear-to-r from-primary to-primary/80 text-lg font-semibold shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl",
                 {
                   "pointer-events-none opacity-70": isPending,
                 },

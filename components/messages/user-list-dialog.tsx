@@ -196,7 +196,7 @@ export const UserListDialog = () => {
         </div>
         <div className="flex justify-between">
           <DialogClose asChild>
-            <Button variant={"outline"}>Fermer</Button>
+            <Button variant={"outline-solid"}>Fermer</Button>
           </DialogClose>
           <Button
             onClick={handleCreateConversation}

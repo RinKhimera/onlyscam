@@ -50,7 +50,7 @@ export const UnsubscribeDialog = ({ userProfile }: SubscribeDialogProps) => {
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          variant={"outline"}
+          variant={"outline-solid"}
           className="mt-3 w-full justify-between rounded-3xl border-2 border-muted text-lg"
         >
           <>

@@ -56,7 +56,7 @@ export const UserInfoPopover = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="mb-4 flex w-full items-center justify-between rounded-lg p-3 transition duration-200 hover:bg-foreground/10 data-[state=open]:bg-foreground/10 data-[state=open]:text-foreground">
+        <button className="hover:bg-foreground/10 data-[state=open]:bg-foreground/10 data-[state=open]:text-foreground mb-4 flex w-full cursor-pointer items-center justify-between rounded-lg p-3 transition duration-200">
           <div className="flex items-center gap-2">
             <Avatar className="size-8 rounded-lg">
               {currentUser?.image ? (
@@ -76,7 +76,7 @@ export const UserInfoPopover = ({
               <span className="truncate font-semibold">
                 {currentUser?.name}
               </span>
-              <span className="truncate text-xs text-muted-foreground">
+              <span className="text-muted-foreground truncate text-sm">
                 @{currentUser?.username}
               </span>
             </div>
@@ -109,7 +109,7 @@ export const UserInfoPopover = ({
               <span className="truncate font-semibold">
                 {currentUser?.name}
               </span>
-              <span className="truncate text-xs">@{currentUser?.username}</span>
+              <span className="truncate text-sm">@{currentUser?.username}</span>
             </div>
           </div>
           <div className="mt-2 px-2 text-sm">
@@ -119,7 +119,7 @@ export const UserInfoPopover = ({
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <Sparkles className="mr-2 size-4" />
+            <Sparkles className="mr-2 size-4 text-white" />
             Passer au compte Créateur
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -131,7 +131,7 @@ export const UserInfoPopover = ({
             onClick={() => handleNavigation(`/${currentUser?.username}`)}
           >
             <DropdownMenuItem className="w-full cursor-pointer">
-              <CircleUserRound className="mr-2 size-4" />
+              <CircleUserRound className="mr-2 size-4 text-white" />
               Profil
             </DropdownMenuItem>
           </Button>
@@ -142,7 +142,7 @@ export const UserInfoPopover = ({
             onClick={() => handleNavigation("/collections")}
           >
             <DropdownMenuItem className="w-full cursor-pointer">
-              <BookmarkPlus className="mr-2 size-4" />
+              <BookmarkPlus className="mr-2 size-4 text-white" />
               Collections
             </DropdownMenuItem>
           </Button>
@@ -153,7 +153,7 @@ export const UserInfoPopover = ({
             onClick={() => handleNavigation("/account")}
           >
             <DropdownMenuItem className="w-full cursor-pointer">
-              <Settings className="mr-2 size-4" />
+              <Settings className="mr-2 size-4 text-white" />
               Compte
             </DropdownMenuItem>
           </Button>
@@ -161,7 +161,7 @@ export const UserInfoPopover = ({
         <DropdownMenuSeparator />
         <SignOutButton>
           <DropdownMenuItem className="cursor-pointer">
-            <LogOut className="mr-2 size-4" />
+            <LogOut className="mr-2 size-4 text-white" />
             Se déconnecter
           </DropdownMenuItem>
         </SignOutButton>
@@ -173,12 +173,12 @@ export const UserInfoPopover = ({
 const UserInfoSkeleton = () => {
   return (
     <div className="mb-4 flex w-full items-center rounded-lg p-3">
-      <Skeleton className="size-8 rounded-lg bg-muted" />
+      <Skeleton className="bg-muted size-8 rounded-lg" />
       <div className="ml-2 space-y-2">
-        <Skeleton className="h-3 w-[100px] bg-muted" />
-        <Skeleton className="h-3 w-[150px] bg-muted" />
+        <Skeleton className="bg-muted h-3 w-[100px]" />
+        <Skeleton className="bg-muted h-3 w-[150px]" />
       </div>
-      <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
+      <ChevronsUpDown className="text-muted-foreground ml-auto size-4" />
     </div>
   )
 }

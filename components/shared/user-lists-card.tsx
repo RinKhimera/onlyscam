@@ -74,7 +74,7 @@ export const UserListsCard = ({
             className="object-cover"
           />
         ) : (
-          <div className="h-full w-full bg-gradient-to-r from-purple-500 to-blue-500" />
+          <div className="h-full w-full bg-linear-to-r from-purple-500 to-blue-500" />
         )}
       </Link>
 
@@ -118,7 +118,7 @@ export const UserListsCard = ({
               {/* Bouton d'abonnement */}
               {!isBlockedPage && onSubscribe && (
                 <Button
-                  variant={isSubscribed ? "outline" : "default"}
+                  variant={isSubscribed ? "outline-solid" : "default"}
                   size="sm"
                   onClick={onSubscribe}
                 >

@@ -420,7 +420,7 @@ const ReportDetails = ({ params }: ReportDetailsProps) => {
     if (report === null) {
       return (
         <main className="flex h-full min-h-screen w-full flex-col border-l border-r border-muted sm:w-[80%] lg:w-[60%]">
-          <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
+          <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur-sm">
             <div className="flex items-center gap-4">
               <Link href="/superuser/reports">
                 <Button variant="ghost" size="sm">
@@ -465,7 +465,7 @@ const ReportDetails = ({ params }: ReportDetailsProps) => {
   return (
     <main className="flex h-full min-h-screen w-full flex-col border-l border-r border-muted max-lg:pb-12 sm:w-[80%] lg:w-[60%]">
       {/* Header */}
-      <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur">
+      <div className="sticky top-0 z-20 border-b border-muted bg-background/95 p-4 backdrop-blur-sm">
         <div className="flex items-center gap-4">
           <Link href="/superuser/reports">
             <Button variant="ghost" size="sm">
