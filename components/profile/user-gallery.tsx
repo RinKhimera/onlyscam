@@ -53,7 +53,7 @@ export const UserGallery = ({
   return (
     <>
       {!userGallery || userGallery.length === 0 ? (
-        <div className="mt-16 h-full px-4 text-center text-xl text-muted-foreground">
+        <div className="text-muted-foreground mt-16 h-full px-4 text-center text-xl">
           Pas de médias pour le moment
         </div>
       ) : (
@@ -65,7 +65,7 @@ export const UserGallery = ({
               !isMediaProtected ||
               isSubscriber ||
               currentUser.accountType === "SUPERUSER"
-            const mediaUrl = item.medias[0]
+            const mediaUrl = item.mediaUrl
             const isVideoMedia = isVideo(mediaUrl)
 
             return (
@@ -85,8 +85,8 @@ export const UserGallery = ({
                     {canViewMedia ? (
                       <div className="relative h-full w-full">
                         {isVideoMedia ? (
-                          <div className="flex h-full w-full items-center justify-center bg-muted/20">
-                            <div className="absolute z-10 flex h-12 w-12 items-center justify-center rounded-full bg-primary/80">
+                          <div className="bg-muted/20 flex h-full w-full items-center justify-center">
+                            <div className="bg-primary/80 absolute z-10 flex h-12 w-12 items-center justify-center rounded-full">
                               <Play className="h-6 w-6 fill-white text-white" />
                             </div>
                             <Image
@@ -110,15 +110,15 @@ export const UserGallery = ({
                       </div>
                     ) : (
                       <div className="flex h-full w-full items-center justify-center">
-                        <Lock className="size-8 text-muted-foreground" />
+                        <Lock className="text-muted-foreground size-8" />
                       </div>
                     )}
                   </div>
                 </AspectRatio>
 
                 {isMediaProtected && (
-                  <div className="absolute right-1.5 top-1.5 rounded-md bg-background/80 p-1">
-                    <Lock className="size-4 text-primary" />
+                  <div className="bg-background/80 absolute top-1.5 right-1.5 rounded-md p-1">
+                    <Lock className="text-primary size-4" />
                   </div>
                 )}
               </div>

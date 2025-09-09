@@ -209,16 +209,9 @@ export const getUserPosts = query({
 export const getUserGallery = query({
   args: { authorId: v.id("users") },
   handler: async (ctx, args) => {
-    const author = await ctx.db
-      .query("users")
-      .withIndex("by_id", (q) => q.eq("_id", args.authorId))
-      .unique()
-
-    if (!author) throw new ConvexError("User not found")
-
     const posts = await ctx.db
       .query("posts")
-      .withIndex("by_author", (q) => q.eq("author", author._id))
+      .withIndex("by_author", (q) => q.eq("author", args.authorId))
       .order("desc")
       .collect()
 
@@ -227,20 +220,21 @@ export const getUserGallery = query({
       (post) => post.medias && post.medias.length > 0,
     )
 
-    // Retourner uniquement les informations nécessaires
-    const galleryItems = postsWithMedia.map((post) => {
-      return {
-        _id: post._id,
-        author: {
-          _id: author._id,
-          name: author.name,
-          username: author.username,
-          image: author.image,
-        },
-        medias: post.medias,
-        creationTime: post._creationTime,
-        visibility: post.visibility || "public",
-      }
+    // Aplatir tous les médias en éléments individuels de galerie
+    const galleryItems: Array<{
+      _id: string
+      mediaUrl: string
+      visibility: string
+    }> = []
+
+    postsWithMedia.forEach((post) => {
+      post.medias?.forEach((mediaUrl, index) => {
+        galleryItems.push({
+          _id: `${post._id}_${index}`,
+          mediaUrl,
+          visibility: post.visibility || "public",
+        })
+      })
     })
 
     return galleryItems
