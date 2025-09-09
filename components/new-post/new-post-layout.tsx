@@ -12,7 +12,6 @@ import {
   CldUploadWidget,
   CloudinaryUploadWidgetInfo,
 } from "next-cloudinary"
-import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
@@ -39,21 +38,7 @@ import { api } from "@/convex/_generated/api"
 import { useCurrentUser } from "@/hooks/useCurrentUser"
 import { cn } from "@/lib/utils"
 import { postFormSchema } from "@/schemas/post"
-import { generateRandomString } from "@/utils/generateRandomString"
 import { ProfileImage } from "../shared/profile-image"
-
-// Import dynamique du CldVideoPlayer pour éviter les problèmes SSR
-const CldVideoPlayer = dynamic(
-  () => import("next-cloudinary").then((mod) => mod.CldVideoPlayer),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="bg-muted mt-2 flex h-[300px] w-[500px] items-center justify-center rounded-md">
-        <LoaderCircle className="animate-spin" size={32} />
-      </div>
-    ),
-  },
-)
 
 export const NewPostLayout = () => {
   const router = useRouter()
@@ -63,10 +48,9 @@ export const NewPostLayout = () => {
   const createDraftAsset = useMutation(api.assetsDraft.createDraftAsset)
   const deleteDraftAsset = useMutation(api.assetsDraft.deleteDraftAsset)
 
-  const [medias, setMedias] = useState<string>("")
-  const [publicId, setPublicId] = useState<string>("")
-  const [mediaType, setMediaType] = useState<"image" | "video" | null>(null)
-  const [randomString] = useState(() => generateRandomString(6))
+  const [medias, setMedias] = useState<
+    { url: string; publicId: string; type: "image" | "video" }[]
+  >([])
   const [isPending, startTransition] = useTransition()
   const [visibility, setVisibility] = useState<"public" | "subscribers_only">(
     "public",
@@ -78,20 +62,21 @@ export const NewPostLayout = () => {
 
   useEffect(() => {
     return () => {
-      // Ne supprime l'asset que s'il existe et que le post n'a pas été créé
-      if (publicId && !isPostCreatedRef.current) {
-        deleteAsset(publicId, mediaType || "image").catch((error) => {
-          console.error("Erreur lors de la suppression de l'asset:", error)
-        })
+      // Nettoie tous les assets si le post n'a pas été créé
+      if (medias.length > 0 && !isPostCreatedRef.current) {
+        medias.forEach((media) => {
+          deleteAsset(media.publicId, media.type).catch((error) => {
+            console.error("Erreur lors de la suppression de l'asset:", error)
+          })
 
-        if (publicId) {
-          deleteDraftAsset({ publicId }).catch((error) => {
+          deleteDraftAsset({ publicId: media.publicId }).catch((error) => {
             console.error("Erreur lors de la suppression du brouillon:", error)
           })
-        }
+        })
       }
     }
-  }, [publicId, mediaType, deleteDraftAsset])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deleteDraftAsset])
 
   const createPost = useMutation(api.posts.createPost)
 
@@ -108,14 +93,19 @@ export const NewPostLayout = () => {
     widget: CloudinaryUploadWidget,
   ) => {
     const data = result.info as CloudinaryUploadWidgetInfo
-    setMedias(data.secure_url)
-    setPublicId(data.public_id)
+    console.log("Upload réussi:", data)
 
     const isVideo = data.secure_url.startsWith(
       "https://res.cloudinary.com/onlyscam/video/",
     )
 
-    setMediaType(isVideo ? "video" : "image")
+    const newMedia = {
+      url: data.secure_url,
+      publicId: data.public_id,
+      type: (isVideo ? "video" : "image") as "image" | "video",
+    }
+
+    setMedias((prev) => [...prev, newMedia])
 
     if (currentUser) {
       createDraftAsset({
@@ -126,13 +116,12 @@ export const NewPostLayout = () => {
         console.error("Erreur lors de l'enregistrement du brouillon:", error)
       })
     }
-    widget.close()
   }
 
   const onSubmit = async (data: z.infer<typeof postFormSchema>) => {
     startTransition(async () => {
       try {
-        data.media = medias ? [medias] : []
+        data.media = medias.map((media) => media.url)
 
         await createPost({
           content: data.content,
@@ -145,9 +134,10 @@ export const NewPostLayout = () => {
         // Marquer le post comme créé en utilisant la référence
         isPostCreatedRef.current = true
 
-        if (publicId) {
-          await deleteDraftAsset({ publicId })
-        }
+        // Supprimer tous les draft assets après création du post
+        medias.forEach(async (media) => {
+          await deleteDraftAsset({ publicId: media.publicId })
+        })
 
         toast.success("Votre publication a été partagée")
         router.push("/")
@@ -161,7 +151,7 @@ export const NewPostLayout = () => {
     })
   }
   return (
-    <main className="border-muted flex h-full min-h-screen w-[50%] flex-col border-l border-r max-lg:w-[80%] max-sm:w-full">
+    <main className="border-muted flex h-full min-h-screen w-[50%] flex-col border-r border-l max-lg:w-[80%] max-sm:w-full">
       <h1 className="border-muted sticky top-0 z-20 border-b p-4 text-2xl font-bold backdrop-blur-sm">
         Nouvelle publication
       </h1>
@@ -193,64 +183,66 @@ export const NewPostLayout = () => {
                     <div className="flex h-full w-full flex-col">
                       <TextareaAutosize
                         placeholder="Ecrivez une nouvelle publication"
-                        className="outline-hidden mt-1 h-full w-full  resize-none border-none text-xl"
+                        className="mt-1 h-full w-full resize-none border-none text-xl outline-hidden"
                         minRows={2}
                         maxRows={10}
                         {...field}
                       />
 
-                      {medias && (
-                        <div className="relative w-fit">
-                          <Button
-                            size={"icon"}
-                            className="bg-muted absolute right-[10px] top-3 z-10 size-8"
-                            onClick={async () => {
-                              const currentPublicId = publicId
-                              const currentMediaType = mediaType
+                      {medias.length > 0 && (
+                        <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2">
+                          {medias.map((media, index) => (
+                            <div key={media.publicId} className="relative">
+                              <Button
+                                type="button"
+                                size={"icon"}
+                                className="bg-muted absolute top-3 right-[10px] z-10 size-8"
+                                onClick={async () => {
+                                  // Supprimer le média du tableau
+                                  setMedias((prev) =>
+                                    prev.filter((_, i) => i !== index),
+                                  )
 
-                              setMedias("")
-                              setPublicId("")
-                              setMediaType(null)
+                                  // Supprimer l'asset de Cloudinary
+                                  await deleteAsset(media.publicId, media.type)
 
-                              deleteAsset(
-                                currentPublicId,
-                                currentMediaType || "image",
-                              )
-
-                              if (currentPublicId) {
-                                deleteDraftAsset({ publicId: currentPublicId })
-                              }
-                            }}
-                          >
-                            <CircleX size={22} />
-                          </Button>
-
-                          {/* Affichage conditionnel selon le type de média */}
-                          {mediaType === "video" ? (
-                            <div className="mt-2">
-                              <video
-                                src={medias}
-                                controls
-                                width={500}
-                                height={300}
-                                className="max-h-[550px] rounded-md"
+                                  // Supprimer le draft asset
+                                  await deleteDraftAsset({
+                                    publicId: media.publicId,
+                                  })
+                                }}
                               >
-                                Votre navigateur ne supporte pas la lecture
-                                vidéo.
-                              </video>
-                            </div>
-                          ) : (
-                            <CldImage
-                              src={medias}
-                              alt={""}
-                              width={500}
-                              height={500}
-                              sizes="(max-width: 768px) 100vw,
+                                <CircleX size={22} />
+                              </Button>
+
+                              {/* Affichage conditionnel selon le type de média */}
+                              {media.type === "video" ? (
+                                <div className="mt-2">
+                                  <video
+                                    src={media.url}
+                                    controls
+                                    width={500}
+                                    height={300}
+                                    className="max-h-[300px] w-full rounded-md object-cover"
+                                  >
+                                    Votre navigateur ne supporte pas la lecture
+                                    vidéo.
+                                  </video>
+                                </div>
+                              ) : (
+                                <CldImage
+                                  src={media.publicId}
+                                  alt={""}
+                                  width={500}
+                                  height={300}
+                                  sizes="(max-width: 768px) 100vw,
                           (max-width: 1200px) 50vw,
                           33vw"
-                              className="mt-2 max-h-[550px] rounded-md object-cover"
-                            />
-                          )}
+                                  className="mt-2 max-h-[300px] w-full rounded-md object-cover"
+                                />
+                              )}
+                            </div>
+                          ))}
                         </div>
                       )}
 
@@ -283,20 +275,22 @@ export const NewPostLayout = () => {
                                   "google_drive",
                                   "url",
                                 ],
-                                publicId: `${currentUser._id}-${randomString}`,
-                                multiple: false,
+                                multiple: true,
+                                maxFiles: 5,
                                 maxFileSize: 50 * 1024 * 1024,
                                 clientAllowedFormats: ["image", "video"],
                               }}
                               onSuccess={(result, { widget }) =>
                                 handleUploadSuccess(result, widget)
                               }
+                              onQueuesEnd={(result, { widget }) => {
+                                widget.close()
+                              }}
                             >
                               {({ open }) => (
                                 <Button
                                   type="button"
                                   variant="default"
-                                  size="sm"
                                   className={cn(
                                     "border-muted flex items-center gap-2 rounded-full",
                                     { "cursor-not-allowed": isPending },
