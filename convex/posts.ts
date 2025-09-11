@@ -548,6 +548,40 @@ export const removeBookmark = mutation({
   },
 })
 
+export const updatePost = mutation({
+  args: {
+    postId: v.id("posts"),
+    content: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new ConvexError("Not authenticated")
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_tokenIdentifier", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique()
+
+    if (!user) throw new ConvexError("User not found")
+
+    // Récupérer le post
+    const post = await ctx.db.get(args.postId)
+    if (!post) throw new ConvexError("Post not found")
+
+    // Vérifier que l'utilisateur est bien l'auteur
+    if (post.author !== user._id) throw new ConvexError("Unauthorized")
+
+    // Mettre à jour le contenu du post
+    await ctx.db.patch(args.postId, {
+      content: args.content,
+    })
+
+    return { success: true }
+  },
+})
+
 export const updatePostVisibility = mutation({
   args: {
     postId: v.id("posts"),

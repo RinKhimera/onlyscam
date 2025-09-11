@@ -25,6 +25,7 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
+import { DropdownMenuItem } from "../ui/dropdown-menu"
 
 interface ReportDialogProps {
   reportedUserId?: Id<"users">
@@ -133,13 +134,13 @@ export const ReportDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          className="w-full justify-start gap-2 text-red-600 hover:text-red-700"
+        <DropdownMenuItem
+          variant="destructive"
+          onSelect={(e) => e.preventDefault()}
         >
-          <Flag className="h-4 w-4" />
+          <Flag className="mr-2 size-4" />
           {triggerText}
-        </Button>
+        </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
