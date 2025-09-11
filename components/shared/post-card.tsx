@@ -3,12 +3,12 @@
 import { useQuery } from "convex/react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { Lock } from "lucide-react"
+import { Image as ImageIcon, Lock } from "lucide-react"
 import { CldImage, CldVideoPlayer } from "next-cloudinary"
 import "next-cloudinary/dist/cld-video-player.css"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { BookmarkButton } from "@/components/home/bookmark-button"
 import { CommentButton } from "@/components/home/comment-button"
 import { LikeButton } from "@/components/home/like-button"
@@ -18,6 +18,14 @@ import { ProfileImage } from "@/components/shared/profile-image"
 import { SubscriptionModal } from "@/components/shared/subscription-modal"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import {
+  Carousel,
+  type CarouselApi,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 import { api } from "@/convex/_generated/api"
 import { Doc } from "@/convex/_generated/dataModel"
 
@@ -36,7 +44,23 @@ type PostCardProps = {
 export const PostCard = ({ post, currentUser }: PostCardProps) => {
   const [isCommentsOpen, setIsCommentsOpen] = useState(false)
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false)
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>()
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [slideCount, setSlideCount] = useState(0)
   const router = useRouter()
+
+  // Gérer l'API du carousel
+  useEffect(() => {
+    if (!carouselApi) return
+
+    setSlideCount(carouselApi.scrollSnapList().length)
+    setCurrentSlide(carouselApi.selectedScrollSnap())
+
+    carouselApi.on("select", () => {
+      setCurrentSlide(carouselApi.selectedScrollSnap())
+    })
+  }, [carouselApi])
+
   const isOwnPost = currentUser._id === post.author?._id
   const isMediaProtected = post.visibility === "subscribers_only"
   const hasMedia = post.medias && post.medias.length > 0
@@ -86,7 +110,7 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
   return (
     <>
       <div
-        className="flex cursor-pointer space-x-4 border-b px-4 pb-2 pt-4 transition-colors hover:bg-muted/10"
+        className="hover:bg-muted/10 flex cursor-pointer space-x-4 border-b px-4 pt-4 pb-2 transition-colors"
         onClick={handlePostClick}
       >
         <div className="flex w-full flex-col">
@@ -120,7 +144,7 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
               </div>
             </Link>
 
-            <div className="flex items-center gap-3 text-muted-foreground">
+            <div className="text-muted-foreground flex items-center gap-3">
               <>
                 {format(new Date(post._creationTime), "d MMMM", {
                   locale: fr,
@@ -154,52 +178,118 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
             {hasMedia && (
               <>
                 {canViewMedia ? (
-                  // Original media rendering logic
-                  <>
-                    {post.medias.map((media) => {
-                      const isVideo = media.startsWith(
-                        "https://res.cloudinary.com/onlyscam/video/",
-                      )
-                      if (isVideo) {
-                        return (
-                          <div key={media} onClick={(e) => e.stopPropagation()}>
-                            <CldVideoPlayer
-                              width={1620}
-                              height={1080}
-                              src={media}
-                              logo={false}
-                              sourceTypes={["hls"]}
-                              transformation={{
-                                streaming_profile: "hd",
-                              }}
-                              className="mt-2 rounded-md"
-                            />
+                  // Carousel pour les médias multiples ou affichage simple pour un seul média
+                  post.medias.length > 1 ? (
+                    <div
+                      className="relative mt-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Carousel setApi={setCarouselApi}>
+                        <CarouselContent>
+                          {post.medias.map((media, index) => {
+                            const isVideo = media.startsWith(
+                              "https://res.cloudinary.com/onlyscam/video/",
+                            )
+                            return (
+                              <CarouselItem key={media}>
+                                {isVideo ? (
+                                  <CldVideoPlayer
+                                    width={1620}
+                                    height={1080}
+                                    src={media}
+                                    logo={false}
+                                    sourceTypes={["hls"]}
+                                    transformation={{
+                                      streaming_profile: "hd",
+                                    }}
+                                    className="rounded-md"
+                                  />
+                                ) : (
+                                  <CldImage
+                                    src={media}
+                                    alt={""}
+                                    width={500}
+                                    height={500}
+                                    className="max-h-[550px] w-full rounded-md object-cover"
+                                  />
+                                )}
+                              </CarouselItem>
+                            )
+                          })}
+                        </CarouselContent>
+                        <CarouselPrevious
+                          variant="secondary"
+                          size={"icon"}
+                          className="hover:bg-muted/30 left-2 bg-transparent"
+                        />
+                        <CarouselNext
+                          variant="secondary"
+                          size={"icon"}
+                          className="hover:bg-muted/30 right-2 bg-transparent"
+                        />
+                      </Carousel>
+
+                      {/* Badge indicateur de position */}
+                      {slideCount > 1 && (
+                        <div className="absolute bottom-1 left-1/2 z-10 -translate-x-1/2 transform">
+                          <div className="bg-muted/40 flex cursor-default items-center gap-1 rounded px-2 py-1 text-xs font-medium">
+                            <ImageIcon size={12} />
+                            {currentSlide + 1}/{slideCount}
                           </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    // Affichage simple pour un seul média
+                    <>
+                      {post.medias.map((media) => {
+                        const isVideo = media.startsWith(
+                          "https://res.cloudinary.com/onlyscam/video/",
                         )
-                      } else {
-                        return (
-                          <CldImage
-                            key={media}
-                            src={media}
-                            alt={""}
-                            width={500}
-                            height={500}
-                            className="mt-2 max-h-[550px] rounded-md object-cover"
-                          />
-                        )
-                      }
-                    })}
-                  </>
+                        if (isVideo) {
+                          return (
+                            <div
+                              key={media}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <CldVideoPlayer
+                                width={1620}
+                                height={1080}
+                                src={media}
+                                logo={false}
+                                sourceTypes={["hls"]}
+                                transformation={{
+                                  streaming_profile: "hd",
+                                }}
+                                className="mt-2 rounded-md"
+                              />
+                            </div>
+                          )
+                        } else {
+                          return (
+                            <CldImage
+                              key={media}
+                              src={media}
+                              alt={""}
+                              width={500}
+                              height={500}
+                              className="mt-2 max-h-[550px] rounded-md object-cover"
+                            />
+                          )
+                        }
+                      })}
+                    </>
+                  )
                 ) : (
                   // Locked media placeholder
-                  <div className="mt-2 flex aspect-video w-full flex-col items-center justify-center rounded-md bg-muted/20 p-6">
-                    <div className="mb-3 rounded-full bg-background/90 p-3">
-                      <Lock className="size-6 text-primary" />
+                  <div className="bg-muted/20 mt-2 flex aspect-video w-full flex-col items-center justify-center rounded-md p-6">
+                    <div className="bg-background/90 mb-3 rounded-full p-3">
+                      <Lock className="text-primary size-6" />
                     </div>
                     <h3 className="mb-1 text-lg font-semibold">
                       Contenu exclusif
                     </h3>
-                    <p className="mb-4 text-center text-sm text-muted-foreground">
+                    <p className="text-muted-foreground mb-4 text-center text-sm">
                       Ce contenu est réservé aux abonnés de @
                       {post.author?.username}
                     </p>
@@ -219,7 +309,7 @@ export const PostCard = ({ post, currentUser }: PostCardProps) => {
               </>
             )}
 
-            <div className="-ml-[5px] mt-2 flex w-full items-center justify-between">
+            <div className="mt-2 -ml-[5px] flex w-full items-center justify-between">
               <div className="flex w-full items-center space-x-2">
                 <div onClick={(e) => e.stopPropagation()}>
                   <LikeButton

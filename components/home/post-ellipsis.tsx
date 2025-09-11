@@ -8,10 +8,12 @@ import {
   LoaderCircle,
   Lock,
   Share2,
+  Sparkles,
   Trash2,
 } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
+import { EditPostDialog } from "@/components/shared/edit-post-dialog"
 import { ReportDialog } from "@/components/shared/report-dialog"
 import {
   AlertDialog,
@@ -26,17 +28,16 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { api } from "@/convex/_generated/api"
 import { Doc, Id } from "@/convex/_generated/dataModel"
 
@@ -110,7 +111,7 @@ export const PostEllipsis = ({
     navigator.clipboard.writeText(postUrl).then(() => {
       toast.success("Lien copié !", {
         description: "Le lien du post a été copié dans le presse-papier",
-        icon: <CheckCircle className="h-4 w-4" />,
+        icon: <CheckCircle className="size-4" />,
       })
     })
   }
@@ -143,38 +144,72 @@ export const PostEllipsis = ({
   }
 
   return (
-    <Popover>
-      <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
         <Button size="icon" variant="ghost">
           <Ellipsis />
         </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80 p-1">
-        {/* Option de partage (disponible pour tous) */}
-        <Button
-          variant="ghost"
-          className="w-full justify-start gap-2"
-          onClick={handleShareLink}
-        >
-          <Share2 className="size-4" />
-          Partager le post
-        </Button>
-
-        {/* Options disponibles uniquement pour l'auteur */}
-        {canDelete && (
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-64">
+        {/* Option de visibilité - uniquement pour l'auteur */}
+        {isAuthor && (
           <>
-            {/* Option de suppression */}
+            <DropdownMenuLabel>Visibilité du post</DropdownMenuLabel>
+            <DropdownMenuRadioGroup
+              value={visibility}
+              onValueChange={(value) =>
+                handleVisibilityChange(value as "public" | "subscribers_only")
+              }
+            >
+              <DropdownMenuRadioItem value="public" disabled={isUpdatePending}>
+                <Globe className="mr-2 size-4" />
+                Public
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem
+                value="subscribers_only"
+                disabled={isUpdatePending}
+              >
+                <Lock className="mr-2 size-4" />
+                Abonnés uniquement
+              </DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+            <DropdownMenuSeparator />
+          </>
+        )}
+
+        {/* Option de partage (disponible pour tous) */}
+        <DropdownMenuItem onClick={handleShareLink}>
+          <Share2 className="mr-2 size-4" />
+          Partager la publication
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          {!isAuthor && (
+            <>
+              <ReportDialog
+                reportedPostId={postId}
+                reportedUserId={postAuthorId}
+                type="post"
+                triggerText="Signaler la publication"
+              />
+            </>
+          )}
+          {isAuthor && <EditPostDialog postId={postId} />}
+          {canDelete && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2 text-primary hover:text-primary"
+                <DropdownMenuItem
+                  variant="destructive"
+                  onSelect={(e) => e.preventDefault()}
                 >
-                  <Trash2 className="h-4 w-4" />
-                  {isAuthor
-                    ? "Supprimer la publication"
-                    : "Supprimer la publication (Admin)"}
-                </Button>
+                  {isAuthor ? (
+                    <Trash2 className="mr-2 size-4" />
+                  ) : (
+                    <Sparkles className="mr-2 size-4" />
+                  )}
+                  Supprimer la publication
+                </DropdownMenuItem>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -201,53 +236,9 @@ export const PostEllipsis = ({
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-
-            {/* Option de visibilité - uniquement pour l'auteur */}
-            {isAuthor && (
-              <div className="px-2 py-2">
-                <p className="mb-1 text-sm font-medium">Visibilité du post</p>
-                <Select
-                  value={visibility}
-                  onValueChange={(value) =>
-                    handleVisibilityChange(
-                      value as "public" | "subscribers_only",
-                    )
-                  }
-                  disabled={isUpdatePending}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choisir la visibilité" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="public">
-                      <div className="flex items-center">
-                        <Globe className="mr-2 h-4 w-4" />
-                        <span>Public</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="subscribers_only">
-                      <div className="flex items-center">
-                        <Lock className="mr-2 h-4 w-4" />
-                        <span>Abonnés uniquement</span>
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Option de signalement (disponible pour tous sauf l'auteur) */}
-        {!isAuthor && (
-          <ReportDialog
-            reportedPostId={postId}
-            reportedUserId={postAuthorId}
-            type="post"
-            triggerText="Signaler la publication"
-          />
-        )}
-      </PopoverContent>
-    </Popover>
+          )}
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
